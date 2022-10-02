@@ -21,6 +21,8 @@ import javax.swing.border.EmptyBorder;
 
 public class MainWindow extends JFrame {
 
+	private static final long serialVersionUID = -8203812316779660921L;
+	
 	private JPanel mainPanel;
 	private JLabel lblTitle;
 	private JButton btnSecretaria;
