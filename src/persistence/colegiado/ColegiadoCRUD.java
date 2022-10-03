@@ -17,7 +17,7 @@ public class ColegiadoCRUD {
 	private static final String SQL_INSERT_CURSO = 
 			Conf.getInstance().getProperty("TCOLEGIADO_FIND_BY_YEAR");
 	
-	public List<ColegiadoDto> getColegiadosByYear(int año) throws SQLException {
+	public List<ColegiadoDto> getColegiadosByYear(int aÃ±o) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -26,7 +26,7 @@ public class ColegiadoCRUD {
 			con = Jdbc.getConnection();
 			pst = con.prepareStatement(SQL_INSERT_CURSO);
 			
-			pst.setInt(1, año);
+			pst.setInt(1, aÃ±o);
 			
 			rs = pst.executeQuery();
 			

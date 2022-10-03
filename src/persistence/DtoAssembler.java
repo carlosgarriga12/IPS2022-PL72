@@ -29,7 +29,7 @@ public class DtoAssembler {
 		c.poblacion = rs.getString("poblacion");
 		c.titulacion = rs.getInt("titulacion");
 		c.centro = rs.getString("centro");
-		c.año = rs.getInt("año");
+		c.aÃ±o = rs.getInt("aÃ±o");
 		c.numeroTarjeta = rs.getInt("numeroTarjeta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
 		c.numeroColegiado = rs.getString("numeroColegiado");
