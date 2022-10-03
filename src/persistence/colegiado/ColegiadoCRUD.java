@@ -15,6 +15,8 @@ import persistence.util.Conf;
 public class ColegiadoCRUD {
 	private static final String SQL_INSERT_CURSO = 
 			Conf.getInstance().getProperty("TCOLEGIADO_FIND_BY_YEAR");
+	private static final String SQL_SOLICITUD_ALTA = 
+			Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	
 	public List<ColegiadoDto> getColegiadosByYear(int annio) throws SQLException {
 		Connection con = null;
@@ -30,6 +32,28 @@ public class ColegiadoCRUD {
 			rs = pst.executeQuery();
 			
 			return DtoAssembler.toColegiadoList(rs);
+			
+		} catch(SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(pst);
+		}
+	}
+	
+	public void add(ColegiadoDto colegiado) {
+		Connection con = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_SOLICITUD_ALTA);
+			
+			// set cosas
+			
+			rs = pst.executeQuery();
+			
+			//return DtoAssembler.toColegiadoList(rs);
 			
 		} catch(SQLException e) {
 			throw new PersistenceException(e);
