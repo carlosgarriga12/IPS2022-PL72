@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import persistence.DtoAssembler;
@@ -17,7 +16,7 @@ public class ColegiadoCRUD {
 	private static final String SQL_INSERT_CURSO = 
 			Conf.getInstance().getProperty("TCOLEGIADO_FIND_BY_YEAR");
 	
-	public List<ColegiadoDto> getColegiadosByYear(int año) throws SQLException {
+	public List<ColegiadoDto> getColegiadosByYear(int annio) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -26,7 +25,7 @@ public class ColegiadoCRUD {
 			con = Jdbc.getConnection();
 			pst = con.prepareStatement(SQL_INSERT_CURSO);
 			
-			pst.setInt(1, año);
+			pst.setInt(1, annio);
 			
 			rs = pst.executeQuery();
 			
