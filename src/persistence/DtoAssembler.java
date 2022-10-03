@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import persistence.colegiado.ColegiadoDto;
+import persistence.curso.CursoDto;
 
 public class DtoAssembler {
 
@@ -35,6 +36,30 @@ public class DtoAssembler {
 		c.numeroColegiado = rs.getString("numeroColegiado");
 
 		return c;
+
+	}
+
+	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {
+		List<CursoDto> cursos = new ArrayList<>();
+
+		while (rs.next()) {
+			cursos.add(resultSetToCursoDto(rs));
+		}
+
+		return cursos;
+	}
+
+	private static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
+		CursoDto newCursoDto = new CursoDto();
+
+		// TODO: Comprobar que el modelo de BBDD está así
+		newCursoDto.setTitulo(rs.getString("TITULO"));
+		newCursoDto.setFechaInicio(rs.getDate("FECHAINICIO").toLocalDate());
+		newCursoDto.setPlazasDisponibles(rs.getInt("PLAZAS"));
+		newCursoDto.setPrecio(rs.getBigDecimal("PRECIO"));
+		newCursoDto.setEstado(rs.getString("ESTADO"));
+
+		return newCursoDto;
 
 	}
 
