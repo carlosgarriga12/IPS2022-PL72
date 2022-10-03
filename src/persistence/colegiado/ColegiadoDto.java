@@ -12,7 +12,7 @@ public class ColegiadoDto {
 										//1 (Titulaci�n en ingenier�a inform�tica) ,
 										//2 (Otras titulaciones)
 	public String centro;				//Campus de los catalanes
-	public int año;						//2022
+	public int annio;						//2022
 	public int numeroTarjeta;			//5555555555555555
 	public LocalDate fechaSolicitud;	//03/10/2022
 	public String numeroColegiado;		//2022-0001
