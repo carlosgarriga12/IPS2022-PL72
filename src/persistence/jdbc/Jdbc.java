@@ -28,12 +28,15 @@ public class Jdbc {
 				System.out.println(rs.getString("DNI"));
 			}
 			
-			
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, ps, c);
 		}
+	}
+	
+	public static Connection getConnection() throws SQLException {
+		return DriverManager.getConnection(URL);
 	}
 	
 	public static void close(ResultSet rs, Statement st, Connection c) {
