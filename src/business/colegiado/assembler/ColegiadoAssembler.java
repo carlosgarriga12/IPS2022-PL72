@@ -1,4 +1,4 @@
-package persistence;
+package business.colegiado.assembler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,21 +6,22 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import persistence.colegiado.ColegiadoDto;
+import business.colegiado.ColegiadoService.ColegiadoDto;
 
-public class DtoAssembler {
+
+public class ColegiadoAssembler {
 
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
 		List<ColegiadoDto> colegiados = new ArrayList<>();
 
 		while (rs.next()) {
-			colegiados.add(resultSetToColegiadoDto(rs));
+			colegiados.add(toColegiadoDto(rs));
 		}
 
 		return colegiados;
 	}
-
-	private static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
+	
+	public static ColegiadoDto toColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
 		c.DNI = rs.getString("DNI");
@@ -35,7 +36,6 @@ public class DtoAssembler {
 		c.numeroColegiado = rs.getString("numeroColegiado");
 
 		return c;
-
 	}
 
 }
