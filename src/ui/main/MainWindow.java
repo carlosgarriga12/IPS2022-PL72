@@ -231,9 +231,7 @@ public class MainWindow extends JFrame {
 			tbCoursesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			TableModel tableModel = CursoModel.getCursoModel();
-			
 			tbCoursesList.setModel(tableModel);
-
 			SwingUtil.autoAdjustColumns(tbCoursesList);
 
 		}
