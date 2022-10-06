@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import business.BusinessException;
 import business.colegiado.ColegiadoService.ColegiadoDto;
@@ -15,7 +14,7 @@ import persistence.util.Conf;
 
 public class AddColegiado {
 	
-	private static final String SQL_AÑADIR_COLEGIADO = 
+	private static final String SQL_ANADIR_COLEGIADO = 
 			Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
 	
@@ -64,7 +63,7 @@ public class AddColegiado {
 		
 		try {
 			con = Jdbc.getConnection();
-			pst = con.prepareStatement(SQL_AÑADIR_COLEGIADO);
+			pst = con.prepareStatement(SQL_ANADIR_COLEGIADO);
 			
 			// set cosas, completar
 			pst.setString(1, colegiado.DNI);
@@ -78,7 +77,7 @@ public class AddColegiado {
 			pst.setInt(9, colegiado.numeroTarjeta);
 			pst.setString(10, LocalDate.now().toString());
 			pst.setString(11, ESTADO_PENDIENTE);
-			pst.setString(12, UUID.randomUUID().toString());
+			pst.setString(12, "");
 
 			pst.executeUpdate();
 						
