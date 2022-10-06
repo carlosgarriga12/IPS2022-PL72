@@ -41,6 +41,7 @@ public class MainWindow extends JFrame {
 	private JPanel pnCoursesList;
 	private JScrollPane spCoursesList;
 	private JTable tbCoursesList;
+	private JPanel pnSolicitudColegiado;
 
 	/**
 	 * Launch the application.
@@ -71,6 +72,7 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(new CardLayout(0, 0));
 
 		// TODO: Cambiar orden para ver al arrancar el programa
+		mainPanel.add(getPnSolicitudColegiado(), "solicitud_colegiado");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnHome(), "homePanel");
@@ -222,5 +224,11 @@ public class MainWindow extends JFrame {
 			tbCoursesList = new JTable();
 		}
 		return tbCoursesList;
+	}
+	private JPanel getPnSolicitudColegiado() {
+		if (pnSolicitudColegiado == null) {
+			pnSolicitudColegiado = new JPanel();
+		}
+		return pnSolicitudColegiado;
 	}
 }

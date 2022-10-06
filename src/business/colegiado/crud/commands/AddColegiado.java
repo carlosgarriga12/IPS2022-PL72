@@ -1,4 +1,4 @@
-package business.colegiado.crud.commands;
+ package business.colegiado.crud.commands;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,6 +53,7 @@ public class AddColegiado {
 		Argument.longitudDieciseis(colegiado.numeroTarjeta);
 		
 		// comprobar si existe en la base de datos
+		
 		
 		this.colegiado=colegiado;
 	}
