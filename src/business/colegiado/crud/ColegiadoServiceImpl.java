@@ -1,9 +1,11 @@
+
 package business.colegiado.crud;
 
 import business.BusinessException;
 import business.colegiado.ColegiadoService;
 import business.colegiado.crud.commands.AddColegiado;
 import business.colegiado.crud.commands.FindColegiadoPorDni;
+import persistence.colegiado.ColegiadoDto;
 
 public class ColegiadoServiceImpl implements ColegiadoService {
 	

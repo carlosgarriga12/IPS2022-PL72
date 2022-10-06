@@ -1,6 +1,5 @@
 package persistence.curso;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -19,7 +18,7 @@ public class CursoDto {
 	public String titulo;
 	public LocalDate fechaInicio;
 	public int plazasDisponibles;
-	public BigDecimal precio;
+	public double precio;
 	public String estado;
 
 	public void setTitulo(final String titulo) {
@@ -40,7 +39,7 @@ public class CursoDto {
 		this.plazasDisponibles = plazasDisponibles;
 	}
 
-	public void setPrecio(final BigDecimal precio) {
+	public void setPrecio(final double precio) {
 		// TODO: Comprobar precio válido
 		this.precio = precio;
 	}

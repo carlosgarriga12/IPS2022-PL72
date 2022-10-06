@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import business.BusinessException;
-import business.colegiado.ColegiadoService.ColegiadoDto;
 import business.util.Argument;
+import persistence.colegiado.ColegiadoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
@@ -19,9 +19,9 @@ public class AddColegiado {
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
 	
 	
-	private ColegiadoDto colegiado; // se lo pasamos
+	private persistence.colegiado.ColegiadoDto colegiado; // se lo pasamos
 	
-	public AddColegiado(ColegiadoDto colegiado) {
+	public AddColegiado(persistence.colegiado.ColegiadoDto colegiado) {
 		Argument.isNotNull(colegiado);
 		
 		Argument.isNotNull(colegiado.DNI);

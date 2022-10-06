@@ -2,8 +2,8 @@ package ui.colegiado;
 
 import business.BusinessException;
 import business.BusinessFactory;
-import business.colegiado.ColegiadoService.ColegiadoDto;
 import business.util.Console;
+import persistence.colegiado.ColegiadoDto;
 
 public class AddColegiadoAction {
 	

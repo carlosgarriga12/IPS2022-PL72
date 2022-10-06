@@ -2,7 +2,8 @@ package business.util;
 
 import java.util.List;
 
-import business.colegiado.ColegiadoService.ColegiadoDto;
+import persistence.colegiado.ColegiadoDto;
+
 
 public class Printer {
 

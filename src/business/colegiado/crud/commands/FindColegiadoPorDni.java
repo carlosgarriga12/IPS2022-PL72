@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import business.colegiado.ColegiadoService.ColegiadoDto;
 import business.colegiado.assembler.ColegiadoAssembler;
 import business.util.Argument;
+import persistence.colegiado.ColegiadoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
