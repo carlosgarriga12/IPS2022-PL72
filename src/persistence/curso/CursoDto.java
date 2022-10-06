@@ -1,6 +1,5 @@
 package persistence.curso;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**

@@ -14,6 +14,7 @@ public class CursoCRUD {
 
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
 	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
+	
 	public static void add(CursoDto curso) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;

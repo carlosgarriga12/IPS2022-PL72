@@ -1,4 +1,4 @@
-package ui;
+package ui.main;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
