@@ -18,9 +18,7 @@ public class Curso {
 	 * 
 	 * @return
 	 */
-	public List<CursoDto> listarCursosPlanificados() {
-		// Refactorizar curso CRud para que los metodos no sean estaticos
-		List<CursoDto> cursos = CursoCRUD.listarCursosActualmentePlanificados();
-		return cursos;
+	public static List<CursoDto> listarCursosPlanificados() {
+		return CursoCRUD.listarCursosActualmentePlanificados();
 	}
 }

@@ -16,13 +16,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+
+import ui.model.CursoModel;
+import ui.util.SwingUtil;
 
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = -8203812316779660921L;
-	
+
 	private JPanel mainPanel;
 	private JLabel lblTitle;
 	private JButton btnSecretaria;
@@ -58,9 +63,6 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public MainWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1126, 710);
@@ -75,9 +77,10 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
-		
+
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
+		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 	}
 
 	private JLabel getLblTitle() {
@@ -196,30 +199,42 @@ public class MainWindow extends JFrame {
 		}
 		return txLoginUsername;
 	}
+
 	private JPanel getPnProgramAccess() {
 		if (pnProgramAccess == null) {
 			pnProgramAccess = new JPanel();
 		}
 		return pnProgramAccess;
 	}
+
 	private JPanel getPnCoursesList() {
 		if (pnCoursesList == null) {
 			pnCoursesList = new JPanel();
 			pnCoursesList.setLayout(new BorderLayout(0, 0));
-			pnCoursesList.add(getSpCoursesList(), BorderLayout.NORTH);
-			pnCoursesList.add(getTbCoursesList(), BorderLayout.CENTER);
+			pnCoursesList.add(getSpCoursesList(), BorderLayout.CENTER);
 		}
 		return pnCoursesList;
 	}
+
 	private JScrollPane getSpCoursesList() {
 		if (spCoursesList == null) {
-			spCoursesList = new JScrollPane(tbCoursesList);
+			spCoursesList = new JScrollPane(getTbCoursesList());
 		}
 		return spCoursesList;
 	}
+
 	private JTable getTbCoursesList() {
 		if (tbCoursesList == null) {
 			tbCoursesList = new JTable();
+			tbCoursesList.setFillsViewportHeight(true);
+
+			tbCoursesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			TableModel tableModel = CursoModel.getCursoModel();
+			tbCoursesList.setModel(tableModel);
+
+			SwingUtil.autoAdjustColumns(tbCoursesList);
+
 		}
 		return tbCoursesList;
 	}

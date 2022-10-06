@@ -2,6 +2,13 @@ package business.util;
 
 import java.time.LocalDate;
 
+/**
+ * Utilidades para trabajar con fechas.
+ * 
+ * @author Francisco Coya
+ * @version v1.0.0
+ *
+ */
 public class DateUtils {
 
 	/**

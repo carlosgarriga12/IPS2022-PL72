@@ -52,12 +52,11 @@ public class DtoAssembler {
 	private static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
-		// TODO: Comprobar que el modelo de BBDD está así
-		newCursoDto.setTitulo(rs.getString("TITULO"));
-		newCursoDto.setFechaInicio(rs.getDate("FECHAINICIO").toLocalDate());
-		newCursoDto.setPlazasDisponibles(rs.getInt("PLAZAS"));
-		newCursoDto.setPrecio(rs.getDouble("PRECIO"));
-		newCursoDto.setEstado(rs.getString("ESTADO"));
+		newCursoDto.titulo = rs.getString("titulo");
+		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaImpartir"));
+		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
+		newCursoDto.precio = rs.getDouble("Precio");
+		// newCursoDto.estado = rs.getString("ESTADO");
 
 		return newCursoDto;
 
