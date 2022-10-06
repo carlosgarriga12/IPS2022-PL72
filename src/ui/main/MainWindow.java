@@ -42,6 +42,8 @@ public class MainWindow extends JFrame {
 	private JScrollPane spCoursesList;
 	private JTable tbCoursesList;
 	private JPanel pnSolicitudColegiado;
+	private JPanel pnSolicitudColegiadoNorte;
+	private JPanel pnSolicitudColegiadoCentro;
 
 	/**
 	 * Launch the application.
@@ -64,7 +66,7 @@ public class MainWindow extends JFrame {
 	 */
 	public MainWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1126, 710);
+		setBounds(100, 100, 894, 533);
 		mainPanel = new JPanel();
 		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(mainPanel);
@@ -228,7 +230,22 @@ public class MainWindow extends JFrame {
 	private JPanel getPnSolicitudColegiado() {
 		if (pnSolicitudColegiado == null) {
 			pnSolicitudColegiado = new JPanel();
+			pnSolicitudColegiado.setLayout(new BorderLayout(0, 0));
+			pnSolicitudColegiado.add(getPnSolicitudColegiadoNorte(), BorderLayout.NORTH);
+			pnSolicitudColegiado.add(getPnSolicitudColegiadoCentro(), BorderLayout.CENTER);
 		}
 		return pnSolicitudColegiado;
+	}
+	private JPanel getPnSolicitudColegiadoNorte() {
+		if (pnSolicitudColegiadoNorte == null) {
+			pnSolicitudColegiadoNorte = new JPanel();
+		}
+		return pnSolicitudColegiadoNorte;
+	}
+	private JPanel getPnSolicitudColegiadoCentro() {
+		if (pnSolicitudColegiadoCentro == null) {
+			pnSolicitudColegiadoCentro = new JPanel();
+		}
+		return pnSolicitudColegiadoCentro;
 	}
 }
