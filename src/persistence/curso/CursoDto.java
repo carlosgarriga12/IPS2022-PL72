@@ -13,13 +13,13 @@ public class CursoDto {
 
 	public static final String CURSO_ABIERTO = "ABIERTO";
 	public static final String CURSO_CERRADO = "CERRADO";
-	public static final String CURSO_IMPARTIENDO = "IMPARTIENDO";
+	public static final String CURSO_PLANIFICADO = "PLANIFICADO";
 
 	public String codigoCurso;
 	public String titulo;
 	public LocalDate fechaInicio;
 	public int plazasDisponibles;
-	public BigDecimal precio;
+	public double precio;
 	public String estado;
 
 	public void setTitulo(final String titulo) {
@@ -40,7 +40,7 @@ public class CursoDto {
 		this.plazasDisponibles = plazasDisponibles;
 	}
 
-	public void setPrecio(final BigDecimal precio) {
+	public void setPrecio(final double precio) {
 		// TODO: Comprobar precio válido
 		this.precio = precio;
 	}
@@ -59,7 +59,7 @@ public class CursoDto {
 	 */
 	private boolean isEstadoValido(final String estadoCurso) {
 		return estadoCurso.equals(CURSO_ABIERTO) || estadoCurso.equals(CURSO_CERRADO)
-				|| estadoCurso.equals(CURSO_IMPARTIENDO);
+				|| estadoCurso.equals(CURSO_PLANIFICADO);
 	}
 
 }

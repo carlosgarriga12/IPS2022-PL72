@@ -56,7 +56,7 @@ public class DtoAssembler {
 		newCursoDto.setTitulo(rs.getString("TITULO"));
 		newCursoDto.setFechaInicio(rs.getDate("FECHAINICIO").toLocalDate());
 		newCursoDto.setPlazasDisponibles(rs.getInt("PLAZAS"));
-		newCursoDto.setPrecio(rs.getBigDecimal("PRECIO"));
+		newCursoDto.setPrecio(rs.getDouble("PRECIO"));
 		newCursoDto.setEstado(rs.getString("ESTADO"));
 
 		return newCursoDto;
