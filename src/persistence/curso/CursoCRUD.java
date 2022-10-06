@@ -27,7 +27,7 @@ public class CursoCRUD {
 			int i = 1;
 			pst.setString(i++, curso.titulo);
 			pst.setString(i++, curso.fechaInicio.toString());
-			pst.setBigDecimal(i++, curso.precio);
+			pst.setDouble(i++, curso.precio);
 			pst.setString(i++, curso.estado);
 
 			pst.executeUpdate();
