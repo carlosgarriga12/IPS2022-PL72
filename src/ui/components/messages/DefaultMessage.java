@@ -22,17 +22,19 @@ public class DefaultMessage extends JPanel {
 	private static final long serialVersionUID = 5170069250639897225L;
 
 	private JLabel messageLabel;
+	private MessageType type;
 	private String msg;
 
 	public DefaultMessage(final String msg) {
+		this.msg = msg;
 		this.setLayout(new BorderLayout(0, 0));
-
 		this.add(getLbCustomFormMessage());
 	}
 
 	public DefaultMessage(final String msg, final MessageType type) {
 		this(msg);
-		setMessageColor(type);
+		this.type = type;
+		setMessageColor(this.type);
 	}
 
 	private JLabel getLbCustomFormMessage() {
@@ -50,12 +52,12 @@ public class DefaultMessage extends JPanel {
 	 * 
 	 * @param type
 	 */
-	private void setMessageColor(final MessageType type) {
+	public void setMessageColor(final MessageType type) {
 		if (type == MessageType.SUCCESS) {
 			changeAllColors(LookAndFeel.SUCCESS_COLOR, LookAndFeel.SUCCESS_COLOR_DARK);
 
 		} else if (type == MessageType.ERROR) {
-			changeAllColors(LookAndFeel.ERROR_COLOR, LookAndFeel.ERROR_COLOR_DARK);
+			changeAllColors(LookAndFeel.ERROR_COLOR, Color.WHITE);
 
 		} else if (type == MessageType.INFO) {
 			changeAllColors(LookAndFeel.TERTIARY_COLOR, LookAndFeel.TERTIARY_COLOR_DARK);
@@ -71,7 +73,7 @@ public class DefaultMessage extends JPanel {
 	}
 
 	public void setMessage(final String msg) {
-		this.msg = msg;
+		messageLabel.setText(msg);
 	}
 
 }

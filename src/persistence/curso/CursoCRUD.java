@@ -15,8 +15,9 @@ public class CursoCRUD {
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
 	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
+	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 
-	public static void add(CursoDto curso) throws SQLException {
+	public static void add(final CursoDto curso) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
 
@@ -64,6 +65,11 @@ public class CursoCRUD {
 		}
 	}
 
+	/**
+	 * Listado de todos los curso actualmente planificados.
+	 * 
+	 * @return
+	 */
 	public static List<CursoDto> listarCursosActualmentePlanificados() {
 		Connection con = null;
 		PreparedStatement pst = null;
@@ -87,6 +93,35 @@ public class CursoCRUD {
 		}
 
 		return res;
+	}
+
+	/**
+	 * Comprueba si el curso pasado como parametro está abierto, es decir, tiene una
+	 * inscripción abierta.
+	 * 
+	 * @param curso
+	 * @return
+	 */
+	public static boolean isCursoAbierto(final CursoDto curso) {
+		Connection con = null;
+		PreparedStatement pst = null;
+		boolean isOpen = false;
+
+		try {
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_CHECK_COURSE_OPEN);
+
+			pst.setInt(1, curso.codigoCurso);
+
+			isOpen = pst.executeQuery().getInt("CURSO_NUM") == 1;
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return isOpen;
 	}
 
 }

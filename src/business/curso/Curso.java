@@ -29,8 +29,13 @@ public class Curso {
 		return selectedCourse;
 	}
 
-	public static void setSelectedCourse(CursoDto selectedCourse) {
+	public static void setSelectedCourse(final CursoDto selectedCourse) {
 		Argument.isNotNull(selectedCourse);
 		Curso.selectedCourse = selectedCourse;
+	}
+
+	public static boolean isCourseOpened(final CursoDto courseToCheck) {
+		Argument.isNotNull(courseToCheck);
+		return CursoCRUD.isCursoAbierto(courseToCheck);
 	}
 }

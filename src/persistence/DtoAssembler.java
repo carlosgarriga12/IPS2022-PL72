@@ -21,7 +21,7 @@ public class DtoAssembler {
 		return colegiados;
 	}
 
-	private static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
+	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
 		c.DNI = rs.getString("DNI");
@@ -49,7 +49,7 @@ public class DtoAssembler {
 		return cursos;
 	}
 
-	private static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
+	public static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
 		newCursoDto.codigoCurso = rs.getInt("ID");
@@ -57,6 +57,7 @@ public class DtoAssembler {
 		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
 		newCursoDto.precio = rs.getDouble("PRECIO");
+		newCursoDto.estado = rs.getInt("PLAZAS") > 0 ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
 
 		return newCursoDto;
 

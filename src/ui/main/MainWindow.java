@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import javax.swing.JButton;
@@ -32,8 +35,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
+import business.BusinessException;
 import business.curso.Curso;
+import business.inscripcion.InscripcionCursoFormativo;
+import business.util.DateUtils;
 import persistence.curso.CursoDto;
+import persistence.jdbc.PersistenceException;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -41,7 +48,7 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import java.awt.Cursor;
+import javax.swing.border.TitledBorder;
 
 public class MainWindow extends JFrame {
 
@@ -85,13 +92,13 @@ public class MainWindow extends JFrame {
 	private JLabel lbTituloCursoSeleccionadoTabla;
 	private JPanel pnCoursesListNorth;
 	private JLabel lbTituloVentanaAperturaInscripcionCurso;
-	private JPanel pnCoursesListSouthMessages;
 	private JPanel pnCoursesListSouthButtons;
 	private DefaultButton btCancelarAperturaCurso;
 	private DefaultButton btAbrirCurso;
-	private JLabel lbCustomFormMessage;
 
 	private JPanel pnListCoursesSouthMessages;
+	private JPanel pnCoursesListNorthRefreshOpenCoursesList;
+	private DefaultButton btRefreshOpenCoursesList;
 
 	/**
 	 * Launch the application.
@@ -302,24 +309,34 @@ public class MainWindow extends JFrame {
 			tbCoursesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent event) {
 
-					// TODO: Enviar datos al panel de apertura de inscripciones
 					CursoDto cursoSeleccionado = new CursoDto();
 
-					cursoSeleccionado.codigoCurso = Integer
-							.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 0).toString());
+					try {
+						cursoSeleccionado.codigoCurso = Integer
+								.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 0).toString());
 
-					cursoSeleccionado.titulo = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 1).toString();
+						cursoSeleccionado.titulo = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 1)
+								.toString();
 
-					cursoSeleccionado.fechaInicio = LocalDate
-							.parse(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 2).toString());
+						cursoSeleccionado.fechaInicio = LocalDate
+								.parse(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 2).toString());
 
-					cursoSeleccionado.plazasDisponibles = Integer
-							.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 3).toString());
+						cursoSeleccionado.plazasDisponibles = Integer
+								.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 3).toString());
 
-					cursoSeleccionado.precio = Double
-							.parseDouble(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 4).toString());
+						cursoSeleccionado.precio = Double
+								.parseDouble(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 4).toString());
 
-					cursoSeleccionado.estado = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 5).toString();
+						cursoSeleccionado.estado = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 5)
+								.toString();
+
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
+
+						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.ERROR);
+						((DefaultMessage) pnListCoursesSouthMessages)
+								.setMessage("<html>" + nfe.getMessage() + "</html>");
+
+					}
 
 					Curso.setSelectedCourse(cursoSeleccionado);
 
@@ -327,8 +344,6 @@ public class MainWindow extends JFrame {
 					spNumeroPlazasCursoSeleccionado.setValue(cursoSeleccionado.plazasDisponibles);
 
 					fTxFechaCierreInscripcionesCursoSeleccionado.setText(String.valueOf(cursoSeleccionado.fechaInicio));
-
-					System.out.println(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 0).toString());
 				}
 			});
 		}
@@ -338,9 +353,10 @@ public class MainWindow extends JFrame {
 	private JPanel getPnCoursesListSouth() {
 		if (pnCoursesListSouth == null) {
 			pnCoursesListSouth = new JPanel();
-			pnCoursesListSouth.setLayout(new BorderLayout(0, 20));
+			pnCoursesListSouth.setLayout(new BorderLayout(0, 10));
 			pnCoursesListSouth.add(getPnCoursesListSouthCourseAbrir(), BorderLayout.CENTER);
 			pnCoursesListSouth.add(getPnCoursesListSouthButtonsAndMessages(), BorderLayout.SOUTH);
+			pnCoursesListSouth.add(getPnCoursesListNorthRefreshOpenCoursesList_1(), BorderLayout.NORTH);
 		}
 		return pnCoursesListSouth;
 	}
@@ -417,6 +433,8 @@ public class MainWindow extends JFrame {
 	private JPanel getPnCursoSeleccionadoFechas() {
 		if (pnCursoSeleccionadoFechas == null) {
 			pnCursoSeleccionadoFechas = new JPanel();
+			pnCursoSeleccionadoFechas.setBorder(new TitledBorder(null, "Periodo inscripci\u00F3n", TitledBorder.LEADING,
+					TitledBorder.TOP, null, null));
 			pnCursoSeleccionadoFechas.setLayout(new GridLayout(1, 2, 10, 0));
 			pnCursoSeleccionadoFechas.add(getPnCursoSeleccionadoFechaApertura());
 			pnCursoSeleccionadoFechas.add(getPnCursoSeleccionadoFechaCierre());
@@ -449,6 +467,8 @@ public class MainWindow extends JFrame {
 	private JPanel getPnCursoSeleccionadoPlazas() {
 		if (pnCursoSeleccionadoPlazas == null) {
 			pnCursoSeleccionadoPlazas = new JPanel();
+			pnCursoSeleccionadoPlazas.setMinimumSize(new Dimension(10, 30));
+			pnCursoSeleccionadoPlazas.setBounds(new Rectangle(0, 0, 0, 33));
 			pnCursoSeleccionadoPlazas.setOpaque(false);
 			pnCursoSeleccionadoPlazas.setLayout(new GridLayout(0, 2, 10, 0));
 			pnCursoSeleccionadoPlazas.add(getLbNumeroPlazasAperturaCurso());
@@ -460,6 +480,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLbNumeroPlazasAperturaCurso() {
 		if (lbNumeroPlazasAperturaCurso == null) {
 			lbNumeroPlazasAperturaCurso = new JLabel("Número de plazas:");
+			lbNumeroPlazasAperturaCurso.setDisplayedMnemonic('p');
 			lbNumeroPlazasAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbNumeroPlazasAperturaCurso.setLabelFor(getSpNumeroPlazasCursoSeleccionado());
 		}
@@ -469,6 +490,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLbFechaAperturaAperturaCurso() {
 		if (lbFechaAperturaAperturaCurso == null) {
 			lbFechaAperturaAperturaCurso = new JLabel("Fecha de inicio:");
+			lbFechaAperturaAperturaCurso.setDisplayedMnemonic('n');
 			lbFechaAperturaAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbFechaAperturaAperturaCurso.setLabelFor(getFTxFechaInicioInscripcionesCursoSeleccionado());
 		}
@@ -478,6 +500,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLbFechaCierreAperturaCurso() {
 		if (lbFechaCierreAperturaCurso == null) {
 			lbFechaCierreAperturaCurso = new JLabel("Fecha finalización");
+			lbFechaCierreAperturaCurso.setDisplayedMnemonic('z');
 			lbFechaCierreAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbFechaCierreAperturaCurso.setLabelFor(getFTxFechaCierreInscripcionesCursoSeleccionado());
 		}
@@ -517,6 +540,7 @@ public class MainWindow extends JFrame {
 	private JSpinner getSpNumeroPlazasCursoSeleccionado() {
 		if (spNumeroPlazasCursoSeleccionado == null) {
 			spNumeroPlazasCursoSeleccionado = new JSpinner();
+			spNumeroPlazasCursoSeleccionado.setOpaque(false);
 			spNumeroPlazasCursoSeleccionado.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					enableOpenCourseButton();
@@ -576,8 +600,9 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton getBtCancelarAperturaCurso() {
 		if (btCancelarAperturaCurso == null) {
-			btCancelarAperturaCurso = new DefaultButton("Cancelar", "ventana", "Cancelar", 'a', ButtonColor.CANCEL);
+			btCancelarAperturaCurso = new DefaultButton("Cancelar", "ventana", "Cancelar", 'c', ButtonColor.CANCEL);
 			btCancelarAperturaCurso.setToolTipText("Cancelar apertura de curso");
+			btCancelarAperturaCurso.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			btCancelarAperturaCurso.setFocusPainted(false);
 		}
 		return btCancelarAperturaCurso;
@@ -590,16 +615,72 @@ public class MainWindow extends JFrame {
 			btAbrirCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// TODO: ABRIR INSCRIPCION A CURSO SELECCIONADO
+					// Comprobar
+					// Fechas
+					// Curso no está abierto ya
+					//
+					String plazas = spNumeroPlazasCursoSeleccionado.getValue().toString();
+					LocalDate fechaApertura = DateUtils
+							.convertStringIntoLocalDate(fTxFechaInicioInscripcionesCursoSeleccionado.getText());
+					LocalDate fechaCierre = DateUtils
+							.convertStringIntoLocalDate(fTxFechaCierreInscripcionesCursoSeleccionado.getText());
 
-					pnListCoursesSouthMessages.setVisible(true);
-					((DefaultMessage) pnListCoursesSouthMessages)
-							.setMessage("Se ha abierto la inscripción para el curso seleccionado");
+					try {
 
+						CursoDto selectedCourse = Curso.getSelectedCourse();
+
+						// Si el curso está abierto, mostrar mensaje de error
+						InscripcionCursoFormativo.abrirCursoFormacion(selectedCourse, fechaApertura, fechaCierre,
+								plazas);
+
+						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
+						((DefaultMessage) pnListCoursesSouthMessages)
+								.setMessage("Se ha abierto la inscripción para el curso seleccionado");
+
+						refreshScheduledCoursesList();
+
+					} catch (BusinessException | PersistenceException | SQLException e1) {
+						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.ERROR);
+						((DefaultMessage) pnListCoursesSouthMessages)
+								.setMessage("<html>" + e1.getMessage() + "</html>");
+						btAbrirCurso.setEnabled(false);
+
+					}
 				}
 			});
 			btAbrirCurso.setToolTipText("Confirmar cambios y abrir inscripciones al curso seleccionado en la tabla");
 			btAbrirCurso.setEnabled(false);
 		}
 		return btAbrirCurso;
+	}
+
+	private JPanel getPnCoursesListNorthRefreshOpenCoursesList_1() {
+		if (pnCoursesListNorthRefreshOpenCoursesList == null) {
+			pnCoursesListNorthRefreshOpenCoursesList = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnCoursesListNorthRefreshOpenCoursesList.getLayout();
+			flowLayout.setAlignment(FlowLayout.LEFT);
+			pnCoursesListNorthRefreshOpenCoursesList.setOpaque(false);
+			pnCoursesListNorthRefreshOpenCoursesList.add(getBtRefreshOpenCoursesList());
+		}
+		return pnCoursesListNorthRefreshOpenCoursesList;
+	}
+
+	private DefaultButton getBtRefreshOpenCoursesList() {
+		if (btRefreshOpenCoursesList == null) {
+			btRefreshOpenCoursesList = new DefaultButton("Actualizar lista", "small", "Actualizar lista", 'r',
+					ButtonColor.NORMAL);
+			btRefreshOpenCoursesList.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: REFRESCAR LISTADO
+					refreshScheduledCoursesList();
+				}
+			});
+		}
+		return btRefreshOpenCoursesList;
+	}
+
+	private void refreshScheduledCoursesList() {
+		TableModel tableModel = CursoModel.getCursoModel();
+		tbCoursesList.setModel(tableModel);
 	}
 }
