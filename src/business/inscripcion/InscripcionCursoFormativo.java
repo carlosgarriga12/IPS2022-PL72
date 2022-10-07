@@ -1,11 +1,14 @@
 package business.inscripcion;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import business.BusinessException;
 import business.util.DateUtils;
+import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
 
 /**
  * 
@@ -24,19 +27,28 @@ public class InscripcionCursoFormativo {
 	 * @param plazasDisponibles
 	 * 
 	 * @throws BusinessException Si la fecha de inscripcion no es válida.
+	 * @throws SQLException
 	 */
-	public void abrirCursoFormacion(final InscripcionCursoFormacionDto inscripcionCurso, final LocalDate fechaApertura,
-			final LocalDate fechaCierre, final int plazasDisponibles) throws BusinessException {
+	public static void abrirCursoFormacion(final CursoDto curso, final LocalDate fechaApertura,
+			final LocalDate fechaCierre, final int plazasDisponibles) throws BusinessException, SQLException {
 
 		if (DateUtils.checkDateIsBefore(fechaCierre, fechaApertura)
-				|| DateUtils.checkDateIsBefore(inscripcionCurso.curso.fechaInicio, fechaApertura)) {
+				|| DateUtils.checkDateIsBefore(curso.fechaInicio, fechaApertura)) {
 
 			throw new BusinessException();
 		}
 
+		InscripcionCursoFormacionDto inscripcionCurso = new InscripcionCursoFormacionDto();
+
+		inscripcionCurso.curso = curso;
 		inscripcionCurso.fechaApertura = fechaApertura;
 		inscripcionCurso.fechaCierre = fechaCierre;
-		inscripcionCurso.curso.estado = CursoDto.CURSO_ABIERTO;
-		inscripcionCurso.curso.plazasDisponibles = plazasDisponibles;
+		
+		InscripcionCursoFormationCRUD.addNewInscripcion(inscripcionCurso);
+		
+		curso.plazasDisponibles = plazasDisponibles;
+		curso.estado = CursoDto.CURSO_ABIERTO;
+		
+		CursoCRUD.abrirCurso(curso);
 	}
 }

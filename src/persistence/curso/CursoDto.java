@@ -14,7 +14,7 @@ public class CursoDto {
 	public static final String CURSO_CERRADO = "CERRADO";
 	public static final String CURSO_PLANIFICADO = "PLANIFICADO";
 
-	public String codigoCurso;
+	public int codigoCurso;
 	public String titulo;
 	public LocalDate fechaInicio;
 	public int plazasDisponibles;

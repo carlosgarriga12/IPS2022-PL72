@@ -13,8 +13,9 @@ import persistence.util.Conf;
 public class CursoCRUD {
 
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
+	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
 	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
-	
+
 	public static void add(CursoDto curso) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
@@ -27,9 +28,35 @@ public class CursoCRUD {
 			pst.setString(i++, curso.titulo);
 			pst.setString(i++, curso.fechaInicio.toString());
 			pst.setDouble(i++, curso.precio);
-			pst.setString(i++, curso.estado);
 
 			pst.executeUpdate();
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(pst);
+		}
+	}
+
+	/**
+	 * La apertura de un curso implica la actualización del número de plazas
+	 * disponibles y el estado de este pasará a ser ABIERTO.
+	 * 
+	 * @param curso
+	 * @throws SQLException
+	 */
+	public static void abrirCurso(final CursoDto curso) throws SQLException {
+		Connection con = null;
+		PreparedStatement pst = null;
+
+		try {
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_ABRIR_CURSO);
+
+			pst.setInt(1, curso.plazasDisponibles);
+			pst.setInt(2, curso.codigoCurso);
+
+			pst.executeUpdate();
+
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
