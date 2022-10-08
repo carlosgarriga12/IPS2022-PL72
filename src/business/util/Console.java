@@ -40,18 +40,6 @@ public class Console {
 		}
 	}
 
-	public static Long readLong() {
-		try {
-			
-			return Long.parseLong(kbd.readLine());
-			
-		} catch (NumberFormatException nfe) {
-			return null;
-		} catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-	}
-
 	public static Double readDouble() {
 		try {
 			
@@ -81,14 +69,6 @@ public class Console {
 		return res;
 	}
 
-	public static Long readLong(String msg) {
-		Long res = null;
-		while(res == null) {
-			print(msg + ": ");
-			res = readLong();
-		}
-		return res;
-	}
 
 	public static Integer readInt(String msg) {
 		Integer res = null;

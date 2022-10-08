@@ -11,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,7 +23,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.SystemColor;
 import java.awt.Color;
 import javax.swing.border.TitledBorder;
+
+import business.BusinessException;
+import business.BusinessFactory;
+import persistence.colegiado.ColegiadoDto;
+
 import javax.swing.border.EtchedBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainWindow extends JFrame {
 
@@ -33,7 +39,6 @@ public class MainWindow extends JFrame {
 	private JPanel mainPanel;
 	private JLabel lblTitle;
 	private JButton btnSecretaria;
-	private JButton btnSolicitud;
 	private JTextField txtDNI;
 	private JLabel lblDNI;
 	private JPanel pnHome;
@@ -61,7 +66,7 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldNombre;
 	private JTextField textFieldApellidos;
 	private JTextField textFieldDni;
-	private JLabel lblNewLabelNAD;
+	private JLabel lblNewLabelN;
 	private JTextField textFieldPoblacion;
 	private JTextField textFieldTelefono;
 	private JTextField textFieldTitulo;
@@ -81,7 +86,13 @@ public class MainWindow extends JFrame {
 
 	private JPanel panelDatosAcademicos;
 
-	private JLabel lblNewLabelDatAcademicos;
+	private JLabel lblNewLabelDatTitulacion;
+	private JButton btnSolicitud;
+	private JButton btnAtras;
+	private JLabel lblNewLabelDatAño;
+	private JLabel lblNewLabelDatCentro;
+	private JLabel lblNewLabelA;
+	private JLabel lblNewLabelD;
 
 	/**
 	 * Create the frame.
@@ -92,11 +103,7 @@ public class MainWindow extends JFrame {
 			public void windowClosing(WindowEvent e) {
 				if (confirmarCancelacion()) {
 					System.exit(0);
-				}
-			}
-			@Override
-			public void windowOpened(WindowEvent e) {
-				textFieldNombre.grabFocus();
+				} 
 			}
 		});
 		setTitle("COIIPA : Gestión de servicios");
@@ -110,13 +117,25 @@ public class MainWindow extends JFrame {
 
 		// TODO: Cambiar orden para ver al arrancar el programa
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
+		textFieldNombre.grabFocus();
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
+		inicializarCampos();
 		
-		// Centrar la ventana
-		this.setLocationRelativeTo(null);
+	}
+
+	private void inicializarCampos() {
+		textFieldNombre.grabFocus();
+		textFieldApellidos.setText("Ej: Gonzalez Navarro");
+		textFieldDni.setText("Ej: 71778880C [9 caracteres]");
+		textFieldPoblacion.setText("Ej: Moreda");
+		textFieldTelefono.setText("Ej: 681676654 [9 números]");
+		textFieldTitulo.setText("Ej: 0 (sin titulación) [solo vale 0, 1(ingenieria) o 2(otros)]");
+		textFieldCentro.setText("Ej: Escuela de Ingeniería");
+		textFieldAño.setText("Ej : 2022 [4 números]");
+		textFieldNTarjeta.setText("Ej: 7656766667776667 [16 números]");
 	}
 
 	private JLabel getLblTitle() {
@@ -132,13 +151,6 @@ public class MainWindow extends JFrame {
 			btnSecretaria = new JButton("Secretaria");
 		}
 		return btnSecretaria;
-	}
-
-	private JButton getBtnSolicitud() {
-		if (btnSolicitud == null) {
-			btnSolicitud = new JButton("Solicitud de Alta");
-		}
-		return btnSolicitud;
 	}
 
 	private JTextField getTxtDNI() {
@@ -162,9 +174,9 @@ public class MainWindow extends JFrame {
 			pnHome.setLayout(new BorderLayout(0, 0));
 			pnHome.add(getLblTitle(), BorderLayout.NORTH);
 			pnHome.add(getBtnSecretaria());
-			pnHome.add(getBtnSolicitud());
 			pnHome.add(getTxtDNI());
 			pnHome.add(getLblDNI());
+			pnHome.add(getBtnSolicitud(), BorderLayout.EAST);
 		}
 		return pnHome;
 	}
@@ -306,7 +318,7 @@ public class MainWindow extends JFrame {
 			panelDatosPersonales.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Datos personales", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
 			panelDatosPersonales.setBounds(0, 0, 691, 118);
 			panelDatosPersonales.setLayout(null);
-			panelDatosPersonales.add(getLblNewLabelNAD());
+			panelDatosPersonales.add(getLblNewLabelN());
 			panelDatosPersonales.add(getTextFieldNombre());
 			panelDatosPersonales.add(getTextFieldApellidos());
 			panelDatosPersonales.add(getTextFieldDni());
@@ -314,6 +326,8 @@ public class MainWindow extends JFrame {
 			panelDatosPersonales.add(getTxFieldPoblacion());
 			panelDatosPersonales.add(getTxFieldTelefono());
 			panelDatosPersonales.add(getLbTelefono());
+			panelDatosPersonales.add(getLblNewLabelA());
+			panelDatosPersonales.add(getLblNewLabelD());
 		}
 		return panelDatosPersonales;
 	}
@@ -323,12 +337,21 @@ public class MainWindow extends JFrame {
 			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelPob.setToolTipText("Introduzca su población");
 			lblNewLabelPob.setBounds(23, 65, 59, 14);
+			lblNewLabelPob.setLabelFor(getTxFieldPoblacion());
+			lblNewLabelPob.setDisplayedMnemonic('P');
 		}
 		return lblNewLabelPob;
 	}
 	private JTextField getTxFieldPoblacion() {
 		if (textFieldPoblacion == null) {
 			textFieldPoblacion = new JTextField();
+			textFieldPoblacion.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldPoblacion.setText(null);
+				}
+			});
+			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldPoblacion.setColumns(10);
 			textFieldPoblacion.setBounds(100, 62, 148, 20);
@@ -338,10 +361,16 @@ public class MainWindow extends JFrame {
 	private JTextField getTxFieldTelefono() {
 		if (textFieldTelefono == null) {
 			textFieldTelefono = new JTextField();
+			textFieldTelefono.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldTelefono.setText(null);
+				}
+			});
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTelefono.setToolTipText("Introduzca su teléfono");
 			textFieldTelefono.setColumns(10);
-			textFieldTelefono.setBounds(155, 85, 127, 20);
+			textFieldTelefono.setBounds(428, 62, 190, 20);
 		}
 		return textFieldTelefono;
 	}
@@ -349,7 +378,9 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelTelefono == null) {
 			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
 			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelTelefono.setBounds(23, 88, 139, 14);
+			lblNewLabelTelefono.setBounds(279, 65, 139, 14);
+			lblNewLabelTelefono.setLabelFor(getTxFieldTelefono());
+			lblNewLabelTelefono.setDisplayedMnemonic('T');
 		}
 		return lblNewLabelTelefono;
 	}
@@ -363,44 +394,66 @@ public class MainWindow extends JFrame {
 			panelDatosAcademicos.add(getTxFieldTitulo());
 			panelDatosAcademicos.add(getTxFieldCentro());
 			panelDatosAcademicos.add(getTxFieldAño());
+			panelDatosAcademicos.add(getLblNewLabelDatAño());
+			panelDatosAcademicos.add(getLblNewLabelDatCentro());
 		}
 		return panelDatosAcademicos;
 	}
 	private JLabel getLbDatAcademicos() {
-		if (lblNewLabelDatAcademicos == null) {
-			lblNewLabelDatAcademicos = new JLabel("Introduzca sus datos académicos (titulación, centro, año):");
-			lblNewLabelDatAcademicos.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatAcademicos.setBounds(192, 23, 335, 14);
+		if (lblNewLabelDatTitulacion == null) {
+			lblNewLabelDatTitulacion = new JLabel("Titulación [0, 1 o 2] segun sus estudios:");
+			lblNewLabelDatTitulacion.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatTitulacion.setBounds(54, 27, 238, 14);
+			lblNewLabelDatTitulacion.setLabelFor(this.getTxFieldTitulo());
+			lblNewLabelDatTitulacion.setDisplayedMnemonic('I');
 		}
-		return lblNewLabelDatAcademicos;
+		return lblNewLabelDatTitulacion;
 	}
 	private JTextField getTxFieldTitulo() {
 		if (textFieldTitulo == null) {
 			textFieldTitulo = new JTextField();
+			textFieldTitulo.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldTitulo.setText(null);
+				}
+			});
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTitulo.setToolTipText("Teclee la titulación");
 			textFieldTitulo.setColumns(10);
-			textFieldTitulo.setBounds(32, 52, 227, 20);
+			textFieldTitulo.setBounds(10, 52, 309, 20);
 		}
 		return textFieldTitulo;
 	}
 	private JTextField getTxFieldCentro() {
 		if (textFieldCentro == null) {
 			textFieldCentro = new JTextField();
+			textFieldCentro.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldCentro.setText(null);
+				}
+			});
 			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
 			textFieldCentro.setColumns(10);
-			textFieldCentro.setBounds(283, 52, 288, 20);
+			textFieldCentro.setBounds(329, 52, 196, 20);
 		}
 		return textFieldCentro;
 	}
 	private JTextField getTxFieldAño() {
 		if (textFieldAño == null) {
 			textFieldAño = new JTextField();
+			textFieldAño.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldAño.setText(null);
+				}
+			});
 			textFieldAño.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldAño.setToolTipText("Escriba el año");
 			textFieldAño.setColumns(10);
-			textFieldAño.setBounds(598, 52, 67, 20);
+			textFieldAño.setBounds(550, 52, 131, 20);
 		}
 		return textFieldAño;
 	}
@@ -425,6 +478,7 @@ public class MainWindow extends JFrame {
 			panelDatosSur = new JPanel();
 			panelDatosSur.setBounds(0, 325, 691, 41);
 			panelDatosSur.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			panelDatosSur.add(getBtnAtras());
 			panelDatosSur.add(getBtnLimpiar());
 			panelDatosSur.add(getBtnFinalizar());
 		}
@@ -433,6 +487,7 @@ public class MainWindow extends JFrame {
 	private JButton getBtnLimpiar() {
 		if (btnLimpiar == null) {
 			btnLimpiar = new JButton("Limpiar");
+			btnLimpiar.setMnemonic('L');
 			btnLimpiar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (confirmarBorrar()) {
@@ -448,17 +503,63 @@ public class MainWindow extends JFrame {
 	private JButton getBtnFinalizar() {
 		if (btnFinalizar == null) {
 			btnFinalizar = new JButton("Finalizar");
+			btnFinalizar.setMnemonic('F');
+			btnFinalizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+						mostrarEstadoPendiente();
+						anadirColegiado();
+						getPnSolicitudColegiado().setVisible(true);
+						getPnHome().setVisible(true);
+						reiniciarSolicitudRegistro();
+				}
+			});
 			btnFinalizar.setBackground(Color.GREEN);
 			btnFinalizar.setToolTipText("Pulse para formalizar su solicitud de ser colegiado");
 		}
 		return btnFinalizar;
 	}
+	
+
+	private void anadirColegiado() {
+		// coger datos
+		ColegiadoDto dto = new ColegiadoDto();
+		dto.DNI=getTextFieldDni().getText();
+		dto.nombre=getTextFieldNombre().getText();
+		dto.apellidos=getTextFieldApellidos().getText();
+		dto.poblacion=getTxFieldPoblacion().getText();
+		dto.telefono=Integer.parseInt(getTxFieldTelefono().getText());
+		dto.titulacion=Integer.parseInt(getTxFieldTitulo().getText());
+		dto.centro=getTxFieldCentro().getText();
+		dto.annio=Integer.parseInt(getTxFieldAño().getText());
+		dto.numeroTarjeta=Integer.parseInt(getTextFieldNTarjeta().getText());
+		try {
+			if (BusinessFactory.forColegiadoService().findColegiadoPorDni(dto.DNI)!=null) {
+				JOptionPane.showMessageDialog(this, "Se acaba de registrar con un DNI que ya se encuentra en tramitación. Inténtelo de nuevo con su DNI", "DNI no válido",
+						JOptionPane.INFORMATION_MESSAGE);
+				 this.reiniciarSolicitudRegistro();
+			} else {
+				BusinessFactory.forColegiadoService().addColegiado(dto);
+			}
+		} catch (BusinessException e) {
+			JOptionPane.showMessageDialog(this, "Por favor, comprueba que ha introducido correctamente sus datos\n"
+					+ "Sin campos vacíos; año, titulación, teléfono o dni incorrectos, o número de tarjeta no válido", "Datos incorrectos",
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+
 	private JTextField getTextFieldNombre() {
 		if (textFieldNombre == null) {
 			textFieldNombre = new JTextField();
+			textFieldNombre.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldNombre.setText(null);
+				}
+			});
 			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldNombre.setToolTipText("Inserte el nombre");
-			textFieldNombre.setBounds(220, 36, 127, 20);
+			textFieldNombre.setBounds(79, 21, 127, 20);
 			textFieldNombre.setColumns(10);
 			textFieldNombre.grabFocus();
 		}
@@ -467,9 +568,15 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldApellidos() {
 		if (textFieldApellidos == null) {
 			textFieldApellidos = new JTextField();
+			textFieldApellidos.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldApellidos.setText(null);
+				}
+			});
 			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldApellidos.setToolTipText("Inserte los apellidos");
-			textFieldApellidos.setBounds(357, 36, 212, 20);
+			textFieldApellidos.setBounds(287, 21, 181, 20);
 			textFieldApellidos.setColumns(10);
 		}
 		return textFieldApellidos;
@@ -477,20 +584,28 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldDni() {
 		if (textFieldDni == null) {
 			textFieldDni = new JTextField();
+			textFieldDni.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldDni.setText(null);
+				}
+			});
 			textFieldDni.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldDni.setToolTipText("Inserte el DNI");
-			textFieldDni.setBounds(579, 36, 102, 20);
+			textFieldDni.setBounds(516, 21, 165, 20);
 			textFieldDni.setColumns(10);
 		}
 		return textFieldDni;
 	}
-	private JLabel getLblNewLabelNAD() {
-		if (lblNewLabelNAD == null) {
-			lblNewLabelNAD = new JLabel("Registre su nombre / apellidos / DNI:");
-			lblNewLabelNAD.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelNAD.setBounds(10, 39, 238, 14);
+	private JLabel getLblNewLabelN() {
+		if (lblNewLabelN == null) {
+			lblNewLabelN = new JLabel("Nombre:");
+			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelN.setBounds(10, 24, 59, 14);
+			lblNewLabelN.setLabelFor(this.getTextFieldNombre());
+			lblNewLabelN.setDisplayedMnemonic('N');
 		}
-		return lblNewLabelNAD;
+		return lblNewLabelN;
 	}
 	private JPanel getPanelBanco() {
 		if (panelBanco == null) {
@@ -508,6 +623,8 @@ public class MainWindow extends JFrame {
 			lblNewLabelNumeroTarjeta = new JLabel("Número de tarjeta:");
 			lblNewLabelNumeroTarjeta.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelNumeroTarjeta.setBounds(158, 29, 121, 17);
+			lblNewLabelNumeroTarjeta.setLabelFor(getTextFieldNTarjeta());
+			lblNewLabelNumeroTarjeta.setDisplayedMnemonic('N');
 		}
 		return lblNewLabelNumeroTarjeta;
 	}
@@ -521,6 +638,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldNTarjeta() {
 		if (textFieldNTarjeta == null) {
 			textFieldNTarjeta = new JTextField();
+			textFieldNTarjeta.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldNTarjeta.setText(null);
+				}
+			});
 			textFieldNTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldNTarjeta.setToolTipText("Registre su número de tarjeta");
 			textFieldNTarjeta.setBounds(282, 27, 299, 20);
@@ -546,6 +669,19 @@ public class MainWindow extends JFrame {
 		}
 		return confir;
 	}
+	private boolean confirmarVolverPrinicipio() {
+		boolean confir = false;
+		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres volver a la pantalla de inicio ?", "Volver al inicio",
+				JOptionPane.INFORMATION_MESSAGE);
+		if (resp == JOptionPane.YES_OPTION) {
+			confir = true;
+		}
+		return confir;
+	}
+	private void mostrarEstadoPendiente() {
+		JOptionPane.showMessageDialog(this, "Se acaba de tramitar su solicitud, quedará en estado 'PENDIENTE' hasta nuevo aviso", "Solicitud de colegiado enviada",
+				JOptionPane.INFORMATION_MESSAGE);
+	}
 	private void reiniciarSolicitudRegistro() {
 		this.getTxFieldAño().setText(null);
 		this.getTextFieldApellidos().setText(null);
@@ -557,5 +693,78 @@ public class MainWindow extends JFrame {
 		this.getTxFieldTitulo().setText(null);
 		this.getTxFieldTelefono().setText(null);
 		this.getTextFieldNombre().grabFocus();
+	}
+	private JButton getBtnSolicitud() {
+		if (btnSolicitud == null) {
+			btnSolicitud = new JButton("Solicitud de colegiado");
+			btnSolicitud.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					getPnHome().setVisible(false);
+					getPnSolicitudColegiado().setVisible(true);
+					inicializarCampos();
+				}
+			});
+			btnSolicitud.setMnemonic('S');
+			btnSolicitud.setToolTipText("Pulsa para formalizar su solicitud");
+		}
+		return btnSolicitud;
+	}
+	private JButton getBtnAtras() {
+		if (btnAtras == null) {
+			btnAtras = new JButton("Atrás");
+			btnAtras.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (confirmarVolverPrinicipio()) {
+						reiniciarSolicitudRegistro();
+						getPnSolicitudColegiado().setVisible(false);
+						getPnHome().setVisible(true);
+					}
+				}
+			});
+			btnAtras.setBackground(Color.RED);
+			btnAtras.setMnemonic('R');
+			btnAtras.setToolTipText("Pulse para volver a la pantalla principal");
+		}
+		return btnAtras;
+	}
+	private JLabel getLblNewLabelDatAño() {
+		if (lblNewLabelDatAño == null) {
+			lblNewLabelDatAño = new JLabel("Año:");
+			lblNewLabelDatAño.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatAño.setBounds(612, 27, 41, 14);
+			lblNewLabelDatAño.setLabelFor(this.getTxFieldAño());
+			lblNewLabelDatAño.setDisplayedMnemonic('O');
+		}
+		return lblNewLabelDatAño;
+	}
+	private JLabel getLblNewLabelDatCentro() {
+		if (lblNewLabelDatCentro == null) {
+			lblNewLabelDatCentro = new JLabel("Centro:");
+			lblNewLabelDatCentro.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatCentro.setBounds(408, 27, 92, 14);
+			lblNewLabelDatCentro.setLabelFor(this.getTxFieldCentro());
+			lblNewLabelDatCentro.setDisplayedMnemonic('C');
+		}
+		return lblNewLabelDatCentro;
+	}
+	private JLabel getLblNewLabelA() {
+		if (lblNewLabelA == null) {
+			lblNewLabelA = new JLabel("Apellidos:");
+			lblNewLabelA.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelA.setBounds(216, 24, 71, 14);
+			lblNewLabelA.setLabelFor(this.getTextFieldApellidos());
+			lblNewLabelA.setDisplayedMnemonic('A');
+		}
+		return lblNewLabelA;
+	}
+	private JLabel getLblNewLabelD() {
+		if (lblNewLabelD == null) {
+			lblNewLabelD = new JLabel("DNI:");
+			lblNewLabelD.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelD.setBounds(478, 24, 46, 14);
+			lblNewLabelD.setLabelFor(this.getTextFieldDni());
+			lblNewLabelD.setDisplayedMnemonic('D');
+		}
+		return lblNewLabelD;
 	}
 }

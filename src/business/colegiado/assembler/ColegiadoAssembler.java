@@ -8,8 +8,6 @@ import java.util.List;
 
 import persistence.colegiado.ColegiadoDto;
 
-
-
 public class ColegiadoAssembler {
 
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
