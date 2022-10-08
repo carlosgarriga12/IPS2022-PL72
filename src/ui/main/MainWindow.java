@@ -122,7 +122,7 @@ public class MainWindow extends JFrame {
 		textFieldDni.setText("Ej: 71778880C [9 caracteres]");
 		textFieldPoblacion.setText("Ej: Moreda");
 		textFieldTelefono.setText("Ej: 681676654 [9 números]");
-		textFieldTitulo.setText("Ej: 0 (sin titulación) [solo vale 0, 1(ingenieria) o 2(otros)]");
+		textFieldTitulo.setText("Ej: 0 (sin titulación), 1 (ingenieria) o 2 (otros)");
 		textFieldCentro.setText("Ej: Escuela de Ingeniería");
 		textFieldAño.setText("Ej : 2022 [4 números]");
 		textFieldNTarjeta.setText("Ej: 7656766667776667 [16 números]");
@@ -496,17 +496,29 @@ public class MainWindow extends JFrame {
 			btnFinalizar.setMnemonic('F');
 			btnFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					anadirColegiado();
-					mostrarEstadoPendiente();
-					getPnSolicitudColegiado().setVisible(false);
-					getPnHome().setVisible(true);
-					reiniciarSolicitudRegistro();
+					if (confirmarRegistro()) {
+						anadirColegiado();
+						mostrarEstadoPendiente();
+						getPnSolicitudColegiado().setVisible(false);
+						getPnHome().setVisible(true);
+						reiniciarSolicitudRegistro();
+					}
 				}
 			});
 			btnFinalizar.setBackground(Color.GREEN);
 			btnFinalizar.setToolTipText("Pulse para formalizar su solicitud de ser colegiado");
 		}
 		return btnFinalizar;
+	}
+
+	private boolean confirmarRegistro() {
+		boolean confir = false;
+		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres registrar tu solicitud ?", "Registrar su solicitud",
+				JOptionPane.INFORMATION_MESSAGE);
+		if (resp == JOptionPane.YES_OPTION) {
+			confir = true;
+		}
+		return confir;
 	}
 
 	private void anadirColegiado() {
