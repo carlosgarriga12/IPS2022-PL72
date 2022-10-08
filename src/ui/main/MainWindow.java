@@ -5,10 +5,9 @@ import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -98,14 +97,6 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow() {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				if (confirmarCancelacion()) {
-					System.exit(0);
-				} 
-			}
-		});
 		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 717, 415);
@@ -123,7 +114,6 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
 		inicializarCampos();
-		
 	}
 
 	private void inicializarCampos() {
@@ -506,11 +496,11 @@ public class MainWindow extends JFrame {
 			btnFinalizar.setMnemonic('F');
 			btnFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-						mostrarEstadoPendiente();
-						anadirColegiado();
-						getPnSolicitudColegiado().setVisible(true);
-						getPnHome().setVisible(true);
-						reiniciarSolicitudRegistro();
+					anadirColegiado();
+					mostrarEstadoPendiente();
+					getPnSolicitudColegiado().setVisible(false);
+					getPnHome().setVisible(true);
+					reiniciarSolicitudRegistro();
 				}
 			});
 			btnFinalizar.setBackground(Color.GREEN);
@@ -518,7 +508,6 @@ public class MainWindow extends JFrame {
 		}
 		return btnFinalizar;
 	}
-	
 
 	private void anadirColegiado() {
 		// coger datos
@@ -536,14 +525,21 @@ public class MainWindow extends JFrame {
 			if (BusinessFactory.forColegiadoService().findColegiadoPorDni(dto.DNI)!=null) {
 				JOptionPane.showMessageDialog(this, "Se acaba de registrar con un DNI que ya se encuentra en tramitación. Inténtelo de nuevo con su DNI", "DNI no válido",
 						JOptionPane.INFORMATION_MESSAGE);
-				 this.reiniciarSolicitudRegistro();
+				this.reiniciarSolicitudRegistro();
 			} else {
-				BusinessFactory.forColegiadoService().addColegiado(dto);
+				try {
+					BusinessFactory.forColegiadoService().addColegiado(dto);
+				} catch (BusinessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+		} catch (HeadlessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (BusinessException e) {
-			JOptionPane.showMessageDialog(this, "Por favor, comprueba que ha introducido correctamente sus datos\n"
-					+ "Sin campos vacíos; año, titulación, teléfono o dni incorrectos, o número de tarjeta no válido", "Datos incorrectos",
-					JOptionPane.INFORMATION_MESSAGE);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -660,15 +656,7 @@ public class MainWindow extends JFrame {
 		}
 		return confir;
 	}
-	private boolean confirmarCancelacion() {
-		boolean confir = false;
-		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres salir de la aplicación ?", "Salir de la aplicación",
-				JOptionPane.INFORMATION_MESSAGE);
-		if (resp == JOptionPane.YES_OPTION) {
-			confir = true;
-		}
-		return confir;
-	}
+	
 	private boolean confirmarVolverPrinicipio() {
 		boolean confir = false;
 		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres volver a la pantalla de inicio ?", "Volver al inicio",

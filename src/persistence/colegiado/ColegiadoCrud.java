@@ -36,6 +36,10 @@ public class ColegiadoCrud {
 			pst.setString(1, dni);
 			
 			rs = pst.executeQuery();
+			rs.next();
+			if (rs.getString("DNI")==null) {
+				return null;
+			}
 			colegiado = ColegiadoAssembler.toColegiadoDto(rs);
 			
 		} catch (SQLException e) {
@@ -71,7 +75,6 @@ public class ColegiadoCrud {
 			pst.setString(10, LocalDate.now().toString());
 			pst.setString(11, ESTADO_PENDIENTE);
 			pst.setString(12, "");
-
 			pst.executeUpdate();
 						
 		} catch(SQLException e) {

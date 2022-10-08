@@ -15,5 +15,6 @@ public class ColegiadoDto {
 	public int annio; // 2022
 	public int numeroTarjeta; // 5555555555555555
 	public LocalDate fechaSolicitud; // 03/10/2022
+	public String estado; // 03/10/2022
 	public String numeroColegiado; // 2022-0001
 }
