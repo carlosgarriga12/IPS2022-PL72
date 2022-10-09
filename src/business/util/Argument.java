@@ -49,9 +49,9 @@ public abstract class Argument {
 		isTrue(v.length()==9);
 	}
 
-	public static void longitudDieciseis(int numeroTarjeta) {
+	public static void longitudCinco(int numeroTarjeta) {
 		String v = String.valueOf(numeroTarjeta);
-		isTrue(v.length()==16);
+		isTrue(v.length()==5);
 	}
 	
 	public static void longitudNueve(String dNI) {
@@ -65,6 +65,7 @@ public abstract class Argument {
 	public static void menorQueMax(int annio) {
 		isTrue(annio <= LocalDate.now().getYear());
 	}
+
 
 	
 

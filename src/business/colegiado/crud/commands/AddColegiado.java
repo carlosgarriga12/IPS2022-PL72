@@ -41,13 +41,20 @@ public class AddColegiado {
 		
 		Argument.menorQueMax(colegiado.annio);
 		
-		//Argument.longitudDieciseis(colegiado.numeroTarjeta);
+		Argument.longitudCinco(colegiado.numeroTarjeta);
 		
 		this.colegiado=colegiado;
 	}
 
 	public ColegiadoDto execute() throws BusinessException {
+		checkDniSinRepetir(colegiado.DNI);
 		return ColegiadoCrud.addColegiado(colegiado);
+	}
+	
+	public void checkDniSinRepetir(String dni) throws BusinessException {
+		if (ColegiadoCrud.findColegiadoDni(dni)!=null) {
+			throw new BusinessException("No se puede añadir colegiados con el mismo dni");
+		}
 	}
 
 

@@ -125,7 +125,7 @@ public class MainWindow extends JFrame {
 		textFieldTitulo.setText("Ej: 0 (sin titulación), 1 (ingenieria) o 2 (otros)");
 		textFieldCentro.setText("Ej: Escuela de Ingeniería");
 		textFieldAño.setText("Ej : 2022 [4 números]");
-		textFieldNTarjeta.setText("Ej: 7656766667776667 [16 números]");
+		textFieldNTarjeta.setText("Ej: 76567 [5 números]");
 	}
 
 	private JLabel getLblTitle() {
@@ -496,8 +496,7 @@ public class MainWindow extends JFrame {
 			btnFinalizar.setMnemonic('F');
 			btnFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (confirmarRegistro()) {
-						anadirColegiado();
+					if (anadirColegiado()) {
 						mostrarEstadoPendiente();
 						getPnSolicitudColegiado().setVisible(false);
 						getPnHome().setVisible(true);
@@ -511,48 +510,48 @@ public class MainWindow extends JFrame {
 		return btnFinalizar;
 	}
 
-	private boolean confirmarRegistro() {
-		boolean confir = false;
-		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres registrar tu solicitud ?", "Registrar su solicitud",
-				JOptionPane.INFORMATION_MESSAGE);
-		if (resp == JOptionPane.YES_OPTION) {
-			confir = true;
-		}
-		return confir;
+	private boolean anadirColegiado() {
+		// coger datos
+		ColegiadoDto dto = recogerDatosCampos();
+		if (dto==null) { return false;}
+		return anadirColegiadoBaseDatos(dto);
 	}
 
-	private void anadirColegiado() {
-		// coger datos
+	private boolean anadirColegiadoBaseDatos(ColegiadoDto dto) {
+		try {
+			BusinessFactory.forColegiadoService().addColegiado(dto);
+			return true; 
+		} catch (BusinessException e) {
+			JOptionPane.showMessageDialog(this, "Por favor, revise que no haya introducido un DNI que no es suyo, este DNI ya ha sido registrado", "DNI inválido",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(this, "Por favor, revise que no deje ningún campo vacío y se ha introducido correctamente cada dato (longitudes correspondientes, formato de datos, ...)\n"
+					+ "Sigue los ejemplos que aparecen en los campos correspondientes", "Datos incorrectos",
+					JOptionPane.INFORMATION_MESSAGE);
+		} 
+		return false;
+	}
+	
+
+
+	private ColegiadoDto recogerDatosCampos() {
 		ColegiadoDto dto = new ColegiadoDto();
 		dto.DNI=getTextFieldDni().getText();
 		dto.nombre=getTextFieldNombre().getText();
 		dto.apellidos=getTextFieldApellidos().getText();
 		dto.poblacion=getTxFieldPoblacion().getText();
-		dto.telefono=Integer.parseInt(getTxFieldTelefono().getText());
-		dto.titulacion=Integer.parseInt(getTxFieldTitulo().getText());
 		dto.centro=getTxFieldCentro().getText();
-		dto.annio=Integer.parseInt(getTxFieldAño().getText());
-		dto.numeroTarjeta=Integer.parseInt(getTextFieldNTarjeta().getText());
 		try {
-			if (BusinessFactory.forColegiadoService().findColegiadoPorDni(dto.DNI)!=null) {
-				JOptionPane.showMessageDialog(this, "Se acaba de registrar con un DNI que ya se encuentra en tramitación. Inténtelo de nuevo con su DNI", "DNI no válido",
-						JOptionPane.INFORMATION_MESSAGE);
-				this.reiniciarSolicitudRegistro();
-			} else {
-				try {
-					BusinessFactory.forColegiadoService().addColegiado(dto);
-				} catch (BusinessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (HeadlessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			dto.telefono=Integer.parseInt(getTxFieldTelefono().getText());
+			dto.titulacion=Integer.parseInt(getTxFieldTitulo().getText());
+			dto.annio=Integer.parseInt(getTxFieldAño().getText());
+			dto.numeroTarjeta=Integer.parseInt(getTextFieldNTarjeta().getText());
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Por favor, revise que no se haya introducido ninguna cadena en alguno de los campos numéricos", "Formato numérico incorrecto",
+					JOptionPane.INFORMATION_MESSAGE);
+			return null;
 		}
+		return dto;
 	}
 
 
