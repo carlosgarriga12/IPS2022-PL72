@@ -69,7 +69,7 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldTelefono;
 	private JTextField textFieldTitulo;
 	private JTextField textFieldCentro;
-	private JTextField textFieldAño;
+	private JTextField textFieldAno;
 	private JPanel panelBanco;
 	private JLabel lblParaFinalizarDebe;
 	private JTextField textFieldNTarjeta;
@@ -87,7 +87,7 @@ public class MainWindow extends JFrame {
 	private JLabel lblNewLabelDatTitulacion;
 	private JButton btnSolicitud;
 	private JButton btnAtras;
-	private JLabel lblNewLabelDatAño;
+	private JLabel lblNewLabelDatAno;
 	private JLabel lblNewLabelDatCentro;
 	private JLabel lblNewLabelA;
 	private JLabel lblNewLabelD;
@@ -123,7 +123,7 @@ public class MainWindow extends JFrame {
 		textFieldTelefono.setText("Ej: 681676654 [9 números]");
 		textFieldTitulo.setText("Ej: 0 (sin titulación), 1 (ingenieria) o 2 (otros)");
 		textFieldCentro.setText("Ej: Escuela de Ingeniería");
-		textFieldAño.setText("Ej : 2022 [4 números]");
+		textFieldAno.setText("Ej : 2022 [4 números]");
 		textFieldNTarjeta.setText("Ej: 76567 [5 números]");
 	}
 
@@ -382,8 +382,8 @@ public class MainWindow extends JFrame {
 			panelDatosAcademicos.add(getLbDatAcademicos());
 			panelDatosAcademicos.add(getTxFieldTitulo());
 			panelDatosAcademicos.add(getTxFieldCentro());
-			panelDatosAcademicos.add(getTxFieldAño());
-			panelDatosAcademicos.add(getLblNewLabelDatAño());
+			panelDatosAcademicos.add(getTxFieldAno());
+			panelDatosAcademicos.add(getLblNewLabelDatAno());
 			panelDatosAcademicos.add(getLblNewLabelDatCentro());
 		}
 		return panelDatosAcademicos;
@@ -430,21 +430,21 @@ public class MainWindow extends JFrame {
 		}
 		return textFieldCentro;
 	}
-	private JTextField getTxFieldAño() {
-		if (textFieldAño == null) {
-			textFieldAño = new JTextField();
-			textFieldAño.addMouseListener(new MouseAdapter() {
+	private JTextField getTxFieldAno() {
+		if (textFieldAno == null) {
+			textFieldAno = new JTextField();
+			textFieldAno.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					textFieldAño.setText(null);
+					textFieldAno.setText(null);
 				}
 			});
-			textFieldAño.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldAño.setToolTipText("Escriba el año");
-			textFieldAño.setColumns(10);
-			textFieldAño.setBounds(550, 52, 131, 20);
+			textFieldAno.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldAno.setToolTipText("Escriba el ano");
+			textFieldAno.setColumns(10);
+			textFieldAno.setBounds(550, 52, 131, 20);
 		}
-		return textFieldAño;
+		return textFieldAno;
 	}
 	private JPanel getPnSolicitudDatosCentro() {
 		if (pnSolicitudDatosCentro == null) {
@@ -543,7 +543,7 @@ public class MainWindow extends JFrame {
 		try {
 			dto.telefono=Integer.parseInt(getTxFieldTelefono().getText());
 			dto.titulacion=Integer.parseInt(getTxFieldTitulo().getText());
-			dto.annio=Integer.parseInt(getTxFieldAño().getText());
+			dto.annio=Integer.parseInt(getTxFieldAno().getText());
 			dto.numeroTarjeta=Integer.parseInt(getTextFieldNTarjeta().getText());
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "Por favor, revise que no se haya introducido ninguna cadena en alguno de los campos numéricos", "Formato numérico incorrecto",
@@ -681,7 +681,7 @@ public class MainWindow extends JFrame {
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 	private void reiniciarSolicitudRegistro() {
-		this.getTxFieldAño().setText(null);
+		this.getTxFieldAno().setText(null);
 		this.getTextFieldApellidos().setText(null);
 		this.getTextFieldDni().setText(null);
 		this.getTextFieldNombre().setText(null);
@@ -725,15 +725,15 @@ public class MainWindow extends JFrame {
 		}
 		return btnAtras;
 	}
-	private JLabel getLblNewLabelDatAño() {
-		if (lblNewLabelDatAño == null) {
-			lblNewLabelDatAño = new JLabel("Año:");
-			lblNewLabelDatAño.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatAño.setBounds(612, 27, 41, 14);
-			lblNewLabelDatAño.setLabelFor(this.getTxFieldAño());
-			lblNewLabelDatAño.setDisplayedMnemonic('O');
+	private JLabel getLblNewLabelDatAno() {
+		if (lblNewLabelDatAno == null) {
+			lblNewLabelDatAno = new JLabel("Ano:");
+			lblNewLabelDatAno.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatAno.setBounds(612, 27, 41, 14);
+			lblNewLabelDatAno.setLabelFor(this.getTxFieldAno());
+			lblNewLabelDatAno.setDisplayedMnemonic('O');
 		}
-		return lblNewLabelDatAño;
+		return lblNewLabelDatAno;
 	}
 	private JLabel getLblNewLabelDatCentro() {
 		if (lblNewLabelDatCentro == null) {
