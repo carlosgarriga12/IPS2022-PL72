@@ -35,7 +35,6 @@ public class DtoAssembler {
 		c.numeroColegiado = rs.getString("numeroColegiado");
 		
 		return c;
-		
 	}
 	
 	
