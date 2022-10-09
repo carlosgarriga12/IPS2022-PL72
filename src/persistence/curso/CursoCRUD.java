@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import business.BusinessException;
 import persistence.DtoAssembler;
@@ -87,7 +88,7 @@ public class CursoCRUD {
 
 			// Filtrar por curso planificado
 			 res = allCourses.stream().filter(c ->
-			 c.estado.equals(CursoDto.CURSO_PLANIFICADO)).toList();
+			 c.estado.equals(CursoDto.CURSO_PLANIFICADO)).collect(Collectors.toList());
 
 		} catch (SQLException e) {
 			throw new BusinessException(e);
