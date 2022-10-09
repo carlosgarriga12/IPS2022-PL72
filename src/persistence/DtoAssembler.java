@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 
@@ -57,7 +58,13 @@ public class DtoAssembler {
 		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
 		newCursoDto.precio = rs.getDouble("PRECIO");
-		newCursoDto.estado = rs.getInt("PLAZAS") > 0 ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
+
+		if (rs.getInt("PLAZAS") > 0) {
+			newCursoDto.estado = CursoDto.CURSO_ABIERTO;
+		} else {
+			newCursoDto.estado = DateUtils.checkDateIsAfter(LocalDate.parse(rs.getString("FECHAIMPARTIR")),
+					LocalDate.now()) ? CursoDto.CURSO_PLANIFICADO : CursoDto.CURSO_CERRADO;
+		}
 
 		return newCursoDto;
 

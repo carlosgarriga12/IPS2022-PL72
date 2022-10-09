@@ -19,6 +19,6 @@ public class CursoDto {
 	public LocalDate fechaInicio;
 	public int plazasDisponibles;
 	public double precio;
-	public String estado = CURSO_PLANIFICADO;
+	public String estado;
 
 }

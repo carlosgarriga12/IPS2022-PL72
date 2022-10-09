@@ -3,8 +3,10 @@ package persistence.curso;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import business.BusinessException;
 import persistence.DtoAssembler;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
@@ -69,11 +71,12 @@ public class CursoCRUD {
 	 * Listado de todos los curso actualmente planificados.
 	 * 
 	 * @return
+	 * @throws BusinessException 
 	 */
-	public static List<CursoDto> listarCursosActualmentePlanificados() {
+	public static List<CursoDto> listarCursosActualmentePlanificados() throws BusinessException {
 		Connection con = null;
 		PreparedStatement pst = null;
-		List<CursoDto> res = null;
+		List<CursoDto> res = new ArrayList<CursoDto>();
 
 		try {
 
@@ -83,10 +86,11 @@ public class CursoCRUD {
 			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
 
 			// Filtrar por curso planificado
-			res = allCourses.stream().filter(c -> c.estado.equalsIgnoreCase(CursoDto.CURSO_PLANIFICADO)).toList();
+			 res = allCourses.stream().filter(c ->
+			 c.estado.equals(CursoDto.CURSO_PLANIFICADO)).toList();
 
 		} catch (SQLException e) {
-			throw new PersistenceException(e);
+			throw new BusinessException(e);
 
 		} finally {
 			Jdbc.close(pst);

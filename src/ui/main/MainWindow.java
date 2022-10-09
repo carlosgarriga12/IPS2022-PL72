@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -29,6 +30,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -48,7 +50,6 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import javax.swing.border.TitledBorder;
 
 public class MainWindow extends JFrame {
 
@@ -302,40 +303,49 @@ public class MainWindow extends JFrame {
 
 			tbCoursesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			TableModel tableModel = CursoModel.getCursoModel();
-			tbCoursesList.setModel(tableModel);
+			TableModel tableModel;
+			try {
+				tableModel = CursoModel.getCursoModel();
+				tbCoursesList.setModel(tableModel);
+			} catch (BusinessException e) {
+				showMessage(e, MessageType.ERROR);
+				e.printStackTrace();
+			}
 
 			// Evento de selección de curso para abrir inscripciones
 			tbCoursesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent event) {
 
+					if (event.getValueIsAdjusting())
+						return;
+
 					CursoDto cursoSeleccionado = new CursoDto();
 
 					try {
-						cursoSeleccionado.codigoCurso = Integer
-								.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 0).toString());
 
-						cursoSeleccionado.titulo = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 1)
-								.toString();
+						int selectedRow = tbCoursesList.getSelectedRow();
+
+						if (selectedRow == -1) {
+							selectedRow = 0;
+						}
+
+						cursoSeleccionado.codigoCurso = Integer
+								.parseInt(tbCoursesList.getValueAt(selectedRow, 0).toString());
+
+						cursoSeleccionado.titulo = tbCoursesList.getValueAt(selectedRow, 1).toString();
 
 						cursoSeleccionado.fechaInicio = LocalDate
-								.parse(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 2).toString());
+								.parse(tbCoursesList.getValueAt(selectedRow, 2).toString());
 
 						cursoSeleccionado.plazasDisponibles = Integer
-								.parseInt(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 3).toString());
+								.parseInt(tbCoursesList.getValueAt(selectedRow, 3).toString());
 
 						cursoSeleccionado.precio = Double
-								.parseDouble(tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 4).toString());
+								.parseDouble(tbCoursesList.getValueAt(selectedRow, 4).toString());
 
-						cursoSeleccionado.estado = tbCoursesList.getValueAt(tbCoursesList.getSelectedRow(), 5)
-								.toString();
+						cursoSeleccionado.estado = tbCoursesList.getValueAt(selectedRow, 5).toString();
 
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
-
-						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.ERROR);
-						((DefaultMessage) pnListCoursesSouthMessages)
-								.setMessage("<html>" + nfe.getMessage() + "</html>");
-
 					}
 
 					Curso.setSelectedCourse(cursoSeleccionado);
@@ -345,6 +355,7 @@ public class MainWindow extends JFrame {
 
 					fTxFechaCierreInscripcionesCursoSeleccionado.setText(String.valueOf(cursoSeleccionado.fechaInicio));
 				}
+
 			});
 		}
 		return tbCoursesList;
@@ -540,6 +551,7 @@ public class MainWindow extends JFrame {
 	private JSpinner getSpNumeroPlazasCursoSeleccionado() {
 		if (spNumeroPlazasCursoSeleccionado == null) {
 			spNumeroPlazasCursoSeleccionado = new JSpinner();
+			spNumeroPlazasCursoSeleccionado.setFocusable(false);
 			spNumeroPlazasCursoSeleccionado.setOpaque(false);
 			spNumeroPlazasCursoSeleccionado.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
@@ -579,19 +591,20 @@ public class MainWindow extends JFrame {
 	}
 
 	private void enableOpenCourseButton() {
+		btAbrirCurso.setEnabled(true);
 		// Comprobar fechas
-		if (Integer.parseInt(spNumeroPlazasCursoSeleccionado.getValue().toString()) > 0
-				&& spNumeroPlazasCursoSeleccionado.getValue() != "") {
-			btAbrirCurso.setEnabled(true);
-		} else {
-			btAbrirCurso.setEnabled(false);
-		}
+//		if (Integer.parseInt(spNumeroPlazasCursoSeleccionado.getValue().toString()) > 0
+//				&& spNumeroPlazasCursoSeleccionado.getValue() != "") {
+//			
+//		} else {
+//			btAbrirCurso.setEnabled(false);
+//		}
 	}
 
 	private JPanel getPnCoursesListSouthButtons() {
 		if (pnCoursesListSouthButtons == null) {
 			pnCoursesListSouthButtons = new JPanel();
-			pnCoursesListSouthButtons.setLayout(new GridLayout(0, 2, 0, 0));
+			pnCoursesListSouthButtons.setLayout(new GridLayout(0, 2, 10, 0));
 			pnCoursesListSouthButtons.add(getBtCancelarAperturaCurso());
 			pnCoursesListSouthButtons.add(getBtAbrirCurso());
 		}
@@ -614,11 +627,7 @@ public class MainWindow extends JFrame {
 			btAbrirCurso.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			btAbrirCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO: ABRIR INSCRIPCION A CURSO SELECCIONADO
-					// Comprobar
-					// Fechas
-					// Curso no está abierto ya
-					//
+
 					String plazas = spNumeroPlazasCursoSeleccionado.getValue().toString();
 					LocalDate fechaApertura = DateUtils
 							.convertStringIntoLocalDate(fTxFechaInicioInscripcionesCursoSeleccionado.getText());
@@ -629,15 +638,22 @@ public class MainWindow extends JFrame {
 
 						CursoDto selectedCourse = Curso.getSelectedCourse();
 
-						// Si el curso está abierto, mostrar mensaje de error
-						InscripcionCursoFormativo.abrirCursoFormacion(selectedCourse, fechaApertura, fechaCierre,
-								plazas);
+						int input = JOptionPane.showConfirmDialog(null,
+								"Al hacer click en confirmar, se abrirá la inscripción para el curso seleccionado ¿Confirmar apertura?");
 
-						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
-						((DefaultMessage) pnListCoursesSouthMessages)
-								.setMessage("Se ha abierto la inscripción para el curso seleccionado");
+						if (input == JOptionPane.OK_OPTION) {
+							// Si el curso está abierto, mostrar mensaje de error
+							InscripcionCursoFormativo.abrirCursoFormacion(selectedCourse, fechaApertura, fechaCierre,
+									plazas);
 
-						refreshScheduledCoursesList();
+							((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
+							((DefaultMessage) pnListCoursesSouthMessages)
+									.setMessage("Se ha abierto la inscripción para el curso seleccionado");
+
+							refreshScheduledCoursesList();
+
+							btAbrirCurso.setEnabled(false);
+						}
 
 					} catch (BusinessException | PersistenceException | SQLException e1) {
 						((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.ERROR);
@@ -671,16 +687,31 @@ public class MainWindow extends JFrame {
 					ButtonColor.NORMAL);
 			btRefreshOpenCoursesList.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO: REFRESCAR LISTADO
-					refreshScheduledCoursesList();
+					try {
+						refreshScheduledCoursesList();
+					} catch (BusinessException e1) {
+						showMessage(e1, MessageType.ERROR);
+						e1.printStackTrace();
+					}
 				}
 			});
 		}
 		return btRefreshOpenCoursesList;
 	}
 
-	private void refreshScheduledCoursesList() {
+	private void refreshScheduledCoursesList() throws BusinessException {
 		TableModel tableModel = CursoModel.getCursoModel();
 		tbCoursesList.setModel(tableModel);
+		tbCoursesList.repaint();
+	}
+
+	/**
+	 * 
+	 * @param e1
+	 * @param type
+	 */
+	private void showMessage(BusinessException e1, MessageType type) {
+		((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(type);
+		((DefaultMessage) pnListCoursesSouthMessages).setMessage("<html>" + e1.getMessage() + "</html>");
 	}
 }

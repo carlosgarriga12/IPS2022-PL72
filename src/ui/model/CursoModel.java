@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import business.BusinessException;
 import business.curso.Curso;
 import persistence.curso.CursoDto;
 
@@ -24,7 +25,7 @@ public class CursoModel {
 	public static final String HEADER_COLUMN4 = "PRECIO";
 	public static final String HEADER_COLUMN5 = "ESTADO";
 
-	public static TableModel getCursoModel() {
+	public static TableModel getCursoModel() throws BusinessException {
 
 		// Listado de cursos actualmente planificados
 		List<CursoDto> cursosPlanificados = Curso.listarCursosPlanificados();
