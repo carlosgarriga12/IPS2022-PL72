@@ -1,9 +1,15 @@
 package business.inscripcion;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
+import business.BusinessException;
+import business.curso.Curso;
+import business.util.DateUtils;
+import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
 
 /**
  * 
@@ -20,20 +26,68 @@ public class InscripcionCursoFormativo {
 	 * @param fechaApertura
 	 * @param fechaCierre
 	 * @param plazasDisponibles
+	 * 
+	 * @throws BusinessException Si la fecha de inscripcion no es válida.
+	 * @throws SQLException
 	 */
-	public void abrirCursoFormacion(final InscripcionCursoFormacionDto inscripcionCurso, final LocalDate fechaApertura,
-			final LocalDate fechaCierre, final int plazasDisponibles) {
+	public static void abrirCursoFormacion(final CursoDto curso, final LocalDate fechaApertura,
+			final LocalDate fechaCierre, final String plazasDisponibles) throws BusinessException, SQLException {
 
-		// Establecer fecha inicio
-		inscripcionCurso.setFechaApertura(fechaApertura);
+		int plazas = 0;
 
-		// Establecer fecha fin
-		inscripcionCurso.setFechaCierre(fechaCierre);
+		try {
+			plazas = Integer.parseInt(plazasDisponibles);
 
-		// Cambiar estado del curso a abierto
-		inscripcionCurso.getCurso().setEstado(CursoDto.CURSO_ABIERTO);
+		} catch (NumberFormatException e) {
+			throw new BusinessException("Por favor, introduzca un número válido para las plazas disponibles");
+		}
 
-		// Establecer el número de plazas del curso
-		inscripcionCurso.getCurso().setPlazasDisponibles(plazasDisponibles);
+		if (curso == null || Curso.getSelectedCourse() == null) {
+			throw new BusinessException("Por favor, seleccione un curso de la lista.");
+
+			// Fecha inscripciones anterior a fecha actual
+		} else if (DateUtils.checkDateIsBefore(fechaApertura, LocalDate.now())
+				|| DateUtils.checkDateIsBefore(fechaCierre, LocalDate.now())) {
+
+			throw new BusinessException(
+					"Por favor, corriga el periodo de inscripción. La fecha de inscripción ha de ser a partir del día de hoy");
+
+			// Si fecha cierre < fecha apertura
+			// ó fecha inicio < fecha apertura
+		} else if (DateUtils.checkDateIsBefore(fechaCierre, fechaApertura)
+				|| DateUtils.checkDateIsBefore(curso.fechaInicio, fechaApertura)) {
+
+			throw new BusinessException(
+					"Por favor, corriga el periodo de inscripción. La fecha de impartición del curso seleccionado está programada para: "
+							+ curso.fechaInicio);
+
+			// Si las fechas de apertura y cierre son el mismo dia
+		} else if (fechaApertura.isEqual(fechaCierre)) {
+			throw new BusinessException(
+					"Por favor, corriga el periodo de inscripción. El periodo mínimo de inscripciones ha de ser de un día natural");
+		}
+		// Si el curso seleccionado ya está abierto
+		else if (Curso.isCourseOpened(curso)) {
+			throw new BusinessException(
+					"Por favor, actualice el listado de cursos en el botón. El curso seleccionado ya tiene abiertas inscripciones.");
+
+			// Si no se ha seleccionado un número de plazas
+		} else if (plazas <= 0) {
+			throw new BusinessException("Por favor, introduzca un número válido para las plazas disponibles");
+
+		}
+
+		InscripcionCursoFormacionDto inscripcionCurso = new InscripcionCursoFormacionDto();
+
+		inscripcionCurso.curso = curso;
+		inscripcionCurso.fechaApertura = fechaApertura;
+		inscripcionCurso.fechaCierre = fechaCierre;
+
+		InscripcionCursoFormationCRUD.addNewInscripcion(inscripcionCurso);
+
+		curso.plazasDisponibles = plazas;
+		curso.estado = CursoDto.CURSO_ABIERTO;
+
+		CursoCRUD.abrirCurso(curso);
 	}
 }

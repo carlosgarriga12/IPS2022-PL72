@@ -2,6 +2,8 @@ package business.curso;
 
 import java.util.List;
 
+import business.BusinessException;
+import business.util.Argument;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 
@@ -13,14 +15,29 @@ import persistence.curso.CursoDto;
  */
 public class Curso {
 
+	private static CursoDto selectedCourse;
+
 	/**
 	 * Listado de los curso actualmente planificados
 	 * 
 	 * @return
+	 * @throws BusinessException 
 	 */
-	public List<CursoDto> listarCursosPlanificados() {
-		// Refactorizar curso CRud para que los metodos no sean estaticos
-		List<CursoDto> cursos = CursoCRUD.listarCursosActualmentePlanificados();
-		return cursos;
+	public static List<CursoDto> listarCursosPlanificados() throws BusinessException {
+		return CursoCRUD.listarCursosActualmentePlanificados();
+	}
+
+	public static CursoDto getSelectedCourse() {
+		return selectedCourse;
+	}
+
+	public static void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException{
+		Argument.isNotNull(selectedCourse);
+		Curso.selectedCourse = selectedCourse;
+	}
+
+	public static boolean isCourseOpened(final CursoDto courseToCheck) {
+		Argument.isNotNull(courseToCheck);
+		return CursoCRUD.isCursoAbierto(courseToCheck);
 	}
 }

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 
@@ -21,7 +22,7 @@ public class DtoAssembler {
 		return colegiados;
 	}
 
-	private static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
+	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
 		c.DNI = rs.getString("DNI");
@@ -49,15 +50,21 @@ public class DtoAssembler {
 		return cursos;
 	}
 
-	private static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
+	public static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
-		// TODO: Comprobar que el modelo de BBDD está así
-		newCursoDto.setTitulo(rs.getString("TITULO"));
-		newCursoDto.setFechaInicio(rs.getDate("FECHAINICIO").toLocalDate());
-		newCursoDto.setPlazasDisponibles(rs.getInt("PLAZAS"));
-		newCursoDto.setPrecio(rs.getDouble("PRECIO"));
-		newCursoDto.setEstado(rs.getString("ESTADO"));
+		newCursoDto.codigoCurso = rs.getInt("ID");
+		newCursoDto.titulo = rs.getString("TITULO");
+		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
+		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
+		newCursoDto.precio = rs.getDouble("PRECIO");
+
+		if (rs.getInt("PLAZAS") > 0) {
+			newCursoDto.estado = CursoDto.CURSO_ABIERTO;
+		} else {
+			newCursoDto.estado = DateUtils.checkDateIsAfter(LocalDate.parse(rs.getString("FECHAIMPARTIR")),
+					LocalDate.now()) ? CursoDto.CURSO_PLANIFICADO : CursoDto.CURSO_CERRADO;
+		}
 
 		return newCursoDto;
 
