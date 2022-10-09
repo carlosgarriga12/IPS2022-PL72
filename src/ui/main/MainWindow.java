@@ -639,7 +639,7 @@ public class MainWindow extends JFrame {
 						CursoDto selectedCourse = Curso.getSelectedCourse();
 
 						int input = JOptionPane.showConfirmDialog(null,
-								"Al hacer click en confirmar, se abrirá la inscripción para el curso seleccionado ¿Confirmar apertura?");
+								"<html><p>¿Confirma que desea abrir las inscripciones para el curso <b>" + selectedCourse.titulo + "</b> ?</p></html>");
 
 						if (input == JOptionPane.OK_OPTION) {
 							// Si el curso está abierto, mostrar mensaje de error
