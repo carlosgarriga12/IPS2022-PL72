@@ -1,0 +1,6 @@
+Fichero de recibos 
+Numero de recibo	Fecha de emision	DNI		Numero cuenta		Cantidad
+1					2022-10-05			555		123456789090		50.0
+2					2022-10-05			555		123456789090		50.0
+3					2022-10-05			555		123456789090		50.0
+4					2022-10-05			555		123456789090		50.0
