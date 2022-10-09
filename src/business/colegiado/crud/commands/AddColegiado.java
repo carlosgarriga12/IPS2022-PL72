@@ -1,23 +1,12 @@
-package business.colegiado.crud.commands;
+ package business.colegiado.crud.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.LocalDate;
 
 import business.BusinessException;
 import business.util.Argument;
+import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
-import persistence.jdbc.Jdbc;
-import persistence.jdbc.PersistenceException;
-import persistence.util.Conf;
 
 public class AddColegiado {
-	
-	private static final String SQL_ANADIR_COLEGIADO = 
-			Conf.getInstance().getProperty("TCOLEGIADO_ADD");
-	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
-	
 	
 	private persistence.colegiado.ColegiadoDto colegiado; // se lo pasamos
 	
@@ -50,44 +39,22 @@ public class AddColegiado {
 
 		Argument.longitudNueve(colegiado.telefono);
 		
-		Argument.longitudDieciseis(colegiado.numeroTarjeta);
+		Argument.menorQueMax(colegiado.annio);
 		
-		// comprobar si existe en la base de datos
+		Argument.longitudCinco(colegiado.numeroTarjeta);
 		
 		this.colegiado=colegiado;
 	}
 
 	public ColegiadoDto execute() throws BusinessException {
-		Connection con = null;
-		PreparedStatement pst = null;
-		
-		try {
-			con = Jdbc.getConnection();
-			pst = con.prepareStatement(SQL_ANADIR_COLEGIADO);
-			
-			// set cosas, completar
-			pst.setString(1, colegiado.DNI);
-			pst.setString(2, colegiado.nombre);
-			pst.setString(3, colegiado.apellidos);
-			pst.setString(4, colegiado.poblacion);
-			pst.setInt(5, colegiado.telefono);
-			pst.setInt(6, colegiado.titulacion);
-			pst.setString(7, colegiado.centro);
-			pst.setInt(8, colegiado.annio);
-			pst.setInt(9, colegiado.numeroTarjeta);
-			pst.setString(10, LocalDate.now().toString());
-			pst.setString(11, ESTADO_PENDIENTE);
-			pst.setString(12, "");
-
-			pst.executeUpdate();
-						
-		} catch(SQLException e) {
-			throw new PersistenceException(e);
-		} finally {
-			if (pst != null) try { pst.close(); } catch(SQLException e) { /* ignore */ }
-			if (con != null) try { con.close(); } catch(SQLException e) { /* ignore */ }
+		checkDniSinRepetir(colegiado.DNI);
+		return ColegiadoCrud.addColegiado(colegiado);
+	}
+	
+	public void checkDniSinRepetir(String dni) throws BusinessException {
+		if (ColegiadoCrud.findColegiadoDni(dni)!=null) {
+			throw new BusinessException("No se puede añadir colegiados con el mismo dni");
 		}
-		return colegiado;
 	}
 
 

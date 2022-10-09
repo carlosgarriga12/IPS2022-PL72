@@ -1,5 +1,7 @@
 package business.util;
 
+import java.time.LocalDate;
+
 public abstract class Argument {
 
 	public static void isNotNull(final Object obj) {
@@ -18,10 +20,6 @@ public abstract class Argument {
 		isTrue( obj != null, msg );
 	}
 
-	public static void isNull(final Object obj) {
-		isTrue( obj == null, " Must be null " );
-	}
-
 	public static void isTrue(final boolean test) {
 		isTrue(test, "Condition must be true");
 	}
@@ -37,13 +35,13 @@ public abstract class Argument {
 		isTrue( str != null, 
 				"The string cannot be null not empty" );
 
-		isTrue( str.trim().length() > 0, 
+		isTrue( !str.trim().isEmpty(), 
 				"The string cannot be null not empty" );
 	}
 
 	public static void isNotEmpty(final String str, final String msg) {
 		isTrue( str != null, msg );
-		isTrue( str.trim().length() > 0, msg );
+		isTrue( !str.trim().isEmpty(), msg );
 	}
 	
 	public static void longitudNueve(int telefono) {
@@ -51,9 +49,9 @@ public abstract class Argument {
 		isTrue(v.length()==9);
 	}
 
-	public static void longitudDieciseis(int numeroTarjeta) {
+	public static void longitudCinco(int numeroTarjeta) {
 		String v = String.valueOf(numeroTarjeta);
-		isTrue(v.length()==16);
+		isTrue(v.length()==5);
 	}
 	
 	public static void longitudNueve(String dNI) {
@@ -63,6 +61,11 @@ public abstract class Argument {
 	protected static void throwException(final String msg) {
 		throw new IllegalArgumentException( msg );
 	}
+
+	public static void menorQueMax(int annio) {
+		isTrue(annio <= LocalDate.now().getYear());
+	}
+
 
 	
 
