@@ -159,8 +159,8 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(new CardLayout(0, 0));
 
 		// TODO: Cambiar orden para ver al arrancar el programa
-		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
+		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		textFieldNombre.grabFocus();
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnLogin(), "loginPanel");
@@ -175,6 +175,7 @@ public class MainWindow extends JFrame {
 
 	private void inicializarCampos() {
 		textFieldNombre.grabFocus();
+		textFieldNombre.setText("Ej: Miguel");
 		textFieldApellidos.setText("Ej: Gonzalez Navarro");
 		textFieldDni.setText("Ej: 71778880C [9 caracteres]");
 		textFieldPoblacion.setText("Ej: Moreda");
@@ -756,10 +757,10 @@ public class MainWindow extends JFrame {
 	private JPanel getPnSolicitudColegiado() {
 		if (pnSolicitudColegiado == null) {
 			pnSolicitudColegiado = new JPanel();
-			pnSolicitudColegiado.setLayout(null);
-			pnSolicitudColegiado.add(getPnSolicitudColegiadoNorte());
+			pnSolicitudColegiado.setLayout(new BorderLayout(0, 0));
+			pnSolicitudColegiado.add(getPnSolicitudColegiadoNorte(), BorderLayout.NORTH);
 			pnSolicitudColegiado.add(getPnSolicitudColegiadoCentro());
-			pnSolicitudColegiado.add(getPanelDatosSur_1());
+			pnSolicitudColegiado.add(getPanelDatosSur_1(), BorderLayout.SOUTH);
 		}
 		return pnSolicitudColegiado;
 	}
@@ -767,7 +768,6 @@ public class MainWindow extends JFrame {
 	private JPanel getPnSolicitudColegiadoNorte() {
 		if (pnSolicitudColegiadoNorte == null) {
 			pnSolicitudColegiadoNorte = new JPanel();
-			pnSolicitudColegiadoNorte.setBounds(0, 0, 691, 24);
 			pnSolicitudColegiadoNorte.setForeground(SystemColor.desktop);
 			pnSolicitudColegiadoNorte.add(getLbTitulo());
 		}
@@ -777,7 +777,6 @@ public class MainWindow extends JFrame {
 	private JPanel getPnSolicitudColegiadoCentro() {
 		if (pnSolicitudColegiadoCentro == null) {
 			pnSolicitudColegiadoCentro = new JPanel();
-			pnSolicitudColegiadoCentro.setBounds(0, 24, 691, 297);
 			pnSolicitudColegiadoCentro.setLayout(new BorderLayout(0, 0));
 			pnSolicitudColegiadoCentro.add(getPnSolicitudDatosNorte(), BorderLayout.NORTH);
 			pnSolicitudColegiadoCentro.add(getPnSolicitudDatosCentro(), BorderLayout.CENTER);
@@ -807,7 +806,7 @@ public class MainWindow extends JFrame {
 			panelDatosPersonales.setBorder(new TitledBorder(
 					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
 					"Datos personales", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
-			panelDatosPersonales.setBounds(0, 0, 691, 118);
+			panelDatosPersonales.setBounds(0, 0, 889, 130);
 			panelDatosPersonales.setLayout(null);
 			panelDatosPersonales.add(getLblNewLabelN());
 			panelDatosPersonales.add(getTextFieldNombre());
@@ -828,7 +827,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelPob = new JLabel("Población:");
 			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelPob.setToolTipText("Introduzca su población");
-			lblNewLabelPob.setBounds(23, 65, 59, 14);
+			lblNewLabelPob.setBounds(127, 68, 59, 14);
 			lblNewLabelPob.setLabelFor(getTxFieldPoblacion());
 			lblNewLabelPob.setDisplayedMnemonic('P');
 		}
@@ -847,7 +846,7 @@ public class MainWindow extends JFrame {
 			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldPoblacion.setColumns(10);
-			textFieldPoblacion.setBounds(100, 62, 148, 20);
+			textFieldPoblacion.setBounds(220, 65, 148, 20);
 		}
 		return textFieldPoblacion;
 	}
@@ -864,7 +863,7 @@ public class MainWindow extends JFrame {
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTelefono.setToolTipText("Introduzca su teléfono");
 			textFieldTelefono.setColumns(10);
-			textFieldTelefono.setBounds(428, 62, 190, 20);
+			textFieldTelefono.setBounds(586, 65, 190, 20);
 		}
 		return textFieldTelefono;
 	}
@@ -873,7 +872,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelTelefono == null) {
 			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
 			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelTelefono.setBounds(279, 65, 139, 14);
+			lblNewLabelTelefono.setBounds(418, 68, 139, 14);
 			lblNewLabelTelefono.setLabelFor(getTxFieldTelefono());
 			lblNewLabelTelefono.setDisplayedMnemonic('T');
 		}
@@ -887,7 +886,7 @@ public class MainWindow extends JFrame {
 					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
 					"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
 			panelDatosAcademicos.setLayout(null);
-			panelDatosAcademicos.setBounds(0, 116, 691, 99);
+			panelDatosAcademicos.setBounds(0, 135, 889, 142);
 			panelDatosAcademicos.add(getLbDatAcademicos());
 			panelDatosAcademicos.add(getTxFieldTitulo());
 			panelDatosAcademicos.add(getTxFieldCentro());
@@ -902,7 +901,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelDatTitulacion == null) {
 			lblNewLabelDatTitulacion = new JLabel("Titulación [0, 1 o 2] segun sus estudios:");
 			lblNewLabelDatTitulacion.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatTitulacion.setBounds(54, 27, 238, 14);
+			lblNewLabelDatTitulacion.setBounds(76, 55, 238, 14);
 			lblNewLabelDatTitulacion.setLabelFor(this.getTxFieldTitulo());
 			lblNewLabelDatTitulacion.setDisplayedMnemonic('I');
 		}
@@ -921,7 +920,7 @@ public class MainWindow extends JFrame {
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTitulo.setToolTipText("Teclee la titulación");
 			textFieldTitulo.setColumns(10);
-			textFieldTitulo.setBounds(10, 52, 309, 20);
+			textFieldTitulo.setBounds(33, 95, 309, 20);
 		}
 		return textFieldTitulo;
 	}
@@ -938,7 +937,7 @@ public class MainWindow extends JFrame {
 			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
 			textFieldCentro.setColumns(10);
-			textFieldCentro.setBounds(329, 52, 196, 20);
+			textFieldCentro.setBounds(398, 95, 196, 20);
 		}
 		return textFieldCentro;
 	}
@@ -955,7 +954,7 @@ public class MainWindow extends JFrame {
 			textFieldAno.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldAno.setToolTipText("Escriba el ano");
 			textFieldAno.setColumns(10);
-			textFieldAno.setBounds(550, 52, 131, 20);
+			textFieldAno.setBounds(670, 95, 131, 20);
 		}
 		return textFieldAno;
 	}
@@ -981,7 +980,6 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelDatosSur_1() {
 		if (panelDatosSur == null) {
 			panelDatosSur = new JPanel();
-			panelDatosSur.setBounds(0, 325, 691, 41);
 			panelDatosSur.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			panelDatosSur.add(getBtnAtras());
 			panelDatosSur.add(getBtnLimpiar());
@@ -1085,7 +1083,7 @@ public class MainWindow extends JFrame {
 			});
 			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldNombre.setToolTipText("Inserte el nombre");
-			textFieldNombre.setBounds(79, 21, 127, 20);
+			textFieldNombre.setBounds(127, 21, 127, 20);
 			textFieldNombre.setColumns(10);
 			textFieldNombre.grabFocus();
 		}
@@ -1103,7 +1101,7 @@ public class MainWindow extends JFrame {
 			});
 			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldApellidos.setToolTipText("Inserte los apellidos");
-			textFieldApellidos.setBounds(287, 21, 181, 20);
+			textFieldApellidos.setBounds(391, 21, 181, 20);
 			textFieldApellidos.setColumns(10);
 		}
 		return textFieldApellidos;
@@ -1120,7 +1118,7 @@ public class MainWindow extends JFrame {
 			});
 			textFieldDni.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldDni.setToolTipText("Inserte el DNI");
-			textFieldDni.setBounds(516, 21, 165, 20);
+			textFieldDni.setBounds(670, 21, 165, 20);
 			textFieldDni.setColumns(10);
 		}
 		return textFieldDni;
@@ -1130,7 +1128,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelN == null) {
 			lblNewLabelN = new JLabel("Nombre:");
 			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelN.setBounds(10, 24, 59, 14);
+			lblNewLabelN.setBounds(58, 24, 59, 14);
 			lblNewLabelN.setLabelFor(this.getTextFieldNombre());
 			lblNewLabelN.setDisplayedMnemonic('N');
 		}
@@ -1140,7 +1138,7 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelBanco() {
 		if (panelBanco == null) {
 			panelBanco = new JPanel();
-			panelBanco.setBounds(0, 215, 691, 58);
+			panelBanco.setBounds(0, 280, 889, 58);
 			panelBanco.setLayout(null);
 			panelBanco.add(getLblParaFinalizarDebe());
 			panelBanco.add(getTextFieldNTarjeta());
@@ -1164,7 +1162,7 @@ public class MainWindow extends JFrame {
 		if (lblParaFinalizarDebe == null) {
 			lblParaFinalizarDebe = new JLabel(
 					"Para finalizar, debe registrar sus datos bancarios para el pago de las cuotas:");
-			lblParaFinalizarDebe.setBounds(164, 2, 446, 14);
+			lblParaFinalizarDebe.setBounds(255, 2, 446, 14);
 		}
 		return lblParaFinalizarDebe;
 	}
@@ -1180,7 +1178,7 @@ public class MainWindow extends JFrame {
 			});
 			textFieldNTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldNTarjeta.setToolTipText("Registre su número de tarjeta");
-			textFieldNTarjeta.setBounds(282, 27, 299, 20);
+			textFieldNTarjeta.setBounds(296, 27, 299, 20);
 			textFieldNTarjeta.setColumns(10);
 		}
 		return textFieldNTarjeta;
@@ -1262,9 +1260,9 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelDatAno() {
 		if (lblNewLabelDatAno == null) {
-			lblNewLabelDatAno = new JLabel("Ano:");
+			lblNewLabelDatAno = new JLabel("Año:");
 			lblNewLabelDatAno.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatAno.setBounds(612, 27, 41, 14);
+			lblNewLabelDatAno.setBounds(724, 55, 41, 14);
 			lblNewLabelDatAno.setLabelFor(this.getTxFieldAno());
 			lblNewLabelDatAno.setDisplayedMnemonic('O');
 		}
@@ -1275,7 +1273,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelDatCentro == null) {
 			lblNewLabelDatCentro = new JLabel("Centro:");
 			lblNewLabelDatCentro.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatCentro.setBounds(408, 27, 92, 14);
+			lblNewLabelDatCentro.setBounds(466, 55, 92, 14);
 			lblNewLabelDatCentro.setLabelFor(this.getTxFieldCentro());
 			lblNewLabelDatCentro.setDisplayedMnemonic('C');
 		}
@@ -1286,7 +1284,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelA == null) {
 			lblNewLabelA = new JLabel("Apellidos:");
 			lblNewLabelA.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelA.setBounds(216, 24, 71, 14);
+			lblNewLabelA.setBounds(310, 24, 71, 14);
 			lblNewLabelA.setLabelFor(this.getTextFieldApellidos());
 			lblNewLabelA.setDisplayedMnemonic('A');
 		}
@@ -1297,7 +1295,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelD == null) {
 			lblNewLabelD = new JLabel("DNI:");
 			lblNewLabelD.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelD.setBounds(478, 24, 46, 14);
+			lblNewLabelD.setBounds(614, 24, 46, 14);
 			lblNewLabelD.setLabelFor(this.getTextFieldDni());
 			lblNewLabelD.setDisplayedMnemonic('D');
 		}
