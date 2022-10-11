@@ -13,8 +13,6 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -110,47 +108,55 @@ public class MainWindow extends JFrame {
 	private JPanel pnSolicitudColegiadoNorte;
 	private JPanel pnSolicitudColegiadoCentro;
 	private JLabel lbTitulo;
-	private JPanel pnSolicitudDatosNorte;
 	private JPanel pnSolicitudDatosCentro;
-	private JLabel lbRellenarDatos;
-	private JPanel panelDatosSur;
+	private JPanel pnSolicitudColegiadoSur;
 	private JButton btnLimpiar;
 	private JButton btnFinalizar;
-	private JTextField textFieldNombre;
-	private JTextField textFieldApellidos;
-	private JTextField textFieldDni;
-	private JLabel lblNewLabelN;
-	private JTextField textFieldPoblacion;
-	private JTextField textFieldTelefono;
-	private JTextField textFieldTitulo;
-	private JTextField textFieldCentro;
-	private JTextField textFieldAno;
-	private JPanel panelBanco;
-	private JLabel lblParaFinalizarDebe;
-	private JTextField textFieldNTarjeta;
-
-	private JLabel lblNewLabelNumeroTarjeta;
-
-	private JPanel panelDatosPersonales;
-
-	private JLabel lblNewLabelPob;
-
-	private JLabel lblNewLabelTelefono;
-
-	private JPanel panelDatosAcademicos;
-
-	private JLabel lblNewLabelDatTitulacion;
 	private JButton btnSolicitud;
 	private JButton btnAtras;
-	private JLabel lblNewLabelDatAno;
-	private JLabel lblNewLabelDatCentro;
+	private JLabel lbRellenarDatos;
+	private JPanel pnSolicitudDatosSur;
+	private JPanel pnTarjetaLabel;
+	private JPanel pnTarjetaTextField;
+	private JLabel lblParaFinalizarDebe;
+	private JLabel lblNewLabelNumeroTarjeta;
+	private JTextField textFieldTarjeta;
+	private JPanel pnDatosPersonales;
+	private JPanel pnNombreColegiado;
+	private JPanel pnApellidosColegiado;
+	private JPanel pnDNIColegiado;
+	private JLabel lblNewLabelN;
+	private JTextField textFieldNombre;
 	private JLabel lblNewLabelA;
+	private JTextField textFieldApellidos;
 	private JLabel lblNewLabelD;
+	private JTextField textFieldDni;
+	private JPanel pnDatosGeoAcademicos;
+	private JPanel panelDatosGeo;
+	private JPanel pnDatosPoblacionColegiado;
+	private JLabel lblNewLabelPob;
+	private JTextField textFieldPoblacion;
+	private JPanel pnDatosTelefonoColegiado;
+	private JLabel lblNewLabelTelefono;
+	private JTextField textFieldTelefono;
+	private JPanel panelDatosAcademicos;
+	private JPanel pnDatosTituloColegiado;
+	private JPanel pnDatosCentroColegiado;
+	private JPanel pnDatosAñoColegiado;
+	private JTextField textFieldAño;
+	private JLabel lblNewLabelDatAno;
+	private JTextField textFieldCentro;
+	private JLabel lblNewLabelDatCentro;
+	private JPanel pnDatosTituloColegiadoLabel;
+	private JPanel pnDatosTituloColegiadoCheck;
+	private JTextField textFieldTitulo;
+	private JLabel lblTitulacinSegunSus;
+	private JLabel lblNewLabelTitulacionColegiado;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 915, 477);
+		setBounds(100, 100, 932, 402);
 		mainPanel = new JPanel();
 		mainPanel.setName("");
 		mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -161,7 +167,6 @@ public class MainWindow extends JFrame {
 		// TODO: Cambiar orden para ver al arrancar el programa
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
-		textFieldNombre.grabFocus();
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
@@ -174,16 +179,6 @@ public class MainWindow extends JFrame {
 	}
 
 	private void inicializarCampos() {
-		textFieldNombre.grabFocus();
-		textFieldNombre.setText("Ej: Miguel");
-		textFieldApellidos.setText("Ej: Gonzalez Navarro");
-		textFieldDni.setText("Ej: 71778880C [9 caracteres]");
-		textFieldPoblacion.setText("Ej: Moreda");
-		textFieldTelefono.setText("Ej: 681676654 [9 números]");
-		textFieldTitulo.setText("Ej: 0 (sin titulación), 1 (ingenieria) o 2 (otros)");
-		textFieldCentro.setText("Ej: Escuela de Ingeniería");
-		textFieldAno.setText("Ej : 2022 [4 números]");
-		textFieldNTarjeta.setText("Ej: 76567 [5 números]");
 	}
 
 	private JLabel getLblTitle() {
@@ -760,7 +755,7 @@ public class MainWindow extends JFrame {
 			pnSolicitudColegiado.setLayout(new BorderLayout(0, 0));
 			pnSolicitudColegiado.add(getPnSolicitudColegiadoNorte(), BorderLayout.NORTH);
 			pnSolicitudColegiado.add(getPnSolicitudColegiadoCentro());
-			pnSolicitudColegiado.add(getPanelDatosSur_1(), BorderLayout.SOUTH);
+			pnSolicitudColegiado.add(getPanelDatosSur(), BorderLayout.SOUTH);
 		}
 		return pnSolicitudColegiado;
 	}
@@ -769,7 +764,9 @@ public class MainWindow extends JFrame {
 		if (pnSolicitudColegiadoNorte == null) {
 			pnSolicitudColegiadoNorte = new JPanel();
 			pnSolicitudColegiadoNorte.setForeground(SystemColor.desktop);
+			pnSolicitudColegiadoNorte.setLayout(new GridLayout(2, 2, 0, 0));
 			pnSolicitudColegiadoNorte.add(getLbTitulo());
+			pnSolicitudColegiadoNorte.add(getLbRellenarDatos_1());
 		}
 		return pnSolicitudColegiadoNorte;
 	}
@@ -778,8 +775,8 @@ public class MainWindow extends JFrame {
 		if (pnSolicitudColegiadoCentro == null) {
 			pnSolicitudColegiadoCentro = new JPanel();
 			pnSolicitudColegiadoCentro.setLayout(new BorderLayout(0, 0));
-			pnSolicitudColegiadoCentro.add(getPnSolicitudDatosNorte(), BorderLayout.NORTH);
 			pnSolicitudColegiadoCentro.add(getPnSolicitudDatosCentro(), BorderLayout.CENTER);
+			pnSolicitudColegiadoCentro.add(getPnSolicitudDatosSur(), BorderLayout.SOUTH);
 		}
 		return pnSolicitudColegiadoCentro;
 	}
@@ -788,204 +785,31 @@ public class MainWindow extends JFrame {
 		if (lbTitulo == null) {
 			lbTitulo = new JLabel("Solicitud de alta para ser colegiado en el COIIPA");
 			lbTitulo.setFont(new Font("Arial Black", Font.BOLD, 11));
+			lbTitulo.setFont(LookAndFeel.HEADING_1_FONT);
+			lbTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lbTitulo;
-	}
-
-	private JPanel getPnSolicitudDatosNorte() {
-		if (pnSolicitudDatosNorte == null) {
-			pnSolicitudDatosNorte = new JPanel();
-			pnSolicitudDatosNorte.add(getLbRellenarDatos());
-		}
-		return pnSolicitudDatosNorte;
-	}
-
-	private JPanel getPnDatosPersonales() {
-		if (panelDatosPersonales == null) {
-			panelDatosPersonales = new JPanel();
-			panelDatosPersonales.setBorder(new TitledBorder(
-					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-					"Datos personales", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
-			panelDatosPersonales.setBounds(0, 0, 889, 130);
-			panelDatosPersonales.setLayout(null);
-			panelDatosPersonales.add(getLblNewLabelN());
-			panelDatosPersonales.add(getTextFieldNombre());
-			panelDatosPersonales.add(getTextFieldApellidos());
-			panelDatosPersonales.add(getTextFieldDni());
-			panelDatosPersonales.add(getLbPoblacion());
-			panelDatosPersonales.add(getTxFieldPoblacion());
-			panelDatosPersonales.add(getTxFieldTelefono());
-			panelDatosPersonales.add(getLbTelefono());
-			panelDatosPersonales.add(getLblNewLabelA());
-			panelDatosPersonales.add(getLblNewLabelD());
-		}
-		return panelDatosPersonales;
-	}
-
-	private JLabel getLbPoblacion() {
-		if (lblNewLabelPob == null) {
-			lblNewLabelPob = new JLabel("Población:");
-			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelPob.setToolTipText("Introduzca su población");
-			lblNewLabelPob.setBounds(127, 68, 59, 14);
-			lblNewLabelPob.setLabelFor(getTxFieldPoblacion());
-			lblNewLabelPob.setDisplayedMnemonic('P');
-		}
-		return lblNewLabelPob;
-	}
-
-	private JTextField getTxFieldPoblacion() {
-		if (textFieldPoblacion == null) {
-			textFieldPoblacion = new JTextField();
-			textFieldPoblacion.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldPoblacion.setText(null);
-				}
-			});
-			textFieldPoblacion.setToolTipText("Introduzca su población");
-			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldPoblacion.setColumns(10);
-			textFieldPoblacion.setBounds(220, 65, 148, 20);
-		}
-		return textFieldPoblacion;
-	}
-
-	private JTextField getTxFieldTelefono() {
-		if (textFieldTelefono == null) {
-			textFieldTelefono = new JTextField();
-			textFieldTelefono.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldTelefono.setText(null);
-				}
-			});
-			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldTelefono.setToolTipText("Introduzca su teléfono");
-			textFieldTelefono.setColumns(10);
-			textFieldTelefono.setBounds(586, 65, 190, 20);
-		}
-		return textFieldTelefono;
-	}
-
-	private JLabel getLbTelefono() {
-		if (lblNewLabelTelefono == null) {
-			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
-			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelTelefono.setBounds(418, 68, 139, 14);
-			lblNewLabelTelefono.setLabelFor(getTxFieldTelefono());
-			lblNewLabelTelefono.setDisplayedMnemonic('T');
-		}
-		return lblNewLabelTelefono;
-	}
-
-	private JPanel getPnDatosAcademicos() {
-		if (panelDatosAcademicos == null) {
-			panelDatosAcademicos = new JPanel();
-			panelDatosAcademicos.setBorder(new TitledBorder(
-					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-					"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
-			panelDatosAcademicos.setLayout(null);
-			panelDatosAcademicos.setBounds(0, 135, 889, 142);
-			panelDatosAcademicos.add(getLbDatAcademicos());
-			panelDatosAcademicos.add(getTxFieldTitulo());
-			panelDatosAcademicos.add(getTxFieldCentro());
-			panelDatosAcademicos.add(getTxFieldAno());
-			panelDatosAcademicos.add(getLblNewLabelDatAno());
-			panelDatosAcademicos.add(getLblNewLabelDatCentro());
-		}
-		return panelDatosAcademicos;
-	}
-
-	private JLabel getLbDatAcademicos() {
-		if (lblNewLabelDatTitulacion == null) {
-			lblNewLabelDatTitulacion = new JLabel("Titulación [0, 1 o 2] segun sus estudios:");
-			lblNewLabelDatTitulacion.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatTitulacion.setBounds(76, 55, 238, 14);
-			lblNewLabelDatTitulacion.setLabelFor(this.getTxFieldTitulo());
-			lblNewLabelDatTitulacion.setDisplayedMnemonic('I');
-		}
-		return lblNewLabelDatTitulacion;
-	}
-
-	private JTextField getTxFieldTitulo() {
-		if (textFieldTitulo == null) {
-			textFieldTitulo = new JTextField();
-			textFieldTitulo.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldTitulo.setText(null);
-				}
-			});
-			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldTitulo.setToolTipText("Teclee la titulación");
-			textFieldTitulo.setColumns(10);
-			textFieldTitulo.setBounds(33, 95, 309, 20);
-		}
-		return textFieldTitulo;
-	}
-
-	private JTextField getTxFieldCentro() {
-		if (textFieldCentro == null) {
-			textFieldCentro = new JTextField();
-			textFieldCentro.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldCentro.setText(null);
-				}
-			});
-			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldCentro.setToolTipText("Escriba su centro educativo");
-			textFieldCentro.setColumns(10);
-			textFieldCentro.setBounds(398, 95, 196, 20);
-		}
-		return textFieldCentro;
-	}
-
-	private JTextField getTxFieldAno() {
-		if (textFieldAno == null) {
-			textFieldAno = new JTextField();
-			textFieldAno.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldAno.setText(null);
-				}
-			});
-			textFieldAno.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldAno.setToolTipText("Escriba el ano");
-			textFieldAno.setColumns(10);
-			textFieldAno.setBounds(670, 95, 131, 20);
-		}
-		return textFieldAno;
 	}
 
 	private JPanel getPnSolicitudDatosCentro() {
 		if (pnSolicitudDatosCentro == null) {
 			pnSolicitudDatosCentro = new JPanel();
-			pnSolicitudDatosCentro.setLayout(null);
-			pnSolicitudDatosCentro.add(getPnDatosPersonales());
-			pnSolicitudDatosCentro.add(getPnDatosAcademicos());
-			pnSolicitudDatosCentro.add(getPanelBanco());
+			pnSolicitudDatosCentro.setLayout(new BorderLayout(0, 0));
+			pnSolicitudDatosCentro.add(getPanelDatosPersonalesColegiado(), BorderLayout.NORTH);
+			pnSolicitudDatosCentro.add(getPnDatosGeoAcademicos(), BorderLayout.CENTER);
 		}
 		return pnSolicitudDatosCentro;
 	}
 
-	private JLabel getLbRellenarDatos() {
-		if (lbRellenarDatos == null) {
-			lbRellenarDatos = new JLabel("Por favor, rellene los siguientes datos para formalizar su solicitud:");
+	private JPanel getPanelDatosSur() {
+		if (pnSolicitudColegiadoSur == null) {
+			pnSolicitudColegiadoSur = new JPanel();
+			pnSolicitudColegiadoSur.setLayout(new GridLayout(1, 3, 0, 0));
+			pnSolicitudColegiadoSur.add(getBtnAtras());
+			pnSolicitudColegiadoSur.add(getBtnLimpiar());
+			pnSolicitudColegiadoSur.add(getBtnFinalizar());
 		}
-		return lbRellenarDatos;
-	}
-
-	private JPanel getPanelDatosSur_1() {
-		if (panelDatosSur == null) {
-			panelDatosSur = new JPanel();
-			panelDatosSur.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-			panelDatosSur.add(getBtnAtras());
-			panelDatosSur.add(getBtnLimpiar());
-			panelDatosSur.add(getBtnFinalizar());
-		}
-		return panelDatosSur;
+		return pnSolicitudColegiadoSur;
 	}
 
 	private JButton getBtnLimpiar() {
@@ -1056,13 +880,13 @@ public class MainWindow extends JFrame {
 		dto.DNI = getTextFieldDni().getText();
 		dto.nombre = getTextFieldNombre().getText();
 		dto.apellidos = getTextFieldApellidos().getText();
-		dto.poblacion = getTxFieldPoblacion().getText();
-		dto.centro = getTxFieldCentro().getText();
+		dto.poblacion = getTextFieldPoblacion().getText();
+		dto.centro = getTextFieldCentroColegiado().getText();
 		try {
-			dto.telefono = Integer.parseInt(getTxFieldTelefono().getText());
-			dto.titulacion = Integer.parseInt(getTxFieldTitulo().getText());
-			dto.annio = Integer.parseInt(getTxFieldAno().getText());
-			dto.numeroTarjeta = Integer.parseInt(getTextFieldNTarjeta().getText());
+			dto.telefono = Integer.parseInt(getTextFieldTelefono().getText());
+			dto.titulacion = Integer.parseInt(getTextFieldTitulacion().getText());
+			dto.annio = Integer.parseInt(getTextFieldAño().getText());
+			dto.numeroTarjeta = Integer.parseInt(getTextFieldTarjeta().getText());
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
 					"Por favor, revise que no se haya introducido ninguna cadena en alguno de los campos numéricos",
@@ -1070,118 +894,6 @@ public class MainWindow extends JFrame {
 			return null;
 		}
 		return dto;
-	}
-
-	private JTextField getTextFieldNombre() {
-		if (textFieldNombre == null) {
-			textFieldNombre = new JTextField();
-			textFieldNombre.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldNombre.setText(null);
-				}
-			});
-			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldNombre.setToolTipText("Inserte el nombre");
-			textFieldNombre.setBounds(127, 21, 127, 20);
-			textFieldNombre.setColumns(10);
-			textFieldNombre.grabFocus();
-		}
-		return textFieldNombre;
-	}
-
-	private JTextField getTextFieldApellidos() {
-		if (textFieldApellidos == null) {
-			textFieldApellidos = new JTextField();
-			textFieldApellidos.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldApellidos.setText(null);
-				}
-			});
-			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldApellidos.setToolTipText("Inserte los apellidos");
-			textFieldApellidos.setBounds(391, 21, 181, 20);
-			textFieldApellidos.setColumns(10);
-		}
-		return textFieldApellidos;
-	}
-
-	private JTextField getTextFieldDni() {
-		if (textFieldDni == null) {
-			textFieldDni = new JTextField();
-			textFieldDni.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldDni.setText(null);
-				}
-			});
-			textFieldDni.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldDni.setToolTipText("Inserte el DNI");
-			textFieldDni.setBounds(670, 21, 165, 20);
-			textFieldDni.setColumns(10);
-		}
-		return textFieldDni;
-	}
-
-	private JLabel getLblNewLabelN() {
-		if (lblNewLabelN == null) {
-			lblNewLabelN = new JLabel("Nombre:");
-			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelN.setBounds(58, 24, 59, 14);
-			lblNewLabelN.setLabelFor(this.getTextFieldNombre());
-			lblNewLabelN.setDisplayedMnemonic('N');
-		}
-		return lblNewLabelN;
-	}
-
-	private JPanel getPanelBanco() {
-		if (panelBanco == null) {
-			panelBanco = new JPanel();
-			panelBanco.setBounds(0, 280, 889, 58);
-			panelBanco.setLayout(null);
-			panelBanco.add(getLblParaFinalizarDebe());
-			panelBanco.add(getTextFieldNTarjeta());
-			panelBanco.add(getLblNumeroTarjeta());
-		}
-		return panelBanco;
-	}
-
-	private JLabel getLblNumeroTarjeta() {
-		if (lblNewLabelNumeroTarjeta == null) {
-			lblNewLabelNumeroTarjeta = new JLabel("Número de tarjeta:");
-			lblNewLabelNumeroTarjeta.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelNumeroTarjeta.setBounds(158, 29, 121, 17);
-			lblNewLabelNumeroTarjeta.setLabelFor(getTextFieldNTarjeta());
-			lblNewLabelNumeroTarjeta.setDisplayedMnemonic('N');
-		}
-		return lblNewLabelNumeroTarjeta;
-	}
-
-	private JLabel getLblParaFinalizarDebe() {
-		if (lblParaFinalizarDebe == null) {
-			lblParaFinalizarDebe = new JLabel(
-					"Para finalizar, debe registrar sus datos bancarios para el pago de las cuotas:");
-			lblParaFinalizarDebe.setBounds(255, 2, 446, 14);
-		}
-		return lblParaFinalizarDebe;
-	}
-
-	private JTextField getTextFieldNTarjeta() {
-		if (textFieldNTarjeta == null) {
-			textFieldNTarjeta = new JTextField();
-			textFieldNTarjeta.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldNTarjeta.setText(null);
-				}
-			});
-			textFieldNTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldNTarjeta.setToolTipText("Registre su número de tarjeta");
-			textFieldNTarjeta.setBounds(296, 27, 299, 20);
-			textFieldNTarjeta.setColumns(10);
-		}
-		return textFieldNTarjeta;
 	}
 
 	private boolean confirmarBorrar() {
@@ -1211,15 +923,15 @@ public class MainWindow extends JFrame {
 	}
 
 	private void reiniciarSolicitudRegistro() {
-		this.getTxFieldAno().setText(null);
+		this.getTextFieldAño().setText(null);
 		this.getTextFieldApellidos().setText(null);
 		this.getTextFieldDni().setText(null);
 		this.getTextFieldNombre().setText(null);
-		this.getTextFieldNTarjeta().setText(null);
-		this.getTxFieldCentro().setText(null);
-		this.getTxFieldPoblacion().setText(null);
-		this.getTxFieldTitulo().setText(null);
-		this.getTxFieldTelefono().setText(null);
+		this.getTextFieldTarjeta().setText(null);
+		this.getTextFieldCentroColegiado().setText(null);
+		this.getTextFieldPoblacion().setText(null);
+		this.getTextFieldTelefono().setText(null);
+		this.getTextFieldTitulacion().setText(null);
 		this.getTextFieldNombre().grabFocus();
 	}
 
@@ -1257,49 +969,370 @@ public class MainWindow extends JFrame {
 		}
 		return btnAtras;
 	}
-
-	private JLabel getLblNewLabelDatAno() {
-		if (lblNewLabelDatAno == null) {
-			lblNewLabelDatAno = new JLabel("Año:");
-			lblNewLabelDatAno.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatAno.setBounds(724, 55, 41, 14);
-			lblNewLabelDatAno.setLabelFor(this.getTxFieldAno());
-			lblNewLabelDatAno.setDisplayedMnemonic('O');
+	private JLabel getLbRellenarDatos_1() {
+		if (lbRellenarDatos == null) {
+			lbRellenarDatos = new JLabel("Por favor, rellene los siguientes datos para formalizar su solicitud:");
+			lbRellenarDatos.setHorizontalAlignment(SwingConstants.CENTER);
+			lbRellenarDatos.setFont(LookAndFeel.HEADING_2_FONT);
 		}
-		return lblNewLabelDatAno;
+		return lbRellenarDatos;
 	}
-
-	private JLabel getLblNewLabelDatCentro() {
-		if (lblNewLabelDatCentro == null) {
-			lblNewLabelDatCentro = new JLabel("Centro:");
-			lblNewLabelDatCentro.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelDatCentro.setBounds(466, 55, 92, 14);
-			lblNewLabelDatCentro.setLabelFor(this.getTxFieldCentro());
-			lblNewLabelDatCentro.setDisplayedMnemonic('C');
+	private JPanel getPnSolicitudDatosSur() {
+		if (pnSolicitudDatosSur == null) {
+			pnSolicitudDatosSur = new JPanel();
+			pnSolicitudDatosSur.setLayout(new GridLayout(1, 2, 0, 0));
+			pnSolicitudDatosSur.add(getPnTarjetaLabel());
+			pnSolicitudDatosSur.add(getPnTarjetaTextField());
 		}
-		return lblNewLabelDatCentro;
+		return pnSolicitudDatosSur;
 	}
-
+	private JPanel getPnTarjetaLabel() {
+		if (pnTarjetaLabel == null) {
+			pnTarjetaLabel = new JPanel();
+			pnTarjetaLabel.add(getLblParaFinalizarDebe());
+		}
+		return pnTarjetaLabel;
+	}
+	private JPanel getPnTarjetaTextField() {
+		if (pnTarjetaTextField == null) {
+			pnTarjetaTextField = new JPanel();
+			pnTarjetaTextField.setLayout(new GridLayout(1, 2, 0, 0));
+			pnTarjetaTextField.add(getLblNewLabelNumeroTarjeta());
+			pnTarjetaTextField.add(getTextFieldTarjeta());
+		}
+		return pnTarjetaTextField;
+	}
+	private JLabel getLblParaFinalizarDebe() {
+		if (lblParaFinalizarDebe == null) {
+			lblParaFinalizarDebe = new JLabel("Para finalizar, debe registrar sus datos bancarios para el pago de las cuotas:");
+			lblParaFinalizarDebe.setHorizontalAlignment(SwingConstants.LEFT);
+		}
+		return lblParaFinalizarDebe;
+	}
+	private JLabel getLblNewLabelNumeroTarjeta() {
+		if (lblNewLabelNumeroTarjeta == null) {
+			lblNewLabelNumeroTarjeta = new JLabel("Número de tarjeta:");
+			lblNewLabelNumeroTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelNumeroTarjeta.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelNumeroTarjeta.setDisplayedMnemonic('N');
+			lblNewLabelNumeroTarjeta.setLabelFor(getTextFieldTarjeta());
+		}
+		return lblNewLabelNumeroTarjeta;
+	}
+	private JTextField getTextFieldTarjeta() {
+		if (textFieldTarjeta == null) {
+			textFieldTarjeta = new JTextField();
+			textFieldTarjeta.setToolTipText("Registre su número de tarjeta");
+			textFieldTarjeta.setText("Ej: 76567 [5 números]");
+			textFieldTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldTarjeta.setColumns(10);
+		}
+		return textFieldTarjeta;
+	}
+	private JPanel getPanelDatosPersonalesColegiado() {
+		if (pnDatosPersonales == null) {
+			pnDatosPersonales = new JPanel();
+			pnDatosPersonales.setLayout(new GridLayout(0, 3, 0, 0));
+			pnDatosPersonales.setBorder(new TitledBorder(
+					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+					"Datos personales", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
+			pnDatosPersonales.add(getPnNombreColegiado());
+			pnDatosPersonales.add(getPnApellidosColegiado());
+			pnDatosPersonales.add(getPnDNIColegiado());
+		}
+		return pnDatosPersonales;
+	}
+	private JPanel getPnNombreColegiado() {
+		if (pnNombreColegiado == null) {
+			pnNombreColegiado = new JPanel();
+			pnNombreColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnNombreColegiado.add(getLblNewLabelN());
+			pnNombreColegiado.add(getTextFieldNombre());
+		}
+		return pnNombreColegiado;
+	}
+	private JPanel getPnApellidosColegiado() {
+		if (pnApellidosColegiado == null) {
+			pnApellidosColegiado = new JPanel();
+			pnApellidosColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnApellidosColegiado.add(getLblNewLabelA());
+			pnApellidosColegiado.add(getTextFieldApellidos());
+		}
+		return pnApellidosColegiado;
+	}
+	private JPanel getPnDNIColegiado() {
+		if (pnDNIColegiado == null) {
+			pnDNIColegiado = new JPanel();
+			pnDNIColegiado.setLayout(null);
+			pnDNIColegiado.add(getLblNewLabelD());
+			pnDNIColegiado.add(getTextFieldDni());
+		}
+		return pnDNIColegiado;
+	}
+	private JLabel getLblNewLabelN() {
+		if (lblNewLabelN == null) {
+			lblNewLabelN = new JLabel("Nombre:");
+			lblNewLabelN.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelN.setDisplayedMnemonic('N');
+			lblNewLabelN.setLabelFor(getTextFieldNombre());
+		}
+		return lblNewLabelN;
+	}
+	private JTextField getTextFieldNombre() {
+		if (textFieldNombre == null) {
+			textFieldNombre = new JTextField();
+			textFieldNombre.setToolTipText("Inserte el nombre");
+			textFieldNombre.setText("Ej: Miguel");
+			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldNombre.setColumns(10);
+		}
+		return textFieldNombre;
+	}
 	private JLabel getLblNewLabelA() {
 		if (lblNewLabelA == null) {
 			lblNewLabelA = new JLabel("Apellidos:");
+			lblNewLabelA.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelA.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelA.setBounds(310, 24, 71, 14);
-			lblNewLabelA.setLabelFor(this.getTextFieldApellidos());
 			lblNewLabelA.setDisplayedMnemonic('A');
+			lblNewLabelA.setLabelFor(getTextFieldApellidos());
 		}
 		return lblNewLabelA;
 	}
-
+	private JTextField getTextFieldApellidos() {
+		if (textFieldApellidos == null) {
+			textFieldApellidos = new JTextField();
+			textFieldApellidos.setToolTipText("Inserte los apellidos");
+			textFieldApellidos.setText("Ej: Gonzalez Navarro");
+			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldApellidos.setColumns(10);
+		}
+		return textFieldApellidos;
+	}
 	private JLabel getLblNewLabelD() {
 		if (lblNewLabelD == null) {
 			lblNewLabelD = new JLabel("DNI:");
+			lblNewLabelD.setBounds(0, 0, 146, 20);
+			lblNewLabelD.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelD.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelD.setBounds(614, 24, 46, 14);
-			lblNewLabelD.setLabelFor(this.getTextFieldDni());
 			lblNewLabelD.setDisplayedMnemonic('D');
+			lblNewLabelD.setLabelFor(getTextFieldDni());
 		}
 		return lblNewLabelD;
-
+	}
+	private JTextField getTextFieldDni() {
+		if (textFieldDni == null) {
+			textFieldDni = new JTextField();
+			textFieldDni.setBounds(146, 0, 146, 20);
+			textFieldDni.setToolTipText("Inserte el DNI");
+			textFieldDni.setText("Ej:71778880C");
+			textFieldDni.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldDni.setColumns(10);
+		}
+		return textFieldDni;
+	}
+	private JPanel getPnDatosGeoAcademicos() {
+		if (pnDatosGeoAcademicos == null) {
+			pnDatosGeoAcademicos = new JPanel();
+			pnDatosGeoAcademicos.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosGeoAcademicos.add(getPanelDatosGeo());
+			pnDatosGeoAcademicos.add(getPanelDatosAcademicos());
+		}
+		return pnDatosGeoAcademicos;
+	}
+	private JPanel getPanelDatosGeo() {
+		if (panelDatosGeo == null) {
+			panelDatosGeo = new JPanel();
+			panelDatosGeo.setBorder(new TitledBorder(
+														new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+														"Datos geográficos", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
+			panelDatosGeo.setLayout(new GridLayout(2, 2, 0, 0));
+			panelDatosGeo.add(getPanelDatosGeoPoblacion());
+			panelDatosGeo.add(getPanelDatosTelefonoColegiado());
+		}
+		return panelDatosGeo;
+	}
+	private JPanel getPanelDatosGeoPoblacion() {
+		if (pnDatosPoblacionColegiado == null) {
+			pnDatosPoblacionColegiado = new JPanel();
+			pnDatosPoblacionColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosPoblacionColegiado.add(getLblNewLabelPob());
+			pnDatosPoblacionColegiado.add(getTextFieldPoblacion());
+		}
+		return pnDatosPoblacionColegiado;
+	}
+	private JLabel getLblNewLabelPob() {
+		if (lblNewLabelPob == null) {
+			lblNewLabelPob = new JLabel("Población:");
+			lblNewLabelPob.setToolTipText("Introduzca su población");
+			lblNewLabelPob.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelPob.setDisplayedMnemonic('P');
+			lblNewLabelPob.setLabelFor(getTextFieldPoblacion());
+		}
+		return lblNewLabelPob;
+	}
+	private JTextField getTextFieldPoblacion() {
+		if (textFieldPoblacion == null) {
+			textFieldPoblacion = new JTextField();
+			textFieldPoblacion.setToolTipText("Introduzca su población");
+			textFieldPoblacion.setText("Ej: Moreda");
+			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldPoblacion.setColumns(10);
+		}
+		return textFieldPoblacion;
+	}
+	private JPanel getPanelDatosTelefonoColegiado() {
+		if (pnDatosTelefonoColegiado == null) {
+			pnDatosTelefonoColegiado = new JPanel();
+			pnDatosTelefonoColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosTelefonoColegiado.add(getLblNewLabelTelefonoColegiado());
+			pnDatosTelefonoColegiado.add(getTextFieldTelefono());
+		}
+		return pnDatosTelefonoColegiado;
+	}
+	private JLabel getLblNewLabelTelefonoColegiado() {
+		if (lblNewLabelTelefono == null) {
+			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
+			lblNewLabelTelefono.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelTelefono.setDisplayedMnemonic('T');
+			lblNewLabelTelefono.setLabelFor(getTextFieldTelefono());
+		}
+		return lblNewLabelTelefono;
+	}
+	private JTextField getTextFieldTelefono() {
+		if (textFieldTelefono == null) {
+			textFieldTelefono = new JTextField();
+			textFieldTelefono.setToolTipText("Introduzca su teléfono");
+			textFieldTelefono.setText("Ej: 681676654 [9 números]");
+			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldTelefono.setColumns(10);
+		}
+		return textFieldTelefono;
+	}
+	private JPanel getPanelDatosAcademicos() {
+		if (panelDatosAcademicos == null) {
+			panelDatosAcademicos = new JPanel();
+			panelDatosAcademicos.setBorder(new TitledBorder(
+											new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+											"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
+			panelDatosAcademicos.setLayout(new GridLayout(0, 1, 0, 0));
+			panelDatosAcademicos.add(getPnDatosTituloColegiado());
+			panelDatosAcademicos.add(getPnDatosCentroColegiado());
+			panelDatosAcademicos.add(getPnDatosAñoColegiado());
+		}
+		return panelDatosAcademicos;
+	}
+	private JPanel getPnDatosTituloColegiado() {
+		if (pnDatosTituloColegiado == null) {
+			pnDatosTituloColegiado = new JPanel();
+			pnDatosTituloColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosTituloColegiado.add(getPnDatosTituloColegiadoLabel());
+			pnDatosTituloColegiado.add(getPnDatosTituloColegiadoCheck());
+		}
+		return pnDatosTituloColegiado;
+	}
+	private JPanel getPnDatosCentroColegiado() {
+		if (pnDatosCentroColegiado == null) {
+			pnDatosCentroColegiado = new JPanel();
+			pnDatosCentroColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosCentroColegiado.add(getLblNewLabelDatCentro());
+			pnDatosCentroColegiado.add(getTextFieldCentroColegiado());
+		}
+		return pnDatosCentroColegiado;
+	}
+	private JPanel getPnDatosAñoColegiado() {
+		if (pnDatosAñoColegiado == null) {
+			pnDatosAñoColegiado = new JPanel();
+			pnDatosAñoColegiado.setLayout(new GridLayout(0, 2, 0, 0));
+			pnDatosAñoColegiado.add(getLblNewLabelDatAno());
+			pnDatosAñoColegiado.add(getTextFieldAño());
+		}
+		return pnDatosAñoColegiado;
+	}
+	private JTextField getTextFieldAño() {
+		if (textFieldAño == null) {
+			textFieldAño = new JTextField();
+			textFieldAño.setToolTipText("Escriba el ano");
+			textFieldAño.setText("Ej : 2022");
+			textFieldAño.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldAño.setColumns(10);
+		}
+		return textFieldAño;
+	}
+	private JLabel getLblNewLabelDatAno() {
+		if (lblNewLabelDatAno == null) {
+			lblNewLabelDatAno = new JLabel("Año:");
+			lblNewLabelDatAno.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelDatAno.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatAno.setDisplayedMnemonic('O');
+			lblNewLabelDatAno.setLabelFor(getTextFieldAño());
+		}
+		return lblNewLabelDatAno;
+	}
+	private JTextField getTextFieldCentroColegiado() {
+		if (textFieldCentro == null) {
+			textFieldCentro = new JTextField();
+			textFieldCentro.setToolTipText("Escriba su centro educativo");
+			textFieldCentro.setText("Ej: Escuela de Ingeniería");
+			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldCentro.setColumns(10);
+		}
+		return textFieldCentro;
+	}
+	private JLabel getLblNewLabelDatCentro() {
+		if (lblNewLabelDatCentro == null) {
+			lblNewLabelDatCentro = new JLabel("Centro:");
+			lblNewLabelDatCentro.setHorizontalAlignment(SwingConstants.CENTER);
+			lblNewLabelDatCentro.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatCentro.setDisplayedMnemonic('C');
+			lblNewLabelDatCentro.setLabelFor(getTextFieldCentroColegiado());
+		}
+		return lblNewLabelDatCentro;
+	}
+	private JPanel getPnDatosTituloColegiadoLabel() {
+		if (pnDatosTituloColegiadoLabel == null) {
+			pnDatosTituloColegiadoLabel = new JPanel();
+			pnDatosTituloColegiadoLabel.setLayout(new GridLayout(0, 1, 0, 0));
+			pnDatosTituloColegiadoLabel.add(getLblTitulacinSegunSus());
+			pnDatosTituloColegiadoLabel.add(getLabelTitulacionColegiado());
+		}
+		return pnDatosTituloColegiadoLabel;
+	}
+	private JPanel getPnDatosTituloColegiadoCheck() {
+		if (pnDatosTituloColegiadoCheck == null) {
+			pnDatosTituloColegiadoCheck = new JPanel();
+			pnDatosTituloColegiadoCheck.setLayout(new GridLayout(0, 1, 0, 0));
+			pnDatosTituloColegiadoCheck.add(getTextFieldTitulacion());
+		}
+		return pnDatosTituloColegiadoCheck;
+	}
+	private JTextField getTextFieldTitulacion() {
+		if (textFieldTitulo == null) {
+			textFieldTitulo = new JTextField();
+			textFieldTitulo.setToolTipText("Teclee la titulación");
+			textFieldTitulo.setText("Ej: 0 (sin titulación)");
+			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldTitulo.setColumns(10);
+		}
+		return textFieldTitulo;
+	}
+	private JLabel getLblTitulacinSegunSus() {
+		if (lblTitulacinSegunSus == null) {
+			lblTitulacinSegunSus = new JLabel("Titulación segun sus estudios:");
+			lblTitulacinSegunSus.setHorizontalAlignment(SwingConstants.CENTER);
+			lblTitulacinSegunSus.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblTitulacinSegunSus.setDisplayedMnemonic('I');
+			lblTitulacinSegunSus.setLabelFor(getTextFieldTitulacion());
+		}
+		return lblTitulacinSegunSus;
+	}
+	private JLabel getLabelTitulacionColegiado() {
+		if (lblNewLabelTitulacionColegiado == null) {
+			lblNewLabelTitulacionColegiado = new JLabel("[0, 1(ingeniero), 2(Otros)]");
+			lblNewLabelTitulacionColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lblNewLabelTitulacionColegiado;
 	}
 }
