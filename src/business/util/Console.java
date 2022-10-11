@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Console {
-	protected static BufferedReader kbd = new BufferedReader(
-			new InputStreamReader(System.in));
-	
+	protected static BufferedReader kbd = new BufferedReader(new InputStreamReader(System.in));
+
 	public static void println() {
 		System.out.println();
 	}
 
 	public static void println(Object obj) {
-		System.out.println( obj.toString() );
+		System.out.println(obj.toString());
 	}
 
 	public static void println(String string) {
@@ -25,26 +24,14 @@ public class Console {
 	}
 
 	public static void printf(String format, Object... args) {
-		System.out.printf(format, args);	
+		System.out.printf(format, args);
 	}
 
 	public static Integer readInt() {
 		try {
-			
-			return Integer.parseInt(kbd.readLine());
-			
-		} catch (NumberFormatException nfe) {
-			return null;
-		} catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-	}
 
-	public static Long readLong() {
-		try {
-			
-			return Long.parseLong(kbd.readLine());
-			
+			return Integer.parseInt(kbd.readLine());
+
 		} catch (NumberFormatException nfe) {
 			return null;
 		} catch (IOException ioe) {
@@ -54,9 +41,9 @@ public class Console {
 
 	public static Double readDouble() {
 		try {
-			
+
 			return Double.parseDouble(kbd.readLine());
-			
+
 		} catch (NumberFormatException nfe) {
 			return null;
 		} catch (IOException ioe) {
@@ -74,25 +61,16 @@ public class Console {
 
 	public static String readString(String msg) {
 		String res = "";
-		while( res.isEmpty() ) {
+		while (res.isEmpty()) {
 			print(msg + ": ");
 			res = readString();
 		}
 		return res;
 	}
 
-	public static Long readLong(String msg) {
-		Long res = null;
-		while(res == null) {
-			print(msg + ": ");
-			res = readLong();
-		}
-		return res;
-	}
-
 	public static Integer readInt(String msg) {
 		Integer res = null;
-		while(res == null) {
+		while (res == null) {
 			print(msg + ": ");
 			res = readInt();
 		}
@@ -101,7 +79,7 @@ public class Console {
 
 	public static Double readDouble(String msg) {
 		Double res = null;
-		while(res == null) {
+		while (res == null) {
 			print(msg + ": ");
 			res = readDouble();
 		}

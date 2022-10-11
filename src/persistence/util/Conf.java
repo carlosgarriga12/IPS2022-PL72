@@ -13,17 +13,18 @@ public class Conf {
 		try {
 			props.load(Conf.class.getClassLoader().getResourceAsStream(FILE_CONF));
 		} catch (IOException e) {
-			throw new RuntimeException("File properties cannot be loaded",e);
+			throw new RuntimeException("File properties cannot be loaded", e);
 		}
-		
+
 	}
+
 	public static Conf getInstance() {
 		if (instance == null) {
 			instance = new Conf();
 		}
 		return instance;
 	}
-	
+
 	public String getProperty(String key) {
 		String value = props.getProperty(key);
 		if (value == null) {
@@ -31,6 +32,5 @@ public class Conf {
 		}
 		return value;
 	}
-	
 
 }

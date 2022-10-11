@@ -6,16 +6,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class EmisionCuotas {
-	
-	public static void main(String [] args) {
+
+	public static void main(String[] args) {
 		BufferedWriter bw = null;
 		try {
 			File fichero = new File("recibos/fichero.txt");
 
-			System.out.println(fichero.getCanonicalPath()); // Path completodonde se creará el fichero.
+			System.out.println(fichero.getCanonicalPath()); // Path completodonde se crearï¿½ el fichero.
 
 			bw = new BufferedWriter(new FileWriter(fichero));
-			
+
 			bw.write("Mensaje a escribir en el fichero");
 		} catch (IOException e) {
 			e.printStackTrace();

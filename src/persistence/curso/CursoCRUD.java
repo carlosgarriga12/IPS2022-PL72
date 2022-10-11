@@ -72,7 +72,7 @@ public class CursoCRUD {
 	 * Listado de todos los curso actualmente planificados.
 	 * 
 	 * @return
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public static List<CursoDto> listarCursosActualmentePlanificados() throws BusinessException {
 		Connection con = null;
@@ -87,8 +87,8 @@ public class CursoCRUD {
 			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
 
 			// Filtrar por curso planificado
-			 res = allCourses.stream().filter(c ->
-			 c.estado.equals(CursoDto.CURSO_PLANIFICADO)).collect(Collectors.toList());
+			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
+					.collect(Collectors.toList());
 
 		} catch (SQLException e) {
 			throw new BusinessException(e);

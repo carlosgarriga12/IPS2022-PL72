@@ -3,7 +3,6 @@ package business;
 import business.colegiado.ColegiadoService;
 import business.colegiado.crud.ColegiadoServiceImpl;
 
-
 /**
  * 
  * @author Francisco Coya

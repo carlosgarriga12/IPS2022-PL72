@@ -21,7 +21,7 @@ public class Curso {
 	 * Listado de los curso actualmente planificados
 	 * 
 	 * @return
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public static List<CursoDto> listarCursosPlanificados() throws BusinessException {
 		return CursoCRUD.listarCursosActualmentePlanificados();
@@ -31,7 +31,7 @@ public class Curso {
 		return selectedCourse;
 	}
 
-	public static void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException{
+	public static void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException {
 		Argument.isNotNull(selectedCourse);
 		Curso.selectedCourse = selectedCourse;
 	}

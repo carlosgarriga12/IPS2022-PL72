@@ -4,7 +4,6 @@ import java.util.List;
 
 import persistence.colegiado.ColegiadoDto;
 
-
 public class Printer {
 
 	public static void printColegiado(ColegiadoDto m) {
@@ -17,5 +16,5 @@ public class Printer {
 		for (ColegiadoDto m : list)
 			printColegiado(m);
 	}
-	
+
 }

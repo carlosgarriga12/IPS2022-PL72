@@ -8,8 +8,6 @@ import java.util.List;
 
 import persistence.colegiado.ColegiadoDto;
 
-
-
 public class ColegiadoAssembler {
 
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
@@ -21,7 +19,7 @@ public class ColegiadoAssembler {
 
 		return colegiados;
 	}
-	
+
 	public static ColegiadoDto toColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
@@ -31,10 +29,11 @@ public class ColegiadoAssembler {
 		c.poblacion = rs.getString("poblacion");
 		c.titulacion = rs.getInt("titulacion");
 		c.centro = rs.getString("centro");
-		c.annio = rs.getInt("annio");
+		c.annio = rs.getInt("ano");
 		c.numeroTarjeta = rs.getInt("numeroTarjeta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
-		c.numeroColegiado = rs.getString("numeroColegiado");
+		c.estado = rs.getString("estado");
+		c.numeroColegiado = rs.getString("numero");
 
 		return c;
 	}

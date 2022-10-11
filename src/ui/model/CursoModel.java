@@ -40,7 +40,8 @@ public class CursoModel {
 		model.addColumn(HEADER_COLUMN5);
 
 		for (CursoDto c : cursosPlanificados) {
-			model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio, c.estado });
+			model.addRow(
+					new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio, c.estado });
 		}
 
 		return model;
