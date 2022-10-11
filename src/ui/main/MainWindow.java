@@ -53,6 +53,8 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainWindow extends JFrame {
 
@@ -179,6 +181,16 @@ public class MainWindow extends JFrame {
 	}
 
 	private void inicializarCampos() {
+		textFieldNombre.grabFocus();
+		textFieldApellidos.setText("Ej: Gonzalez Navarro");
+		textFieldDni.setText("Ej: 71778880C");
+		textFieldPoblacion.setText("Ej: Moreda");
+		textFieldTelefono.setText("Ej: 681676654 [9 números]");
+		textFieldTitulo.setText("Ej: 0 (sin titulación)");
+		textFieldCentro.setText("Ej: Escuela de Ingeniería");
+		textFieldAño.setText("Ej : 2022");
+		textFieldTarjeta.setText("Ej: 76567 [5 números]");
+		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 	}
 
 	private JLabel getLblTitle() {
@@ -1022,6 +1034,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTarjeta() {
 		if (textFieldTarjeta == null) {
 			textFieldTarjeta = new JTextField();
+			textFieldTarjeta.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldTarjeta.setText(null);
+				}
+			});
 			textFieldTarjeta.setToolTipText("Registre su número de tarjeta");
 			textFieldTarjeta.setText("Ej: 76567 [5 números]");
 			textFieldTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1082,6 +1100,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldNombre() {
 		if (textFieldNombre == null) {
 			textFieldNombre = new JTextField();
+			textFieldNombre.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldNombre.setText(null);
+				}
+			});
 			textFieldNombre.setToolTipText("Inserte el nombre");
 			textFieldNombre.setText("Ej: Miguel");
 			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1102,9 +1126,16 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldApellidos() {
 		if (textFieldApellidos == null) {
 			textFieldApellidos = new JTextField();
+			textFieldApellidos.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldApellidos.setText(null);
+				}
+			});
 			textFieldApellidos.setToolTipText("Inserte los apellidos");
 			textFieldApellidos.setText("Ej: Gonzalez Navarro");
 			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldApellidos.grabFocus();
 			textFieldApellidos.setColumns(10);
 		}
 		return textFieldApellidos;
@@ -1123,6 +1154,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldDni() {
 		if (textFieldDni == null) {
 			textFieldDni = new JTextField();
+			textFieldDni.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldDni.setText(null);
+				}
+			});
 			textFieldDni.setBounds(146, 0, 146, 20);
 			textFieldDni.setToolTipText("Inserte el DNI");
 			textFieldDni.setText("Ej:71778880C");
@@ -1175,6 +1212,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldPoblacion() {
 		if (textFieldPoblacion == null) {
 			textFieldPoblacion = new JTextField();
+			textFieldPoblacion.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldPoblacion.setText(null);
+				}
+			});
 			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setText("Ej: Moreda");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1204,6 +1247,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTelefono() {
 		if (textFieldTelefono == null) {
 			textFieldTelefono = new JTextField();
+			textFieldTelefono.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldTelefono.setText(null);
+				}
+			});
 			textFieldTelefono.setToolTipText("Introduzca su teléfono");
 			textFieldTelefono.setText("Ej: 681676654 [9 números]");
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1254,6 +1303,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldAño() {
 		if (textFieldAño == null) {
 			textFieldAño = new JTextField();
+			textFieldAño.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldAño.setText(null);
+				}
+			});
 			textFieldAño.setToolTipText("Escriba el ano");
 			textFieldAño.setText("Ej : 2022");
 			textFieldAño.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1274,6 +1329,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldCentroColegiado() {
 		if (textFieldCentro == null) {
 			textFieldCentro = new JTextField();
+			textFieldCentro.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldCentro.setText(null);
+				}
+			});
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
 			textFieldCentro.setText("Ej: Escuela de Ingeniería");
 			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1311,6 +1372,12 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTitulacion() {
 		if (textFieldTitulo == null) {
 			textFieldTitulo = new JTextField();
+			textFieldTitulo.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldTitulo.setText(null);
+				}
+			});
 			textFieldTitulo.setToolTipText("Teclee la titulación");
 			textFieldTitulo.setText("Ej: 0 (sin titulación)");
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
