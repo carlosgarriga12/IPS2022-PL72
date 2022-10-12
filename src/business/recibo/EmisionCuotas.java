@@ -11,10 +11,9 @@ import persistence.colegiado.ColegiadoDto;
 
 public class EmisionCuotas {
 
-	public static void main(String[] args) {
+	public static void emitirCuotas(List<ColegiadoDto> colegiados, List<Integer> numerosRecibo) {
 		LocalDate fechaEmision = LocalDate.now();
 		double cantidad = 50.0; // Cantidad fija a pagar tanto para colegiados como pre-colegiados
-		int numeroDeRecibo = 1; //Numero que va incrementando para la generación de recibos
 		
 		int year = LocalDate.now().getYear();
 				
@@ -32,10 +31,11 @@ public class EmisionCuotas {
 			bw.write("Fichero de recibos \n");
 			bw.write("Numero de recibo\tFecha de emision\tDNI\t\tNumero cuenta\t\tCantidad\n");
 			
-			bw.write(numeroDeRecibo++ +"\t\t\t\t\t"+ fechaEmision + "\t\t\t" + "555" + "\t\t" + "123456789090" + "\t\t" + cantidad + "\n");
-			bw.write(numeroDeRecibo++ +"\t\t\t\t\t"+ fechaEmision + "\t\t\t" + "555" + "\t\t" + "123456789090" + "\t\t" + cantidad + "\n");
-			bw.write(numeroDeRecibo++ +"\t\t\t\t\t"+ fechaEmision + "\t\t\t" + "555" + "\t\t" + "123456789090" + "\t\t" + cantidad + "\n");
-			bw.write(numeroDeRecibo++ +"\t\t\t\t\t"+ fechaEmision + "\t\t\t" + "555" + "\t\t" + "123456789090" + "\t\t" + cantidad + "\n");
+			for(int i = 0; i < colegiados.size(); i++) {
+				bw.write(numerosRecibo.get(i) +"\t\t\t\t\t"+
+						fechaEmision + "\t\t\t" + colegiados.get(i).DNI+ 
+						"\t\t" + colegiados.get(i).numeroTarjeta + "\t\t" + cantidad + "\n");
+			}
 			
 			bw.write("");
 		} catch (IOException e) {
@@ -47,9 +47,5 @@ public class EmisionCuotas {
 				
 			}
 		}
-	}
-
-	public static void emitirCuotas(List<ColegiadoDto> colegiados) {
-		
 	}
 }

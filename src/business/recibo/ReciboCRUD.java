@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
@@ -49,13 +50,18 @@ public class ReciboCRUD {
 		}
 	}
 	
-	public static void emitirCuotas(List<ColegiadoDto> colegiados) {
+	public static boolean emitirCuotas() {
 		Connection c = null;
 		PreparedStatement pst = null;
+		List<ColegiadoDto> colegiados = ColegiadoCrud.findAllColegiados();
 		List<ColegiadoDto> emitidos = new ArrayList<>();
+		List<Integer> numerosRecibo = new ArrayList<>();
 		try {
 			c = Jdbc.getConnection();
 			
+			if (colegiados.size() == 0) {
+				return false;
+			}
 			for(ColegiadoDto col : colegiados) {
 				if(!findReciboColegiadoByYear(col.DNI, LocalDate.now().getYear())) {
 					ReciboDto recibo = new ReciboDto();
@@ -64,10 +70,15 @@ public class ReciboCRUD {
 					recibo.year = LocalDate.now().getYear();
 					recibo.numeroRecibo = generateNumeroRecibo();
 					emitidos.add(col);
+					numerosRecibo.add(recibo.numeroRecibo);
 					addRecibo(recibo);
-					
 				}
 			}
+			if (emitidos.size() == 0) {
+				return false;
+			}
+			EmisionCuotas.emitirCuotas(emitidos, numerosRecibo);
+			return true;
 			
 		} catch(SQLException e) {
 			throw new PersistenceException(e);

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.List;
 
 import business.BusinessException;
 import business.colegiado.assembler.ColegiadoAssembler;
@@ -17,6 +19,8 @@ public class ColegiadoCrud {
 
 	private static final String SQL_ANADIR_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
+	
+	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
 
 	public static ColegiadoDto findColegiadoDni(String dni) throws BusinessException {
 		ColegiadoDto colegiado;
@@ -101,5 +105,23 @@ public class ColegiadoCrud {
 		}
 		return colegiado;
 	}
-
+	
+	public static List<ColegiadoDto> findAllColegiados() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			c = Jdbc.getConnection();
+		
+			st = c.createStatement();
+			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
+			
+			return ColegiadoAssembler.toColegiadoList(rs);
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(rs, st, c);
+		}
+	}
 }
