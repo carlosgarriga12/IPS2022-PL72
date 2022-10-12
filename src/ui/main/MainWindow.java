@@ -181,9 +181,11 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldTitulo;
 	private JLabel lblTitulacinSegunSus;
 	private JLabel lblNewLabelTitulacionColegiado;
+	private JButton btnRegistrarse_1;
+	private JPanel panel;
 
 	public MainWindow() {
-		setTitle("COIIPA : Gestión de servicios");
+		setTitle("COIIPA : GestiÃ³n de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// TODO: Revisar dimensiones ventana
@@ -205,6 +207,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
+		mainPanel.add(getPanel(), "name_900905980397400");
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -219,11 +222,11 @@ public class MainWindow extends JFrame {
 		textFieldApellidos.setText("Ej: Gonzalez Navarro");
 		textFieldDni.setText("Ej: 71778880C");
 		textFieldPoblacion.setText("Ej: Moreda");
-		textFieldTelefono.setText("Ej: 681676654 [9 números]");
-		textFieldTitulo.setText("Ej: 0 (sin titulación)");
-		textFieldCentro.setText("Ej: Escuela de Ingeniería");
+		textFieldTelefono.setText("Ej: 681676654 [9 nÃºmeros]");
+		textFieldTitulo.setText("Ej: 0 (sin titulaciÃ³n)");
+		textFieldCentro.setText("Ej: Escuela de IngenierÃ­a");
 		textFieldAno.setText("Ej : 2022");
-		textFieldTarjeta.setText("Ej: 76567 [5 números]");
+		textFieldTarjeta.setText("Ej: 76567 [5 nÃºmeros]");
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 	}
 
@@ -327,7 +330,7 @@ public class MainWindow extends JFrame {
 				e.printStackTrace();
 			}
 
-			// Evento de selección de curso para abrir inscripciones
+			// Evento de selecciÃ³n de curso para abrir inscripciones
 			tbCoursesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent event) {
 
@@ -413,7 +416,7 @@ public class MainWindow extends JFrame {
 	}
 
 	/**
-	 * Panel que muestra los mensajes de la ventana de abrir una inscripción.
+	 * Panel que muestra los mensajes de la ventana de abrir una inscripciÃ³n.
 	 * 
 	 * @return
 	 */
@@ -437,11 +440,11 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbAbrirInscripcionesCurso() {
 		if (lbAbrirInscripcionesCurso == null) {
-			lbAbrirInscripcionesCurso = new JLabel("APERTURA INSCRIPCIÓN CURSO SELECCIONADO");
+			lbAbrirInscripcionesCurso = new JLabel("APERTURA INSCRIPCIÃ“N CURSO SELECCIONADO");
 			lbAbrirInscripcionesCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbAbrirInscripcionesCurso.setFont(LookAndFeel.HEADING_2_FONT);
 			lbAbrirInscripcionesCurso.setToolTipText(
-					"Se establecerán los plazos de inicio y cierre de inscripciones, así como el número de plazas del curso seleccionado en la tabla.");
+					"Se establecerÃ¡n los plazos de inicio y cierre de inscripciones, asÃ­ como el nÃºmero de plazas del curso seleccionado en la tabla.");
 		}
 		return lbAbrirInscripcionesCurso;
 	}
@@ -505,7 +508,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbNumeroPlazasAperturaCurso() {
 		if (lbNumeroPlazasAperturaCurso == null) {
-			lbNumeroPlazasAperturaCurso = new JLabel("Número de plazas:");
+			lbNumeroPlazasAperturaCurso = new JLabel("NÃºmero de plazas:");
 			lbNumeroPlazasAperturaCurso.setDisplayedMnemonic('p');
 			lbNumeroPlazasAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbNumeroPlazasAperturaCurso.setLabelFor(getSpNumeroPlazasCursoSeleccionado());
@@ -525,7 +528,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbFechaCierreAperturaCurso() {
 		if (lbFechaCierreAperturaCurso == null) {
-			lbFechaCierreAperturaCurso = new JLabel("Fecha finalización");
+			lbFechaCierreAperturaCurso = new JLabel("Fecha finalizaciÃ³n");
 			lbFechaCierreAperturaCurso.setDisplayedMnemonic('z');
 			lbFechaCierreAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbFechaCierreAperturaCurso.setLabelFor(getFTxFechaCierreInscripcionesCursoSeleccionado());
@@ -546,7 +549,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbTituloCursoSeleccionado() {
 		if (lbTituloCursoSeleccionado == null) {
-			lbTituloCursoSeleccionado = new JLabel("Título:");
+			lbTituloCursoSeleccionado = new JLabel("TÃ­tulo:");
 			lbTituloCursoSeleccionado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lbTituloCursoSeleccionado;
@@ -573,7 +576,7 @@ public class MainWindow extends JFrame {
 					enableOpenCourseButton();
 				}
 			});
-			spNumeroPlazasCursoSeleccionado.setToolTipText("Introduzca el número de plazas del curso seleccionado");
+			spNumeroPlazasCursoSeleccionado.setToolTipText("Introduzca el nÃºmero de plazas del curso seleccionado");
 			spNumeroPlazasCursoSeleccionado.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
 		}
 		return spNumeroPlazasCursoSeleccionado;
@@ -654,17 +657,17 @@ public class MainWindow extends JFrame {
 						CursoDto selectedCourse = Curso.getSelectedCourse();
 
 						int input = JOptionPane.showConfirmDialog(null,
-								"<html><p>¿Confirma que desea abrir las inscripciones para el curso <b>"
+								"<html><p>Â¿Confirma que desea abrir las inscripciones para el curso <b>"
 										+ selectedCourse.titulo + "</b> ?</p></html>");
 
 						if (input == JOptionPane.OK_OPTION) {
-							// Si el curso está abierto, mostrar mensaje de error
+							// Si el curso estÃ¡ abierto, mostrar mensaje de error
 							InscripcionCursoFormativo.abrirCursoFormacion(selectedCourse, fechaApertura, fechaCierre,
 									plazas);
 
 							((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
 							((DefaultMessage) pnListCoursesSouthMessages)
-									.setMessage("Se ha abierto la inscripción para el curso seleccionado");
+									.setMessage("Se ha abierto la inscripciÃ³n para el curso seleccionado");
 
 							refreshScheduledCoursesList();
 
@@ -848,10 +851,10 @@ public class MainWindow extends JFrame {
 		} catch (BusinessException e) {
 			JOptionPane.showMessageDialog(this,
 					"Por favor, revise que no haya introducido un DNI que no es suyo, este DNI ya ha sido registrado",
-					"DNI inválido", JOptionPane.INFORMATION_MESSAGE);
+					"DNI invÃ¡lido", JOptionPane.INFORMATION_MESSAGE);
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this,
-					"Por favor, revise que no deje ningún campo vacío y se ha introducido correctamente cada dato (longitudes correspondientes, formato de datos, ...)\n"
+					"Por favor, revise que no deje ningÃºn campo vacÃ­o y se ha introducido correctamente cada dato (longitudes correspondientes, formato de datos, ...)\n"
 							+ "Sigue los ejemplos que aparecen en los campos correspondientes",
 					"Datos incorrectos", JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -872,8 +875,8 @@ public class MainWindow extends JFrame {
 			dto.numeroTarjeta = Integer.parseInt(getTextFieldTarjeta().getText());
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
-					"Por favor, revise que no se haya introducido ninguna cadena en alguno de los campos numéricos",
-					"Formato numérico incorrecto", JOptionPane.INFORMATION_MESSAGE);
+					"Por favor, revise que no se haya introducido ninguna cadena en alguno de los campos numÃ©ricos",
+					"Formato numÃ©rico incorrecto", JOptionPane.INFORMATION_MESSAGE);
 			return null;
 		}
 		return dto;
@@ -881,7 +884,7 @@ public class MainWindow extends JFrame {
 
 	private boolean confirmarBorrar() {
 		boolean confir = false;
-		int resp = JOptionPane.showConfirmDialog(this, "¿ Estás seguro de que quieres borrar los campos ?",
+		int resp = JOptionPane.showConfirmDialog(this, "Â¿ EstÃ¡s seguro de que quieres borrar los campos ?",
 				"Borrar los campos", JOptionPane.INFORMATION_MESSAGE);
 		if (resp == JOptionPane.YES_OPTION) {
 			confir = true;
@@ -892,7 +895,7 @@ public class MainWindow extends JFrame {
 	private boolean confirmarVolverPrinicipio() {
 		boolean confir = false;
 		int resp = JOptionPane.showConfirmDialog(this,
-				"¿ Estás seguro de que quieres volver a la pantalla de inicio ?", "Volver al inicio",
+				"Â¿ EstÃ¡s seguro de que quieres volver a la pantalla de inicio ?", "Volver al inicio",
 				JOptionPane.INFORMATION_MESSAGE);
 		if (resp == JOptionPane.YES_OPTION) {
 			confir = true;
@@ -902,7 +905,7 @@ public class MainWindow extends JFrame {
 
 	private void mostrarEstadoPendiente() {
 		JOptionPane.showMessageDialog(this,
-				"Se acaba de tramitar su solicitud, quedará en estado 'PENDIENTE' hasta nuevo aviso",
+				"Se acaba de tramitar su solicitud, quedarÃ¡ en estado 'PENDIENTE' hasta nuevo aviso",
 				"Solicitud de colegiado enviada", JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -937,7 +940,7 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnAtras() {
 		if (btnAtras == null) {
-			btnAtras = new JButton("Atrás");
+			btnAtras = new JButton("AtrÃ¡s");
 			btnAtras.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (confirmarVolverPrinicipio()) {
@@ -1001,7 +1004,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelNumeroTarjeta() {
 		if (lblNewLabelNumeroTarjeta == null) {
-			lblNewLabelNumeroTarjeta = new JLabel("Número de tarjeta:");
+			lblNewLabelNumeroTarjeta = new JLabel("NÃºmero de tarjeta:");
 			lblNewLabelNumeroTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelNumeroTarjeta.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelNumeroTarjeta.setDisplayedMnemonic('N');
@@ -1019,8 +1022,8 @@ public class MainWindow extends JFrame {
 					textFieldTarjeta.setText(null);
 				}
 			});
-			textFieldTarjeta.setToolTipText("Registre su número de tarjeta");
-			textFieldTarjeta.setText("Ej: 76567 [5 números]");
+			textFieldTarjeta.setToolTipText("Registre su nÃºmero de tarjeta");
+			textFieldTarjeta.setText("Ej: 76567 [5 nÃºmeros]");
 			textFieldTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTarjeta.setColumns(10);
 		}
@@ -1173,7 +1176,7 @@ public class MainWindow extends JFrame {
 			panelDatosGeo = new JPanel();
 			panelDatosGeo.setBorder(new TitledBorder(
 					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-					"Datos geográficos", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
+					"Datos geogrÃ¡ficos", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
 			panelDatosGeo.setLayout(new GridLayout(2, 2, 0, 0));
 			panelDatosGeo.add(getPanelDatosGeoPoblacion());
 			panelDatosGeo.add(getPanelDatosTelefonoColegiado());
@@ -1193,8 +1196,8 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelPob() {
 		if (lblNewLabelPob == null) {
-			lblNewLabelPob = new JLabel("Población:");
-			lblNewLabelPob.setToolTipText("Introduzca su población");
+			lblNewLabelPob = new JLabel("PoblaciÃ³n:");
+			lblNewLabelPob.setToolTipText("Introduzca su poblaciÃ³n");
 			lblNewLabelPob.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelPob.setDisplayedMnemonic('P');
@@ -1212,7 +1215,7 @@ public class MainWindow extends JFrame {
 					textFieldPoblacion.setText(null);
 				}
 			});
-			textFieldPoblacion.setToolTipText("Introduzca su población");
+			textFieldPoblacion.setToolTipText("Introduzca su poblaciÃ³n");
 			textFieldPoblacion.setText("Ej: Moreda");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldPoblacion.setColumns(10);
@@ -1232,7 +1235,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelTelefonoColegiado() {
 		if (lblNewLabelTelefono == null) {
-			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
+			lblNewLabelTelefono = new JLabel("TelÃ©fono de contacto:");
 			lblNewLabelTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelTelefono.setDisplayedMnemonic('T');
@@ -1250,8 +1253,8 @@ public class MainWindow extends JFrame {
 					textFieldTelefono.setText(null);
 				}
 			});
-			textFieldTelefono.setToolTipText("Introduzca su teléfono");
-			textFieldTelefono.setText("Ej: 681676654 [9 números]");
+			textFieldTelefono.setToolTipText("Introduzca su telÃ©fono");
+			textFieldTelefono.setText("Ej: 681676654 [9 nÃºmeros]");
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTelefono.setColumns(10);
 		}
@@ -1340,7 +1343,7 @@ public class MainWindow extends JFrame {
 				}
 			});
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
-			textFieldCentro.setText("Ej: Escuela de Ingeniería");
+			textFieldCentro.setText("Ej: Escuela de IngenierÃ­a");
 			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldCentro.setColumns(10);
 		}
@@ -1386,8 +1389,8 @@ public class MainWindow extends JFrame {
 					textFieldTitulo.setText(null);
 				}
 			});
-			textFieldTitulo.setToolTipText("Teclee la titulación");
-			textFieldTitulo.setText("Ej: 0 (sin titulación)");
+			textFieldTitulo.setToolTipText("Teclee la titulaciÃ³n");
+			textFieldTitulo.setText("Ej: 0 (sin titulaciÃ³n)");
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTitulo.setColumns(10);
 		}
@@ -1396,7 +1399,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblTitulacinSegunSus() {
 		if (lblTitulacinSegunSus == null) {
-			lblTitulacinSegunSus = new JLabel("Titulación segun sus estudios:");
+			lblTitulacinSegunSus = new JLabel("TitulaciÃ³n segun sus estudios:");
 			lblTitulacinSegunSus.setHorizontalAlignment(SwingConstants.CENTER);
 			lblTitulacinSegunSus.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblTitulacinSegunSus.setDisplayedMnemonic('I');
@@ -1435,7 +1438,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbLoginTitle() {
 		if (lbLoginTitle == null) {
-			lbLoginTitle = new JLabel("Iniciar sesión");
+			lbLoginTitle = new JLabel("Iniciar sesiÃ³n");
 		}
 		return lbLoginTitle;
 	}
@@ -1553,13 +1556,13 @@ public class MainWindow extends JFrame {
 									}
 								} else {
 									lbConfirmacionInscripcion.setText(
-											"La inscripción no se ha realizado porque ya está inscrito en este curso");
+											"La inscripciÃ³n no se ha realizado porque ya estÃ¡ inscrito en este curso");
 									lbConfirmacionInscripcion.setForeground(Color.red);
 									lbConfirmacionInscripcion.setVisible(true);
 								}
 							} else {
 								lbConfirmacionInscripcion
-										.setText("La inscripción no se ha realizado porque el curso se ha cerrado");
+										.setText("La inscripciÃ³n no se ha realizado porque el curso se ha cerrado");
 								lbConfirmacionInscripcion.setForeground(Color.red);
 								lbConfirmacionInscripcion.setVisible(true);
 							}
@@ -1584,7 +1587,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbAlerta() {
 		if (lbAlerta == null) {
-			lbAlerta = new JLabel("Para Realizar la Inscripción es Necesario Seleccionar un Curso");
+			lbAlerta = new JLabel("Para Realizar la InscripciÃ³n es Necesario Seleccionar un Curso");
 			lbAlerta.setVisible(false);
 			lbAlerta.setBorder(new LineBorder(Color.BLACK));
 			lbAlerta.setForeground(Color.RED);
@@ -1643,7 +1646,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLbDniIncorrecto() {
 		if (lbDniIncorrecto == null) {
 			lbDniIncorrecto = new JLabel(
-					"El DNI Introducido no se corresponde con ningún Colegiado o Precolegiado. Introduzca un DNI Válido");
+					"El DNI Introducido no se corresponde con ningÃºn Colegiado o Precolegiado. Introduzca un DNI VÃ¡lido");
 			lbDniIncorrecto.setVisible(false);
 			lbDniIncorrecto.setForeground(Color.RED);
 			lbDniIncorrecto.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1655,7 +1658,7 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnIniciarSesion() {
 		if (btnIniciarSesion == null) {
-			btnIniciarSesion = new JButton("Iniciar Sesión");
+			btnIniciarSesion = new JButton("Iniciar SesiÃ³n");
 			btnIniciarSesion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -1673,7 +1676,7 @@ public class MainWindow extends JFrame {
 				}
 			});
 			btnIniciarSesion.setFont(new Font("Tahoma", Font.BOLD, 14));
-			btnIniciarSesion.setBounds(448, 255, 171, 65);
+			btnIniciarSesion.setBounds(358, 253, 171, 65);
 		}
 		return btnIniciarSesion;
 	}
@@ -1687,7 +1690,7 @@ public class MainWindow extends JFrame {
 				}
 			});
 			btnRegistrarse.setFont(new Font("Tahoma", Font.BOLD, 14));
-			btnRegistrarse.setBounds(448, 350, 171, 65);
+			btnRegistrarse.setBounds(534, 253, 171, 65);
 		}
 		return btnRegistrarse;
 	}
@@ -1727,7 +1730,7 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnInscripcionCurso() {
 		if (btnInscripcionCurso == null) {
-			btnInscripcionCurso = new JButton("Inscripción Curso");
+			btnInscripcionCurso = new JButton("InscripciÃ³n Curso");
 			btnInscripcionCurso.setOpaque(false);
 			btnInscripcionCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -1753,4 +1756,11 @@ public class MainWindow extends JFrame {
 		}
 		return btnInscripcionToInicio;
 	}
+	private JPanel getPanel() {
+		if (panel == null) {
+			panel = new JPanel();
+		}
+		return panel;
+	}
 }
+
