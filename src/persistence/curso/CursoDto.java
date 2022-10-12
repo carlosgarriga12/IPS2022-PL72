@@ -20,5 +20,9 @@ public class CursoDto {
 	public int plazasDisponibles;
 	public double precio;
 	public String estado;
+	
+	public String toString() {
+		return "titulo= " +titulo+ ", fechaInicio= "+fechaInicio+", precio "+precio;
+	}
 
 }

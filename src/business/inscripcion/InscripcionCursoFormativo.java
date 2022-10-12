@@ -2,12 +2,14 @@ package business.inscripcion;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
 
@@ -90,4 +92,19 @@ public class InscripcionCursoFormativo {
 
 		CursoCRUD.abrirCurso(curso);
 	}
+	
+	public static List<CursoDto> getCursosAbiertos(){
+		return InscripcionCursoFormationCRUD.listaCursosAbiertos();
+	
+	}
+	
+	public static boolean PlazasLibres(CursoDto curso) throws BusinessException {
+		return InscripcionCursoFormationCRUD.PlazasLibres(curso);
+	}
+
+	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
+		// TODO Auto-generated method stub
+		return InscripcionCursoFormationCRUD.isCursoAbierto(cursoSeleccionado);
+	}
+	
 }

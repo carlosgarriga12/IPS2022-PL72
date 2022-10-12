@@ -9,6 +9,7 @@ import java.util.List;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 
 public class DtoAssembler {
 
@@ -21,6 +22,14 @@ public class DtoAssembler {
 
 		return colegiados;
 	}
+	
+	public static List<InscripcionCursoFormacionDto> toInscripcionList(ResultSet rs) throws SQLException{
+		List<InscripcionCursoFormacionDto> inscripciones = new ArrayList<InscripcionCursoFormacionDto>();
+		while(rs.next()) {
+			inscripciones.add(resultSetToInscripcionDto(rs));
+		}
+		return inscripciones;
+	}
 
 	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
@@ -31,10 +40,10 @@ public class DtoAssembler {
 		c.poblacion = rs.getString("poblacion");
 		c.titulacion = rs.getInt("titulacion");
 		c.centro = rs.getString("centro");
-		c.annio = rs.getInt("annio");
+		c.annio = rs.getInt("ano");
 		c.numeroTarjeta = rs.getInt("numeroTarjeta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
-		c.numeroColegiado = rs.getString("numeroColegiado");
+		c.numeroColegiado = rs.getString("numero");
 
 		return c;
 
@@ -68,6 +77,24 @@ public class DtoAssembler {
 
 		return newCursoDto;
 
+	}
+	
+	private static InscripcionCursoFormacionDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
+		InscripcionCursoFormacionDto i = new InscripcionCursoFormacionDto();
+		CursoDto c = new CursoDto();
+		
+		c.codigoCurso = rs.getInt("ID_CURSO");
+		c.titulo = rs.getString("TITULO");
+		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
+		c.plazasDisponibles = rs.getInt("PLAZAS");
+		c.precio = rs.getDouble("PRECIO");
+		
+		i.curso = c;
+		i.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
+		i.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
+		
+		return i;
+		
 	}
 
 }
