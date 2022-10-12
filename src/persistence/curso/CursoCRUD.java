@@ -19,7 +19,7 @@ public class CursoCRUD {
 	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 
-	public static void add(final CursoDto curso) throws SQLException {
+	public static void add(CursoDto curso) throws SQLException {
 		Connection con = null;
 		PreparedStatement pst = null;
 
