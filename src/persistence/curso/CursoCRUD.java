@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import business.BusinessException;
 import persistence.DtoAssembler;
@@ -17,7 +16,7 @@ public class CursoCRUD {
 
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
-	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
+	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 
 	public static void add(final CursoDto curso) throws SQLException {
@@ -82,13 +81,15 @@ public class CursoCRUD {
 		try {
 
 			con = Jdbc.getConnection();
-			pst = con.prepareStatement(SQL_LIST_ALL_COURSES);
+			pst = con.prepareStatement(SQL_LIST_ALL_SCHEDULED_COURSES);
+			
+			res = DtoAssembler.toCursoList(pst.executeQuery());
 
-			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
-
-			// Filtrar por curso planificado
-			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
-					.collect(Collectors.toList());
+//			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
+//
+//			// Filtrar por curso planificado
+//			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
+//					.collect(Collectors.toList());
 
 		} catch (SQLException e) {
 			throw new BusinessException(e);

@@ -20,7 +20,7 @@ import persistence.util.Conf;
  * @version v1.0.0
  *
  */
-public class InscripcionCursoFormationCRUD {
+public class InscripcionCursoFormacionCRUD {
 
 	private static final String SQL_INSERT_INSCRIPCION_CURSO_FORMATIVO = Conf.getInstance()
 			.getProperty("TINSCRIPCION_CURSO_ADD");

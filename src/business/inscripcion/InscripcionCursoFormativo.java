@@ -9,9 +9,9 @@ import business.curso.Curso;
 import business.util.DateUtils;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormationCRUD;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 
 /**
  * 
@@ -85,7 +85,7 @@ public class InscripcionCursoFormativo {
 		inscripcionCurso.fechaApertura = fechaApertura;
 		inscripcionCurso.fechaCierre = fechaCierre;
 
-		InscripcionCursoFormationCRUD.addNewInscripcion(inscripcionCurso);
+		InscripcionCursoFormacionCRUD.addNewInscripcion(inscripcionCurso);
 
 		curso.plazasDisponibles = plazas;
 		curso.estado = CursoDto.CURSO_ABIERTO;
@@ -94,17 +94,17 @@ public class InscripcionCursoFormativo {
 	}
 	
 	public static List<CursoDto> getCursosAbiertos(){
-		return InscripcionCursoFormationCRUD.listaCursosAbiertos();
+		return InscripcionCursoFormacionCRUD.listaCursosAbiertos();
 	
 	}
 	
 	public static boolean PlazasLibres(CursoDto curso) throws BusinessException {
-		return InscripcionCursoFormationCRUD.PlazasLibres(curso);
+		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
 	}
 
 	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
 		// TODO Auto-generated method stub
-		return InscripcionCursoFormationCRUD.isCursoAbierto(cursoSeleccionado);
+		return InscripcionCursoFormacionCRUD.isCursoAbierto(cursoSeleccionado);
 	}
 	
 }

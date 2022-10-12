@@ -19,7 +19,7 @@ public class CursoDto {
 	public LocalDate fechaInicio;
 	public int plazasDisponibles;
 	public double precio;
-	public String estado;
+	public String estado = CURSO_PLANIFICADO;
 	
 	public String toString() {
 		return "titulo= " +titulo+ ", fechaInicio= "+fechaInicio+", precio "+precio;
