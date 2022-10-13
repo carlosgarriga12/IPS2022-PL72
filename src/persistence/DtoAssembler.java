@@ -69,7 +69,6 @@ public class DtoAssembler {
 		newCursoDto.precio = rs.getDouble("PRECIO");
 		
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-		System.out.println(isCursoAbierto);
 		
 		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
 

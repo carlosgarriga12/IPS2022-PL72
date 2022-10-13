@@ -109,11 +109,11 @@ public class DefaultButton extends JButton {
 		// Si el tipo de boton no se corresponde con ningun tipo establecido
 		// se asigna el boton tipo ventana.
 
-//		if (!type.equalsIgnoreCase(sizes[0]) || type.equalsIgnoreCase(sizes[1]) || type.equalsIgnoreCase(sizes[2])) {
-//			this.setBorder(
-//					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));
-//			
-//		}
+		if (!type.equalsIgnoreCase(sizes[0]) || type.equalsIgnoreCase(sizes[1]) || type.equalsIgnoreCase(sizes[2])) {
+			this.setBorder(
+					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));
+			
+		}
 
 		// Boton pequeño
 		if (type.equalsIgnoreCase(sizes[0])) {
