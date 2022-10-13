@@ -13,6 +13,8 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -44,11 +46,10 @@ import javax.swing.table.TableModel;
 
 import business.BusinessException;
 import business.BusinessFactory;
-import business.colegiado.Colegiado;
 import business.InscripcionColegiado.InscripcionColegiado;
 import business.JustificanteInscripcion.JustificanteInscripcion;
+import business.colegiado.Colegiado;
 import business.curso.Curso;
-import business.inscripcion.InscripcionCursoFormativo;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
@@ -61,18 +62,12 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = -8203812316779660921L;
 
 	private JPanel mainPanel;
-	private JLabel lblTitle;
-	private JButton btnSecretaria;
-	private JTextField txtDNI;
-	private JLabel lblDNI;
 	private JPanel pnHome;
 	private JPanel pnCoursesList;
 	private JScrollPane spCoursesListCenter;
@@ -114,7 +109,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnSolicitudColegiadoSur;
 	private JButton btnLimpiar;
 	private JButton btnFinalizar;
-	private JButton btnSolicitud;
 	private JButton btnAtras;
 	private JLabel lbRellenarDatos;
 	private JPanel pnSolicitudDatosSur;
@@ -182,6 +176,13 @@ public class MainWindow extends JFrame {
 	private JLabel lblNewLabelTitulacionColegiado;
 	private JButton btnRegistrarse_1;
 	private JPanel panel;
+	private JPanel pnHomeNorth;
+	private JPanel pnHomeCenter;
+	private JPanel pnHomeSouth;
+	private JPanel pnHomeTituloColegiado;
+	private JPanel pnHomeTituloSecretaria;
+	private JLabel lbTituloHomeColegiado;
+	private JLabel lbTituloHomeSecretaria;
 
 	public MainWindow() {
 		setTitle("COIIPA : GestiÃ³n de servicios");
@@ -228,45 +229,13 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 	}
 
-	private JLabel getLblTitle() {
-		if (lblTitle == null) {
-			lblTitle = new JLabel("Bienvenidos a la aplicaci\u00F3n del COIIPA");
-			lblTitle.setFont(new Font("Arial", Font.BOLD, 18));
-		}
-		return lblTitle;
-	}
-
-	private JButton getBtnSecretaria() {
-		if (btnSecretaria == null) {
-			btnSecretaria = new JButton("Secretaria");
-		}
-		return btnSecretaria;
-	}
-
-	private JTextField getTxtDNI() {
-		if (txtDNI == null) {
-			txtDNI = new JTextField();
-			txtDNI.setColumns(10);
-		}
-		return txtDNI;
-	}
-
-	private JLabel getLblDNI() {
-		if (lblDNI == null) {
-			lblDNI = new JLabel("DNI");
-		}
-		return lblDNI;
-	}
-
 	private JPanel getPnHome() {
 		if (pnHome == null) {
 			pnHome = new JPanel();
 			pnHome.setLayout(new BorderLayout(0, 0));
-			pnHome.add(getLblTitle(), BorderLayout.NORTH);
-			pnHome.add(getBtnSecretaria());
-			pnHome.add(getTxtDNI());
-			pnHome.add(getLblDNI());
-			pnHome.add(getBtnSolicitud(), BorderLayout.EAST);
+			pnHome.add(getPnHomeNorth(), BorderLayout.NORTH);
+			pnHome.add(getPnHomeCenter(), BorderLayout.CENTER);
+			pnHome.add(getPnHomeSouth(), BorderLayout.SOUTH);
 		}
 		return pnHome;
 	}
@@ -911,22 +880,6 @@ public class MainWindow extends JFrame {
 		this.getTextFieldTelefono().setText(null);
 		this.getTextFieldTitulacion().setText(null);
 		this.getTextFieldNombre().grabFocus();
-	}
-
-	private JButton getBtnSolicitud() {
-		if (btnSolicitud == null) {
-			btnSolicitud = new JButton("Solicitud de colegiado");
-			btnSolicitud.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					getPnHome().setVisible(false);
-					getPnSolicitudColegiado().setVisible(true);
-					inicializarCampos();
-				}
-			});
-			btnSolicitud.setMnemonic('S');
-			btnSolicitud.setToolTipText("Pulsa para formalizar su solicitud");
-		}
-		return btnSolicitud;
 	}
 
 	private JButton getBtnAtras() {
@@ -1752,6 +1705,59 @@ public class MainWindow extends JFrame {
 			panel = new JPanel();
 		}
 		return panel;
+	}
+	private JPanel getPnHomeNorth() {
+		if (pnHomeNorth == null) {
+			pnHomeNorth = new JPanel();
+			pnHomeNorth.setOpaque(false);
+			pnHomeNorth.setLayout(new GridLayout(0, 2, 10, 0));
+			pnHomeNorth.add(getPnHomeTituloColegiado());
+			pnHomeNorth.add(getPnHomeTituloSecretaria());
+		}
+		return pnHomeNorth;
+	}
+	private JPanel getPnHomeCenter() {
+		if (pnHomeCenter == null) {
+			pnHomeCenter = new JPanel();
+			pnHomeCenter.setOpaque(false);
+		}
+		return pnHomeCenter;
+	}
+	private JPanel getPnHomeSouth() {
+		if (pnHomeSouth == null) {
+			pnHomeSouth = new JPanel();
+			pnHomeSouth.setOpaque(false);
+		}
+		return pnHomeSouth;
+	}
+	private JPanel getPnHomeTituloColegiado() {
+		if (pnHomeTituloColegiado == null) {
+			pnHomeTituloColegiado = new JPanel();
+			pnHomeTituloColegiado.setOpaque(false);
+			pnHomeTituloColegiado.add(getLbTituloHomeColegiado());
+		}
+		return pnHomeTituloColegiado;
+	}
+	private JPanel getPnHomeTituloSecretaria() {
+		if (pnHomeTituloSecretaria == null) {
+			pnHomeTituloSecretaria = new JPanel();
+			pnHomeTituloSecretaria.add(getLbTituloHomeSecretaria());
+		}
+		return pnHomeTituloSecretaria;
+	}
+	private JLabel getLbTituloHomeColegiado() {
+		if (lbTituloHomeColegiado == null) {
+			lbTituloHomeColegiado = new JLabel("Colegiado");
+			lbTituloHomeColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbTituloHomeColegiado;
+	}
+	private JLabel getLbTituloHomeSecretaria() {
+		if (lbTituloHomeSecretaria == null) {
+			lbTituloHomeSecretaria = new JLabel("Secretaría");
+			lbTituloHomeSecretaria.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbTituloHomeSecretaria;
 	}
 }
 
