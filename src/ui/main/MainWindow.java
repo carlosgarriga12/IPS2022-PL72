@@ -13,6 +13,8 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -44,11 +46,10 @@ import javax.swing.table.TableModel;
 
 import business.BusinessException;
 import business.BusinessFactory;
-import business.colegiado.Colegiado;
 import business.InscripcionColegiado.InscripcionColegiado;
 import business.JustificanteInscripcion.JustificanteInscripcion;
+import business.colegiado.Colegiado;
 import business.curso.Curso;
-import business.inscripcion.InscripcionCursoFormativo;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
@@ -61,8 +62,6 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class MainWindow extends JFrame {
 
@@ -181,7 +180,9 @@ public class MainWindow extends JFrame {
 	private JLabel lblTitulacinSegunSus;
 	private JLabel lblNewLabelTitulacionColegiado;
 	private JButton btnRegistrarse_1;
+	private JPanel pnOpcionesSecretaria;
 	private JPanel panel;
+	private DefaultButton btnEmitirCuotas;
 
 	public MainWindow() {
 		setTitle("COIIPA : GestiÃ³n de servicios");
@@ -205,7 +206,6 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
-		mainPanel.add(getPanel(), "name_900905980397400");
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -1746,12 +1746,6 @@ public class MainWindow extends JFrame {
 			btnInscripcionToInicio.setBounds(952, 587, 123, 49);
 		}
 		return btnInscripcionToInicio;
-	}
-	private JPanel getPanel() {
-		if (panel == null) {
-			panel = new JPanel();
-		}
-		return panel;
 	}
 }
 
