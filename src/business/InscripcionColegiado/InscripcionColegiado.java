@@ -1,13 +1,10 @@
 package business.InscripcionColegiado;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoDto;
-import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.jdbc.PersistenceException;
 
 public class InscripcionColegiado {
 	
@@ -21,4 +18,16 @@ public class InscripcionColegiado {
 		// TODO Auto-generated method stub
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
+	
+	public static String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
+		// devuelve la fecha de la preinscripcion
+		return InscripcionColegiadoCRUD.findFechaPreinscripcion(colegiado, cursoSeleccionado);
+	}
+	
+	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws PersistenceException {
+		// paga un curso, establece el método y el estado del pago
+		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
+	}
+	
+	
 }

@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 
-import business.BusinessException;
 import business.colegiado.assembler.ColegiadoAssembler;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
@@ -22,7 +21,7 @@ public class ColegiadoCrud {
 	
 	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
 
-	public static ColegiadoDto findColegiadoDni(String dni) throws BusinessException {
+	public static ColegiadoDto findColegiadoDni(String dni) throws PersistenceException {
 		ColegiadoDto colegiado;
 
 		Connection c = null;
@@ -66,7 +65,7 @@ public class ColegiadoCrud {
 		return colegiado;
 	}
 
-	public static ColegiadoDto addColegiado(ColegiadoDto colegiado) throws BusinessException {
+	public static ColegiadoDto addColegiado(ColegiadoDto colegiado) throws PersistenceException {
 		Connection con = null;
 		PreparedStatement pst = null;
 
@@ -106,7 +105,7 @@ public class ColegiadoCrud {
 		return colegiado;
 	}
 	
-	public static List<ColegiadoDto> findAllColegiados() {
+	public static List<ColegiadoDto> findAllColegiados() throws PersistenceException {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;

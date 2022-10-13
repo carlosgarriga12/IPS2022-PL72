@@ -12,7 +12,7 @@ public class Colegiado {
 			
 		
 		return ColegiadoCrud.findColegiadoDni(DNI);}
-		catch(BusinessException e){
+		catch(PersistenceException e){
 			if(e.getMessage().equals("java.sql.SQLException: ResultSet closed")) {
 				return null;
 			}

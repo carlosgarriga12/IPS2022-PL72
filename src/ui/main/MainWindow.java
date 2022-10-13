@@ -183,6 +183,10 @@ public class MainWindow extends JFrame {
 	private JPanel pnOpcionesSecretaria;
 	private JPanel panel;
 	private DefaultButton btnEmitirCuotas;
+	private JPanel pnPagarInscripcionColegiado;
+	private JPanel pnPagarInscripcionColegiadoNorte;
+	private JLabel lbTitulo_1;
+	private JLabel lbRellenarDatos_1;
 
 	public MainWindow() {
 		setTitle("COIIPA : GestiÃ³n de servicios");
@@ -206,6 +210,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
+		mainPanel.add(getPnPagarInscripcionColegiado(), "name_675900424461400");
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -1746,6 +1751,40 @@ public class MainWindow extends JFrame {
 			btnInscripcionToInicio.setBounds(952, 587, 123, 49);
 		}
 		return btnInscripcionToInicio;
+	}
+	private JPanel getPnPagarInscripcionColegiado() {
+		if (pnPagarInscripcionColegiado == null) {
+			pnPagarInscripcionColegiado = new JPanel();
+			pnPagarInscripcionColegiado.setLayout(new BorderLayout(0, 0));
+			pnPagarInscripcionColegiado.add(getPnPagarInscripcionColegiadoNorte(), BorderLayout.NORTH);
+		}
+		return pnPagarInscripcionColegiado;
+	}
+	private JPanel getPnPagarInscripcionColegiadoNorte() {
+		if (pnPagarInscripcionColegiadoNorte == null) {
+			pnPagarInscripcionColegiadoNorte = new JPanel();
+			pnPagarInscripcionColegiadoNorte.setForeground(Color.BLACK);
+			pnPagarInscripcionColegiadoNorte.setLayout(new GridLayout(2, 2, 0, 0));
+			pnPagarInscripcionColegiadoNorte.add(getLbTitulo_1());
+			pnPagarInscripcionColegiadoNorte.add(getLbRellenarDatos_1_1());
+		}
+		return pnPagarInscripcionColegiadoNorte;
+	}
+	private JLabel getLbTitulo_1() {
+		if (lbTitulo_1 == null) {
+			lbTitulo_1 = new JLabel("Solicitud de alta para ser colegiado en el COIIPA");
+			lbTitulo_1.setHorizontalAlignment(SwingConstants.CENTER);
+			lbTitulo_1.setFont(new Font("Arial Black", Font.BOLD, 11));
+		}
+		return lbTitulo_1;
+	}
+	private JLabel getLbRellenarDatos_1_1() {
+		if (lbRellenarDatos_1 == null) {
+			lbRellenarDatos_1 = new JLabel("Por favor, rellene los siguientes datos para formalizar su solicitud:");
+			lbRellenarDatos_1.setHorizontalAlignment(SwingConstants.CENTER);
+			lbRellenarDatos_1.setFont(new Font("Arial", Font.PLAIN, 18));
+		}
+		return lbRellenarDatos_1;
 	}
 }
 

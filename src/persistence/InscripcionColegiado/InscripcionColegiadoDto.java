@@ -10,7 +10,6 @@ public class InscripcionColegiadoDto {
 	public InscripcionCursoFormacionDto inscripcion;
 	public LocalDate fechaSolicitud;
 	public double cantidadPagar;
-	public String estado; //Preinscripcion = 0, Inscripcion = 1
-	
-
+	public String estado; // PAGADO (con tarjeta) o PENDIENTE (transferencia)
+	public String formaDePago; // TARJETA O TRANSFERENCIA 
 }
