@@ -47,9 +47,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
 import business.BusinessException;
-import business.BusinessFactory;
 import business.InscripcionColegiado.InscripcionColegiado;
 import business.JustificanteInscripcion.JustificanteInscripcion;
+import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
@@ -836,7 +836,7 @@ public class MainWindow extends JFrame {
 
 	private boolean anadirColegiadoBaseDatos(ColegiadoDto dto) {
 		try {
-			BusinessFactory.forColegiadoService().addColegiado(dto);
+			Colegiado.addColegiado(dto);
 			return true;
 		} catch (BusinessException e) {
 			JOptionPane.showMessageDialog(this,
@@ -2013,8 +2013,8 @@ public class MainWindow extends JFrame {
 					// BusinessFactory.forInscripcionColegiadoService().pagarCursoColegiado(colegiado, /* curso */, "PENDIENTE", "TRANSFERENCIA");
 					JOptionPane.showMessageDialog(null,
 							"Ha seleccionado usted la opción de pagar por transferencia bancaria\n"
-							+ "El pago se ha realizado con éxito",
-							"Pago verificado", JOptionPane.INFORMATION_MESSAGE);				
+							+ "El pago se queda en estado pendiente",
+							"Pago pendiente", JOptionPane.INFORMATION_MESSAGE);				
 				}
 			});
 			btnTransferenciaColegiado.setMnemonic('T');
@@ -2039,12 +2039,19 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					if (comprobarCampos()) {
 						if (comprobarFecha()) {
-							if (BusinessFactory.forInscripcionColegiadoService().comprobarFecha(getCalendarioFechaCaducidad().getCalendar().toString())) {
-								// BusinessFactory.forInscripcionColegiadoService().pagarCursoColegiado(colegiado, /* curso */, "PAGADO", "TARJETA");
+							try {
+								if (InscripcionColegiado.comprobarFecha(getCalendarioFechaCaducidad().getCalendar().toString())) {
+									// BusinessFactory.forInscripcionColegiadoService().pagarCursoColegiado(colegiado, /* curso */, "PAGADO", "TARJETA");
+									JOptionPane.showMessageDialog(null,
+											"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
+											+ "El pago se ha inscrito con éxito",
+											"Pago verificado", JOptionPane.INFORMATION_MESSAGE);
+								}
+							} catch (BusinessException e1) {
 								JOptionPane.showMessageDialog(null,
-										"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
-										+ "El pago se ha realizado con éxito",
-										"Pago verificado", JOptionPane.INFORMATION_MESSAGE);
+										"Lo sentimos, no puede hacerse cargo de pagar un curso en el que no se ha preinscrito\n"
+										+ "Inténtelo de nuevo la próxima vez",
+										"Tarjeta inválida", JOptionPane.WARNING_MESSAGE);
 							}
 						} 
 					} 

@@ -24,17 +24,17 @@ public class InscripcionColegiado {
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
 	
-	public String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
+	public static String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
 		// devuelve la fecha de la preinscripcion
 		return InscripcionColegiadoCRUD.findFechaPreinscripcion(colegiado, cursoSeleccionado);
 	}
 	
-	public void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws BusinessException {
+	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws BusinessException {
 		// paga un curso, establece el m�todo y el estado del pago
 		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
 	}
 	
-	public boolean comprobarFecha(String fechaPreInscripcion) {
+	public static boolean comprobarFecha(String fechaPreInscripcion) throws BusinessException {
 		// comprueba que no han pasado dos dias desde la fecha actual
 		LocalDate fecha = LocalDate.parse(fechaPreInscripcion);
 	    return ChronoUnit.DAYS.between(LocalDate.now(), fecha) <= 2 ? true : false;
