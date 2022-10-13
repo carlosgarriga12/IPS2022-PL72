@@ -74,7 +74,6 @@ public class MainWindow extends JFrame {
 	private JTextField txtDNI;
 	private JLabel lblDNI;
 	private JPanel pnHome;
-	private JPanel pnProgramAccess;
 	private JPanel pnCoursesList;
 	private JScrollPane spCoursesListCenter;
 	private JTable tbCoursesList;
@@ -204,7 +203,6 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		mainPanel.add(getPnHome(), "homePanel");
-		mainPanel.add(getPnProgramAccess(), "programAccessPanel");
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
 		mainPanel.add(getPanel(), "name_900905980397400");
@@ -271,13 +269,6 @@ public class MainWindow extends JFrame {
 			pnHome.add(getBtnSolicitud(), BorderLayout.EAST);
 		}
 		return pnHome;
-	}
-
-	private JPanel getPnProgramAccess() {
-		if (pnProgramAccess == null) {
-			pnProgramAccess = new JPanel();
-		}
-		return pnProgramAccess;
 	}
 
 	private JPanel getPnCoursesList() {
