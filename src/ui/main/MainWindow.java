@@ -48,7 +48,6 @@ import business.BusinessException;
 import business.BusinessFactory;
 import business.InscripcionColegiado.InscripcionColegiado;
 import business.JustificanteInscripcion.JustificanteInscripcion;
-import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
@@ -846,7 +845,8 @@ public class MainWindow extends JFrame {
 			return true;
 		} catch (BusinessException e) {
 			JOptionPane.showMessageDialog(this,
-					"Por favor, revise que no haya introducido un DNI que no es suyo, este DNI ya ha sido registrado",
+					"Este DNI ya ha sido registrado para una solicitud.\n"
+					+ "En el caso de que no se haya registrado anteriormente, revise que no haya introducido un DNI que no es suyo\n",
 					"DNI invÃ¡lido", JOptionPane.INFORMATION_MESSAGE);
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this,
@@ -1658,7 +1658,7 @@ public class MainWindow extends JFrame {
 			btnIniciarSesion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						ColegiadoDto c = Colegiado.InicioSesion(getTxLoginUsername().getText());
+						ColegiadoDto c = InscripcionColegiado.InicioSesion(getTxLoginUsername().getText());
 						if (c == null) {
 							lbDniIncorrecto.setVisible(true);
 						} else {

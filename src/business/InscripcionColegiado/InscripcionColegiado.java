@@ -2,6 +2,7 @@ package business.InscripcionColegiado;
 
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
+import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 import persistence.jdbc.PersistenceException;
@@ -25,8 +26,21 @@ public class InscripcionColegiado {
 	}
 	
 	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws PersistenceException {
-		// paga un curso, establece el método y el estado del pago
+		// paga un curso, establece el mï¿½todo y el estado del pago
 		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
+	}
+	
+	public static ColegiadoDto InicioSesion(String DNI) throws BusinessException {
+		try {
+			return ColegiadoCrud.findColegiadoDni(DNI);}
+		catch(PersistenceException e){
+			if(e.getMessage().equals("java.sql.SQLException: ResultSet closed")) {
+				return null;
+			}
+			else {
+				throw e;
+			}
+		} 
 	}
 	
 	

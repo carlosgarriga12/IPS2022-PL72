@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 
-import business.colegiado.assembler.ColegiadoAssembler;
+import business.colegiado.ColegiadoAssembler;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;

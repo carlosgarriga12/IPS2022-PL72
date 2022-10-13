@@ -1,7 +1,6 @@
 package business;
 
-import business.colegiado.ColegiadoService;
-import business.colegiado.crud.ColegiadoServiceImpl;
+import business.colegiado.Colegiado;
 
 /**
  * 
@@ -11,8 +10,8 @@ import business.colegiado.crud.ColegiadoServiceImpl;
  */
 
 public class BusinessFactory {
-	public static ColegiadoService forColegiadoService() {
-		return new ColegiadoServiceImpl();
+	public static Colegiado forColegiadoService() {
+		return new Colegiado();
 	}
 
 }

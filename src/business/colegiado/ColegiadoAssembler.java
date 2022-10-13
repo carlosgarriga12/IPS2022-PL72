@@ -1,4 +1,4 @@
-package business.colegiado.assembler;
+package business.colegiado;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

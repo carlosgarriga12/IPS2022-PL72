@@ -1,4 +1,4 @@
-package business.colegiado.crud.commands;
+package business.colegiado;
 
 import business.BusinessException;
 import business.util.Argument;
