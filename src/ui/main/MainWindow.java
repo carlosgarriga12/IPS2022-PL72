@@ -273,7 +273,6 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 		inicializarCampos();
-		System.out.print("");
 	}
 
 	private void inicializarCampos() {
