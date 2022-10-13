@@ -85,12 +85,6 @@ public class CursoCRUD {
 			
 			res = DtoAssembler.toCursoList(pst.executeQuery());
 
-//			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
-//
-//			// Filtrar por curso planificado
-//			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
-//					.collect(Collectors.toList());
-
 		} catch (SQLException e) {
 			throw new BusinessException(e);
 

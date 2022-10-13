@@ -8,7 +8,10 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -67,9 +70,21 @@ public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = -8203812316779660921L;
 
+	// Nombres de los paneles contenidos en mainPanel
+	private static final String HOME_PANEL_NAME = "homePanel";
+	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "solicitudColegiadoPanel";
+	private static final String APERTURA_INSCRIPCIONES_PANEL_NAME = "aperturaCursoPanel";
+	private static final String INSCRIPCION_CURSO_PANEL_NAME = "inscripicionCursoPanel";
+	private static final String ADD_CURSO_PANEL_NAME = "addCursoPanel";
+	private static final String PAGAR_INSCRIPCION_CURSO_PANEL_NAME = "pagarInscripcionCursoPanel";
+	private static final String LISTADO_CURSOS_PANEL_NAME = "listadoCursosPanel";
+	private static final String LISTADO_INSCRIPCIONES_PANEL_NAME = "listadoInscripcionesPanel";
+	private static final String CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME = "consultarTitulacionSolicitantePanel";
+	private static final String EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME = "emitirCuotasColegiadosPanels";
+
 	private JPanel mainPanel;
 	private JPanel pnHome;
-	private JPanel pnCoursesList;
+	private JPanel pnAbrirInscripcionesCurso;
 	private JScrollPane spCoursesListCenter;
 	private JTable tbCoursesList;
 
@@ -174,8 +189,6 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldTitulo;
 	private JLabel lblTitulacinSegunSus;
 	private JLabel lblNewLabelTitulacionColegiado;
-	private JButton btnRegistrarse_1;
-	private JPanel panel;
 	private JPanel pnHomeNorth;
 	private JPanel pnHomeCenter;
 	private JPanel pnHomeSouth;
@@ -183,9 +196,33 @@ public class MainWindow extends JFrame {
 	private JPanel pnHomeTituloSecretaria;
 	private JLabel lbTituloHomeColegiado;
 	private JLabel lbTituloHomeSecretaria;
+	private JPanel pnHomeAccionesColegiado;
+	private JPanel pnHomeAccionesSecretaria;
+	private DefaultButton btHomeAltaColegiado;
+	private DefaultButton btHomeVerCursos;
+	private DefaultButton btHomeInscripcionCurso;
+	private DefaultButton btHomePagarInscripcion;
+	private DefaultButton btHomeSecretariaAbrirInscripciones;
+	private DefaultButton btHomeSecretariaConsultarTitulacionSolicitante;
+	private DefaultButton btHomeSecretariaEmitirCuotas;
+	private JPanel pnHomeSouthDatabaseOptions;
+	private JPanel pnHomeClearDatabase;
+	private JPanel pnHomeLoadDatabase;
+	private DefaultButton btHomeLoadDatabase;
+	private JPanel pnHomeSouthTitle;
+	private JLabel lbHomeSouthDatabaseTitle;
+	private DefaultButton btHomeSecretariaAddCurso;
+	private DefaultButton btHomeSecretariaListadoInscripciones;
+	private DefaultButton btHomeClearDatabase;
+	private JPanel pnListadoCursos;
+	private JPanel pnAddCurso;
+	private JPanel pnPagarInscripcion;
+	private JPanel pnListadoInscripciones;
+	private JPanel pnConsultarTitulacionSolicitante;
+	private JPanel pnEmitirCuotasColegiados;
 
 	public MainWindow() {
-		setTitle("COIIPA : GestiÃ³n de servicios");
+		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// TODO: Revisar dimensiones ventana
@@ -200,13 +237,18 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(mainCardLayout);
 
 		// TODO: Cambiar orden para ver al arrancar el programa
+		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
 		mainPanel.add(getPnLogin(), "loginPanel");
-		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
-		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
-		mainPanel.add(getPnHome(), "homePanel");
-		mainPanel.add(getPnInscripcion(), "Instruccion");
+		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
+		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
+		mainPanel.add(getPnInscripcion(), INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnInicio(), "Inicio");
-		mainPanel.add(getPanel(), "name_900905980397400");
+		mainPanel.add(getPnListadoCursos(), LISTADO_CURSOS_PANEL_NAME);
+		mainPanel.add(getPnAddCurso(), ADD_CURSO_PANEL_NAME);
+		mainPanel.add(getPnPagarInscripcion(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
+		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
+		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
+		mainPanel.add(getPnEmitirCuotasColegiados(), EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -240,16 +282,16 @@ public class MainWindow extends JFrame {
 		return pnHome;
 	}
 
-	private JPanel getPnCoursesList() {
-		if (pnCoursesList == null) {
-			pnCoursesList = new JPanel();
-			pnCoursesList.setBorder(null);
-			pnCoursesList.setLayout(new BorderLayout(0, 20));
-			pnCoursesList.add(getSpCoursesListCenter(), BorderLayout.CENTER);
-			pnCoursesList.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
-			pnCoursesList.add(getPnCoursesListNorth(), BorderLayout.NORTH);
+	private JPanel getPnAbrirInscripcionesCurso() {
+		if (pnAbrirInscripcionesCurso == null) {
+			pnAbrirInscripcionesCurso = new JPanel();
+			pnAbrirInscripcionesCurso.setBorder(null);
+			pnAbrirInscripcionesCurso.setLayout(new BorderLayout(0, 20));
+			pnAbrirInscripcionesCurso.add(getSpCoursesListCenter(), BorderLayout.CENTER);
+			pnAbrirInscripcionesCurso.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
+			pnAbrirInscripcionesCurso.add(getPnCoursesListNorth(), BorderLayout.NORTH);
 		}
-		return pnCoursesList;
+		return pnAbrirInscripcionesCurso;
 	}
 
 	private JScrollPane getSpCoursesListCenter() {
@@ -1209,8 +1251,8 @@ public class MainWindow extends JFrame {
 		if (panelDatosAcademicos == null) {
 			panelDatosAcademicos = new JPanel();
 			panelDatosAcademicos.setBorder(new TitledBorder(
-											new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-											"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
+					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+					"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
 			panelDatosAcademicos.setLayout(new GridLayout(0, 1, 0, 0));
 			panelDatosAcademicos.add(getPnDatosTituloColegiado());
 			panelDatosAcademicos.add(getPnDatosCentroColegiado());
@@ -1700,12 +1742,7 @@ public class MainWindow extends JFrame {
 		}
 		return btnInscripcionToInicio;
 	}
-	private JPanel getPanel() {
-		if (panel == null) {
-			panel = new JPanel();
-		}
-		return panel;
-	}
+
 	private JPanel getPnHomeNorth() {
 		if (pnHomeNorth == null) {
 			pnHomeNorth = new JPanel();
@@ -1716,20 +1753,43 @@ public class MainWindow extends JFrame {
 		}
 		return pnHomeNorth;
 	}
+
 	private JPanel getPnHomeCenter() {
 		if (pnHomeCenter == null) {
 			pnHomeCenter = new JPanel();
 			pnHomeCenter.setOpaque(false);
+			pnHomeCenter.setLayout(new GridLayout(0, 2, 10, 0));
+			pnHomeCenter.add(getPnHomeAccionesColegiado());
+			pnHomeCenter.add(getPnHomeAccionesSecretaria());
 		}
 		return pnHomeCenter;
 	}
+
 	private JPanel getPnHomeSouth() {
 		if (pnHomeSouth == null) {
 			pnHomeSouth = new JPanel();
 			pnHomeSouth.setOpaque(false);
+			GridBagLayout gbl_pnHomeSouth = new GridBagLayout();
+			gbl_pnHomeSouth.columnWidths = new int[] { 1100, 0 };
+			gbl_pnHomeSouth.rowHeights = new int[] { 50, 80, 0 };
+			gbl_pnHomeSouth.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+			gbl_pnHomeSouth.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			pnHomeSouth.setLayout(gbl_pnHomeSouth);
+			GridBagConstraints gbc_pnHomeSouthTitle = new GridBagConstraints();
+			gbc_pnHomeSouthTitle.fill = GridBagConstraints.BOTH;
+			gbc_pnHomeSouthTitle.insets = new Insets(0, 0, 5, 0);
+			gbc_pnHomeSouthTitle.gridx = 0;
+			gbc_pnHomeSouthTitle.gridy = 0;
+			pnHomeSouth.add(getPnHomeSouthTitle_1(), gbc_pnHomeSouthTitle);
+			GridBagConstraints gbc_pnHomeSouthDatabaseOptions = new GridBagConstraints();
+			gbc_pnHomeSouthDatabaseOptions.fill = GridBagConstraints.BOTH;
+			gbc_pnHomeSouthDatabaseOptions.gridx = 0;
+			gbc_pnHomeSouthDatabaseOptions.gridy = 1;
+			pnHomeSouth.add(getPnHomeSouthDatabaseOptions(), gbc_pnHomeSouthDatabaseOptions);
 		}
 		return pnHomeSouth;
 	}
+
 	private JPanel getPnHomeTituloColegiado() {
 		if (pnHomeTituloColegiado == null) {
 			pnHomeTituloColegiado = new JPanel();
@@ -1738,6 +1798,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnHomeTituloColegiado;
 	}
+
 	private JPanel getPnHomeTituloSecretaria() {
 		if (pnHomeTituloSecretaria == null) {
 			pnHomeTituloSecretaria = new JPanel();
@@ -1745,19 +1806,286 @@ public class MainWindow extends JFrame {
 		}
 		return pnHomeTituloSecretaria;
 	}
+
 	private JLabel getLbTituloHomeColegiado() {
 		if (lbTituloHomeColegiado == null) {
 			lbTituloHomeColegiado = new JLabel("Colegiado");
+			lbTituloHomeColegiado.setFont(LookAndFeel.HEADING_1_FONT);
 			lbTituloHomeColegiado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lbTituloHomeColegiado;
 	}
+
 	private JLabel getLbTituloHomeSecretaria() {
 		if (lbTituloHomeSecretaria == null) {
 			lbTituloHomeSecretaria = new JLabel("Secretaría");
+			lbTituloHomeSecretaria.setFont(LookAndFeel.HEADING_1_FONT);
 			lbTituloHomeSecretaria.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lbTituloHomeSecretaria;
 	}
-}
 
+	private JPanel getPnHomeAccionesColegiado() {
+		if (pnHomeAccionesColegiado == null) {
+			pnHomeAccionesColegiado = new JPanel();
+			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
+			pnHomeAccionesColegiado.setOpaque(false);
+			pnHomeAccionesColegiado.setLayout(new GridLayout(4, 1, 0, 10));
+
+			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
+			pnHomeAccionesColegiado.add(getBtHomeVerCursos());
+			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
+			pnHomeAccionesColegiado.add(getBtHomePagarInscripcion());
+		}
+		return pnHomeAccionesColegiado;
+	}
+
+	private JPanel getPnHomeAccionesSecretaria() {
+		if (pnHomeAccionesSecretaria == null) {
+			pnHomeAccionesSecretaria = new JPanel();
+			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
+			pnHomeAccionesSecretaria.setOpaque(false);
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(5, 1, 0, 10));
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAddCurso());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaListadoInscripciones());
+		}
+		return pnHomeAccionesSecretaria;
+	}
+
+	private DefaultButton getBtHomeAltaColegiado() {
+		if (btHomeAltaColegiado == null) {
+			btHomeAltaColegiado = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l',
+					ButtonColor.NORMAL);
+			btHomeAltaColegiado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, SOLICITUD_COLEGIADO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeAltaColegiado;
+	}
+
+	private DefaultButton getBtHomeVerCursos() {
+		if (btHomeVerCursos == null) {
+			btHomeVerCursos = new DefaultButton("Ver cursos", "ventana", "VerCursos", 'v', ButtonColor.NORMAL);
+			btHomeVerCursos.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, LISTADO_CURSOS_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeVerCursos;
+	}
+
+	private DefaultButton getBtHomeInscripcionCurso() {
+		if (btHomeInscripcionCurso == null) {
+			btHomeInscripcionCurso = new DefaultButton("Inscribirse a un curso", "ventana", "InscribirseCursoColegiado",
+					'n', ButtonColor.NORMAL);
+			btHomeInscripcionCurso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeInscripcionCurso;
+	}
+
+	private DefaultButton getBtHomePagarInscripcion() {
+		if (btHomePagarInscripcion == null) {
+			btHomePagarInscripcion = new DefaultButton("Pagar una inscripción", "ventana", "PagarInscripcionColegiado",
+					'p', ButtonColor.NORMAL);
+			btHomePagarInscripcion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomePagarInscripcion;
+	}
+
+	private DefaultButton getBtHomeSecretariaAbrirInscripciones() {
+		if (btHomeSecretariaAbrirInscripciones == null) {
+			btHomeSecretariaAbrirInscripciones = new DefaultButton("Abrir inscripciones de un curso", "ventana",
+					"AbrirInscrionesCurso", 'b', ButtonColor.NORMAL);
+			btHomeSecretariaAbrirInscripciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, APERTURA_INSCRIPCIONES_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaAbrirInscripciones;
+	}
+
+	private DefaultButton getBtHomeSecretariaConsultarTitulacionSolicitante() {
+		if (btHomeSecretariaConsultarTitulacionSolicitante == null) {
+			btHomeSecretariaConsultarTitulacionSolicitante = new DefaultButton("Consultar titulación de un solicitante",
+					"ventana", "ConsultarTitulacionSolicitante", 'c', ButtonColor.NORMAL);
+			btHomeSecretariaConsultarTitulacionSolicitante.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaConsultarTitulacionSolicitante;
+	}
+
+	private DefaultButton getBtHomeSecretariaEmitirCuotas() {
+		if (btHomeSecretariaEmitirCuotas == null) {
+			btHomeSecretariaEmitirCuotas = new DefaultButton("Emitir cuotas colegiados", "ventana",
+					"EmitirCuotasColegiados", 't', ButtonColor.NORMAL);
+			btHomeSecretariaEmitirCuotas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaEmitirCuotas;
+	}
+
+	private JPanel getPnHomeSouthDatabaseOptions() {
+		if (pnHomeSouthDatabaseOptions == null) {
+			pnHomeSouthDatabaseOptions = new JPanel();
+			pnHomeSouthDatabaseOptions.setBorder(new EmptyBorder(30, 0, 30, 0));
+			pnHomeSouthDatabaseOptions.setBackground(LookAndFeel.SECONDARY_COLOR);
+			pnHomeSouthDatabaseOptions.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnHomeSouthDatabaseOptions.add(getPnHomeClearDatabase());
+			pnHomeSouthDatabaseOptions.add(getPnHomeLoadDatabase());
+		}
+		return pnHomeSouthDatabaseOptions;
+	}
+
+	private JPanel getPnHomeClearDatabase() {
+		if (pnHomeClearDatabase == null) {
+			pnHomeClearDatabase = new JPanel();
+			pnHomeClearDatabase.add(getBtHomeLoadDatabase());
+		}
+		return pnHomeClearDatabase;
+	}
+
+	private JPanel getPnHomeLoadDatabase() {
+		if (pnHomeLoadDatabase == null) {
+			pnHomeLoadDatabase = new JPanel();
+			pnHomeLoadDatabase.add(getBtHomeClearDatabase());
+		}
+		return pnHomeLoadDatabase;
+	}
+
+	private DefaultButton getBtHomeLoadDatabase() {
+		if (btHomeLoadDatabase == null) {
+			btHomeLoadDatabase = new DefaultButton("Cargar datos", "ventana", "CargarDatos", 'r', ButtonColor.INFO);
+			btHomeLoadDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: Cargar datos en la base de datos
+				}
+			});
+		}
+		return btHomeLoadDatabase;
+	}
+
+	private JPanel getPnHomeSouthTitle_1() {
+		if (pnHomeSouthTitle == null) {
+			pnHomeSouthTitle = new JPanel();
+			pnHomeSouthTitle.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnHomeSouthTitle.add(getLbHomeSouthDatabaseTitle_1());
+		}
+		return pnHomeSouthTitle;
+	}
+
+	private JLabel getLbHomeSouthDatabaseTitle_1() {
+		if (lbHomeSouthDatabaseTitle == null) {
+			lbHomeSouthDatabaseTitle = new JLabel("Base de datos");
+			lbHomeSouthDatabaseTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			lbHomeSouthDatabaseTitle.setFont(new Font("Arial", Font.PLAIN, 24));
+		}
+		return lbHomeSouthDatabaseTitle;
+	}
+
+	private DefaultButton getBtHomeSecretariaAddCurso() {
+		if (btHomeSecretariaAddCurso == null) {
+			btHomeSecretariaAddCurso = new DefaultButton("Añadir un curso", "ventana", "AddCurso", 'd',
+					ButtonColor.NORMAL);
+			btHomeSecretariaAddCurso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, ADD_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaAddCurso;
+	}
+
+	private DefaultButton getBtHomeSecretariaListadoInscripciones() {
+		if (btHomeSecretariaListadoInscripciones == null) {
+			btHomeSecretariaListadoInscripciones = new DefaultButton("Ver todas las inscripciones", "ventana",
+					"ListadoInscripciones", 'l', ButtonColor.NORMAL);
+			btHomeSecretariaListadoInscripciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, LISTADO_INSCRIPCIONES_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaListadoInscripciones;
+	}
+
+	private DefaultButton getBtHomeClearDatabase() {
+		if (btHomeClearDatabase == null) {
+			btHomeClearDatabase = new DefaultButton("Vaciar BBDD", "ventana", "VaciarDB", 'v', ButtonColor.INFO);
+			btHomeClearDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: Vaciar base de datos
+				}
+			});
+		}
+		return btHomeClearDatabase;
+	}
+
+	private JPanel getPnListadoCursos() {
+		if (pnListadoCursos == null) {
+			pnListadoCursos = new JPanel();
+			pnListadoCursos.setLayout(new BorderLayout(0, 0));
+		}
+		return pnListadoCursos;
+	}
+
+	private JPanel getPnAddCurso() {
+		if (pnAddCurso == null) {
+			pnAddCurso = new JPanel();
+			pnAddCurso.setLayout(new BorderLayout(0, 0));
+		}
+		return pnAddCurso;
+	}
+
+	private JPanel getPnPagarInscripcion() {
+		if (pnPagarInscripcion == null) {
+			pnPagarInscripcion = new JPanel();
+			pnPagarInscripcion.setLayout(new BorderLayout(0, 0));
+		}
+		return pnPagarInscripcion;
+	}
+
+	private JPanel getPnListadoInscripciones() {
+		if (pnListadoInscripciones == null) {
+			pnListadoInscripciones = new JPanel();
+			pnListadoInscripciones.setLayout(new BorderLayout(0, 0));
+		}
+		return pnListadoInscripciones;
+	}
+
+	private JPanel getPnConsultarTitulacionSolicitante() {
+		if (pnConsultarTitulacionSolicitante == null) {
+			pnConsultarTitulacionSolicitante = new JPanel();
+			pnConsultarTitulacionSolicitante.setLayout(new BorderLayout(0, 0));
+		}
+		return pnConsultarTitulacionSolicitante;
+	}
+
+	private JPanel getPnEmitirCuotasColegiados() {
+		if (pnEmitirCuotasColegiados == null) {
+			pnEmitirCuotasColegiados = new JPanel();
+			pnEmitirCuotasColegiados.setLayout(new BorderLayout(0, 0));
+		}
+		return pnEmitirCuotasColegiados;
+	}
+}

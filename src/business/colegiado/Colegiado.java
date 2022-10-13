@@ -3,7 +3,6 @@ package business.colegiado;
 import business.BusinessException;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
-import persistence.jdbc.PersistenceException;
 
 public class Colegiado {
 	
