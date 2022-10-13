@@ -1,11 +1,15 @@
 package business.InscripcionColegiado;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 import persistence.jdbc.PersistenceException;
+
 
 public class InscripcionColegiado {
 	
@@ -20,14 +24,20 @@ public class InscripcionColegiado {
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
 	
-	public static String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
+	public String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
 		// devuelve la fecha de la preinscripcion
 		return InscripcionColegiadoCRUD.findFechaPreinscripcion(colegiado, cursoSeleccionado);
 	}
 	
-	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws PersistenceException {
+	public void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws BusinessException {
 		// paga un curso, establece el m�todo y el estado del pago
 		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
+	}
+	
+	public boolean comprobarFecha(String fechaPreInscripcion) {
+		// comprueba que no han pasado dos dias desde la fecha actual
+		LocalDate fecha = LocalDate.parse(fechaPreInscripcion);
+	    return ChronoUnit.DAYS.between(LocalDate.now(), fecha) <= 2 ? true : false;
 	}
 	
 	public static ColegiadoDto InicioSesion(String DNI) throws BusinessException {
