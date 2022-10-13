@@ -215,7 +215,6 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(mainCardLayout);
 
 		// TODO: Cambiar orden para ver al arrancar el programa
-		mainPanel.add(getPnCrearCurso(), "name_3485468920900");
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
@@ -223,6 +222,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
 		mainPanel.add(getPanel(), "name_900905980397400");
+		mainPanel.add(getPnCrearCurso(), "name_3485468920900");
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
