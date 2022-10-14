@@ -1911,9 +1911,11 @@ public class MainWindow extends JFrame {
 			btHomePagarInscripcion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (Curso.listarCursosPlanificados().isEmpty()) {
-						
+						JOptionPane.showMessageDialog(null, "No puede pagar la inscripción de un curso debido a que no hay ninguno planificado"
+								, "No puede hacerse cargo de la inscripción", JOptionPane.WARNING_MESSAGE);
+					} else {
+						mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 					}
-					mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 				}
 			});
 		}
