@@ -1,4 +1,4 @@
-package business.recibo;
+package persistence.recibo;
 
 public class ReciboDto {
 	public int numeroRecibo;

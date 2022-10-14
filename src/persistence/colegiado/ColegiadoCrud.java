@@ -21,14 +21,15 @@ public class ColegiadoCrud {
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
 
 	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
-
+	private static final String SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO = Conf.getInstance().getProperty("BUSCAR_COLEGIADO_NUM_COLEGIADO");
+	
 	private static final String SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS = Conf.getInstance()
 			.getProperty("TCOLEGIADO_FIND_ALL_CANDIDATES");
 
 	private static final String SQL_OBTENER_TITULACION_COLEGIADO = Conf.getInstance()
 			.getProperty("TCOLEGIADO_FIND_TITULACION_BY_DNI");
-
-	public static ColegiadoDto findColegiadoDni(final String dni) throws BusinessException {
+	
+	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) throws BusinessException {
 		ColegiadoDto colegiado;
 
 		Connection c = null;
@@ -38,13 +39,13 @@ public class ColegiadoCrud {
 		try {
 			c = Jdbc.getConnection();
 
-			pst = c.prepareStatement(SQL_BUSCAR_COLEGIADO_DNI);
+			pst = c.prepareStatement(QuerySQL);
 
 			pst.setString(1, dni);
 
 			rs = pst.executeQuery();
 			rs.next();
-			if (rs.getString("DNI") == null) {
+			if (rs.getString(atributo) == null) {
 				return null;
 			}
 			colegiado = ColegiadoAssembler.toColegiadoDto(rs);
@@ -58,7 +59,17 @@ public class ColegiadoCrud {
 
 		return colegiado;
 	}
+	
+	public static ColegiadoDto findColegiadoDni(String Dni) throws BusinessException {
+		return findColegiadoGeneral(Dni, SQL_BUSCAR_COLEGIADO_DNI, "DNI");
+	}
+	
+	
+	public static ColegiadoDto findColegiadoNumColegiado(String Num) throws BusinessException {
+		return findColegiadoGeneral(Num, SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO, "NUMERO");
+	}
 
+	
 	public static ColegiadoDto addColegiado(ColegiadoDto colegiado) throws BusinessException {
 		Connection con = null;
 		PreparedStatement pst = null;
@@ -110,7 +121,7 @@ public class ColegiadoCrud {
 			Jdbc.close(rs, st, c);
 		}
 	}
-
+	
 	/**
 	 * Listado de todas las solicitudes de alta de colegiados.
 	 * 
