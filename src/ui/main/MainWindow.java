@@ -53,11 +53,13 @@ import business.InscripcionColegiado.InscripcionColegiado;
 import business.JustificanteInscripcion.JustificanteInscripcion;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
+import business.recibo.EmisionCuotas;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.jdbc.PersistenceException;
+import persistence.recibo.ReciboCRUD;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -2015,10 +2017,14 @@ public class MainWindow extends JFrame {
 		if (btHomeSecretariaEmitirCuotas == null) {
 			btHomeSecretariaEmitirCuotas = new DefaultButton("Emitir cuotas colegiados", "ventana",
 					"EmitirCuotasColegiados", 't', ButtonColor.NORMAL);
-			btHomeSecretariaEmitirCuotas.setEnabled(false);
 			btHomeSecretariaEmitirCuotas.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
+					if (ReciboCRUD.emitirCuotas()) {
+						JOptionPane.showMessageDialog(null, "Cuotas emitidads correctamente");;
+					} else {
+						JOptionPane.showMessageDialog(null, "No hay cuotas pendientes");
+					}
 				}
 			});
 		}
