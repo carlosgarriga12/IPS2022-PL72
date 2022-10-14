@@ -62,11 +62,11 @@ public class DtoAssembler {
 	public static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
-		newCursoDto.codigoCurso = rs.getInt("ID");
-		newCursoDto.titulo = rs.getString("TITULO");
-		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
-		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
-		newCursoDto.precio = rs.getDouble("PRECIO");
+		newCursoDto.codigoCurso = rs.getInt("IdCurso");
+		newCursoDto.titulo = rs.getString("Titulo");
+		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaApertura"));
+		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
+		newCursoDto.precio = rs.getDouble("Precio");
 		
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
 		

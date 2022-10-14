@@ -23,7 +23,7 @@ public class Curso {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public static List<CursoDto> listarCursosPlanificados() throws BusinessException {
+	public static List<CursoDto> listarCursosPlanificados() {
 		return CursoCRUD.listarCursosActualmentePlanificados();
 	}
 

@@ -8,10 +8,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -55,7 +52,6 @@ import business.JustificanteInscripcion.JustificanteInscripcion;
 import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
-import business.recibo.EmisionCuotas;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
@@ -78,12 +74,12 @@ public class MainWindow extends JFrame {
 
 	// Nombres de los paneles contenidos en mainPanel
 	private static final String HOME_PANEL_NAME = "homePanel";
-	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "pnSolicitudColegiado";
+	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "solicitudAltaColegiado";
 	private static final String LOGIN_COLEGIADO_PANEL = "loginColegiadoPanel";
 	private static final String APERTURA_INSCRIPCIONES_PANEL_NAME = "aperturaCursoPanel";
 	private static final String INSCRIPCION_CURSO_PANEL_NAME = "inscripicionCursoPanel";
 	private static final String ADD_CURSO_PANEL_NAME = "addCursoPanel";
-	private static final String PAGAR_INSCRIPCION_CURSO_PANEL_NAME = "inscripcionColegiado";
+	private static final String PAGAR_INSCRIPCION_CURSO_PANEL_NAME = "pagarInscripcionColegiado";
 	private static final String LISTADO_CURSOS_PANEL_NAME = "listadoCursosPanel";
 	private static final String LISTADO_INSCRIPCIONES_PANEL_NAME = "listadoInscripcionesPanel";
 	private static final String CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME = "consultarTitulacionSolicitantePanel";
@@ -149,10 +145,6 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldApellidos;
 	private JLabel lblNewLabelD;
 
-	private JPanel pnLogin;
-	private JPanel pnLoginNorth;
-	private JLabel lbLoginTitle;
-	private JPanel pnLoginCenter;
 	private JPanel pnInscripcion;
 	private JScrollPane spCursos;
 	private JList<CursoDto> lsCursos;
@@ -162,9 +154,6 @@ public class MainWindow extends JFrame {
 	private JLabel lbConfirmacionInscripcion;
 	private JButton btMostrarCursos;
 	private ColegiadoDto colegiado;
-	private JPanel pnInicio;
-	private JLabel lblNewLabel;
-	private JButton btnInscripcionCurso;
 	private CardLayout mainCardLayout;
 	private JButton btnInscripcionToInicio;
 
@@ -218,7 +207,6 @@ public class MainWindow extends JFrame {
 	private DefaultButton btHomeSecretariaListadoInscripciones;
 	private DefaultButton btHomeClearDatabase;
 	private JPanel pnListadoCursos;
-	private JPanel pnPagarInscripcion;
 	private JPanel pnListadoInscripciones;
 	private JPanel pnConsultarTitulacionSolicitante;
 	private JPanel pnEmitirCuotasColegiados;
@@ -227,8 +215,6 @@ public class MainWindow extends JFrame {
 	private JLabel lblCrearCurso;
 	private JPanel pnCrearCursoCampos;
 	private JPanel pnCrearCursoButtons;
-	private JButton btnCancelar;
-	private JButton btnCrearCurso;
 	private JLabel lbInscripcionPagoColegiado;
 	private JPanel pnModosPagoInscripcionColegiado;
 	private JButton btnTransferenciaColegiado;
@@ -253,13 +239,6 @@ public class MainWindow extends JFrame {
 	private JComboBox<String> comboBoxIdentificadorCursosAbiertos;
 	private DefaultButton btnCrearCursoCancelar;
 	private JButton btnCrearCursoCrear;
-	private JPanel pnLoginCenterContainer;
-	private JPanel pnLoginFields;
-	private JLabel lbLoginUsername;
-	private JPanel pnLoginLoginFieldsInput;
-	private DefaultButton btnIniciarSesion_1;
-	private JTextField txColegiadoLoginDniInput;
-	private DefaultButton btnColegiadoLoginRegistrarse;
 	private JPanel pnCrearCursoCenterContainer;
 	private JPanel pnCrearCursoTituloCurso;
 	private JPanel pnCrearCursoFechaImparticion;
@@ -270,6 +249,8 @@ public class MainWindow extends JFrame {
 	private JTextField txCrearCursoFechaImparticionInput;
 	private JLabel lblCrearCursoPrecio;
 	private JTextField txCrearCursoPrecioInscripcionInput;
+	private JPanel pnPagarInscripcionColegiadoSur;
+	private DefaultButton btnInicioInscripcion;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -288,11 +269,9 @@ public class MainWindow extends JFrame {
 
 		// TODO: Cambiar orden para ver al arrancar el programa
 		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
-		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
 		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
 		mainPanel.add(getPnInscripcion(), INSCRIPCION_CURSO_PANEL_NAME);
-		mainPanel.add(getPnInicio(), "Inicio");
 		mainPanel.add(getPnListadoCursos(), LISTADO_CURSOS_PANEL_NAME);
 		mainPanel.add(getPnPagarInscripcionColegiado(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
@@ -943,7 +922,7 @@ public class MainWindow extends JFrame {
 	private boolean confirmarBorrar() {
 		boolean confir = false;
 		int resp = JOptionPane.showConfirmDialog(this, "Â¿ EstÃ¡s seguro de que quieres borrar los campos ?",
-				"Borrar los campos", JOptionPane.QUESTION_MESSAGE);
+				"Borrar los campos", JOptionPane.INFORMATION_MESSAGE);
 		if (resp == JOptionPane.YES_OPTION) {
 			confir = true;
 		}
@@ -954,7 +933,7 @@ public class MainWindow extends JFrame {
 		boolean confir = false;
 		int resp = JOptionPane.showConfirmDialog(this,
 				"Â¿ EstÃ¡s seguro de que quieres volver a la pantalla de inicio ?", "Volver al inicio",
-				JOptionPane.QUESTION_MESSAGE);
+				JOptionPane.INFORMATION_MESSAGE);
 		if (resp == JOptionPane.YES_OPTION) {
 			confir = true;
 		}
@@ -1121,7 +1100,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelN = new JLabel("Nombre:");
 			lblNewLabelN.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelN.setDisplayedMnemonic('N');
+			lblNewLabelN.setDisplayedMnemonic('M');
 			lblNewLabelN.setLabelFor(getTextFieldNombre());
 		}
 		return lblNewLabelN;
@@ -1458,59 +1437,6 @@ public class MainWindow extends JFrame {
 		return lblNewLabelTitulacionColegiado;
 	}
 
-	private JPanel getPnLogin() {
-		if (pnLogin == null) {
-			pnLogin = new JPanel();
-			pnLogin.setName("panelLogin");
-			GridBagLayout gbl_pnLogin = new GridBagLayout();
-			gbl_pnLogin.columnWidths = new int[] { 1100, 0 };
-			gbl_pnLogin.rowHeights = new int[] { 60, 600, 0 };
-			gbl_pnLogin.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
-			gbl_pnLogin.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-			pnLogin.setLayout(gbl_pnLogin);
-			GridBagConstraints gbc_pnLoginNorth = new GridBagConstraints();
-			gbc_pnLoginNorth.fill = GridBagConstraints.BOTH;
-			gbc_pnLoginNorth.insets = new Insets(0, 0, 5, 0);
-			gbc_pnLoginNorth.gridx = 0;
-			gbc_pnLoginNorth.gridy = 0;
-			pnLogin.add(getPnLoginNorth(), gbc_pnLoginNorth);
-			GridBagConstraints gbc_pnLoginCenter = new GridBagConstraints();
-			gbc_pnLoginCenter.fill = GridBagConstraints.BOTH;
-			gbc_pnLoginCenter.gridx = 0;
-			gbc_pnLoginCenter.gridy = 1;
-			pnLogin.add(getPnLoginCenter(), gbc_pnLoginCenter);
-		}
-		return pnLogin;
-	}
-
-	private JPanel getPnLoginNorth() {
-		if (pnLoginNorth == null) {
-			pnLoginNorth = new JPanel();
-			pnLoginNorth.setOpaque(false);
-			pnLoginNorth.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-			pnLoginNorth.add(getLbLoginTitle());
-		}
-		return pnLoginNorth;
-	}
-
-	private JLabel getLbLoginTitle() {
-		if (lbLoginTitle == null) {
-			lbLoginTitle = new JLabel("Iniciar sesión");
-			lbLoginTitle.setFont(LookAndFeel.HEADING_1_FONT);
-		}
-		return lbLoginTitle;
-	}
-
-	private JPanel getPnLoginCenter() {
-		if (pnLoginCenter == null) {
-			pnLoginCenter = new JPanel();
-			pnLoginCenter.setOpaque(false);
-			pnLoginCenter.setLayout(new BorderLayout(0, 0));
-			pnLoginCenter.add(getPnLoginCenterContainer(), BorderLayout.CENTER);
-		}
-		return pnLoginCenter;
-	}
-
 	private JPanel getPnInscripcion() {
 		if (pnInscripcion == null) {
 			pnInscripcion = new JPanel();
@@ -1667,54 +1593,7 @@ public class MainWindow extends JFrame {
 		}
 		return btMostrarCursos;
 	}
-
-	private JPanel getPnInicio() {
-		if (pnInicio == null) {
-			pnInicio = new JPanel();
-			pnInicio.setVisible(false);
-			pnInicio.setLayout(null);
-			pnInicio.add(getLblNewLabel());
-			pnInicio.add(getBtnInscripcionCurso());
-
-			JButton btnAperturaInscripciones = new JButton("Apertura Inscripciones");
-			btnAperturaInscripciones.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, "coursesTablePanel");
-				}
-
-			});
-			btnAperturaInscripciones.setOpaque(false);
-			btnAperturaInscripciones.setFont(new Font("Tahoma", Font.BOLD, 16));
-			btnAperturaInscripciones.setBounds(611, 202, 221, 70);
-			pnInicio.add(btnAperturaInscripciones);
-		}
-		return pnInicio;
-	}
-
-	private JLabel getLblNewLabel() {
-		if (lblNewLabel == null) {
-			lblNewLabel = new JLabel("INICIO");
-			lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 30));
-			lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabel.setBounds(211, 54, 624, 51);
-		}
-		return lblNewLabel;
-	}
-
-	private JButton getBtnInscripcionCurso() {
-		if (btnInscripcionCurso == null) {
-			btnInscripcionCurso = new JButton("InscripciÃ³n Curso");
-			btnInscripcionCurso.setOpaque(false);
-			btnInscripcionCurso.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_PANEL_NAME);
-				}
-			});
-			btnInscripcionCurso.setFont(new Font("Tahoma", Font.BOLD, 16));
-			btnInscripcionCurso.setBounds(203, 202, 221, 70);
-		}
-		return btnInscripcionCurso;
-	}
+	
 
 	private JButton getBtnInscripcionToInicio() {
 		if (btnInscripcionToInicio == null) {
@@ -1736,6 +1615,7 @@ public class MainWindow extends JFrame {
 			pnPagarInscripcionColegiado.setLayout(new BorderLayout(0, 0));
 			pnPagarInscripcionColegiado.add(getPnPagarInscripcionColegiadoNorte(), BorderLayout.NORTH);
 			pnPagarInscripcionColegiado.add(getPnModosPagoInscripcionColegiado(), BorderLayout.CENTER);
+			pnPagarInscripcionColegiado.add(getPnPagarInscripcionColegiadoSur(), BorderLayout.SOUTH);
 		}
 		return pnPagarInscripcionColegiado;
 	}
@@ -2028,9 +1908,11 @@ public class MainWindow extends JFrame {
 		if (btHomePagarInscripcion == null) {
 			btHomePagarInscripcion = new DefaultButton("Pagar una inscripción", "ventana", "PagarInscripcionColegiado",
 					'p', ButtonColor.NORMAL);
-			btHomePagarInscripcion.setEnabled(false);
 			btHomePagarInscripcion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					if (Curso.listarCursosPlanificados().isEmpty()) {
+						
+					}
 					mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 				}
 			});
@@ -2197,13 +2079,6 @@ public class MainWindow extends JFrame {
 		return pnListadoCursos;
 	}
 
-	private JPanel getPnPagarInscripcion() {
-		if (pnPagarInscripcion == null) {
-			pnPagarInscripcion = new JPanel();
-			pnPagarInscripcion.setLayout(new BorderLayout(0, 0));
-		}
-		return pnPagarInscripcion;
-	}
 
 	private JPanel getPnListadoInscripciones() {
 		if (pnListadoInscripciones == null) {
@@ -2227,100 +2102,6 @@ public class MainWindow extends JFrame {
 			pnEmitirCuotasColegiados.setLayout(new BorderLayout(0, 0));
 		}
 		return pnEmitirCuotasColegiados;
-	}
-
-	private JPanel getPnLoginCenterContainer() {
-		if (pnLoginCenterContainer == null) {
-			pnLoginCenterContainer = new JPanel();
-			pnLoginCenterContainer.setOpaque(false);
-			pnLoginCenterContainer.setBorder(new EmptyBorder(50, 50, 50, 50));
-			pnLoginCenterContainer.setLayout(new GridLayout(0, 1, 0, 0));
-			pnLoginCenterContainer.add(getPnLoginFields_1());
-		}
-		return pnLoginCenterContainer;
-	}
-
-	private JPanel getPnLoginFields_1() {
-		if (pnLoginFields == null) {
-			pnLoginFields = new JPanel();
-			pnLoginFields.setBorder(new EmptyBorder(0, 50, 0, 50));
-			pnLoginFields.setOpaque(false);
-			GridBagLayout gbl_pnLoginFields = new GridBagLayout();
-			gbl_pnLoginFields.columnWidths = new int[] { 50, 900, 0 };
-			gbl_pnLoginFields.rowHeights = new int[] { 100, 250, 0 };
-			gbl_pnLoginFields.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-			gbl_pnLoginFields.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-			pnLoginFields.setLayout(gbl_pnLoginFields);
-			GridBagConstraints gbc_lbLoginUsername = new GridBagConstraints();
-			gbc_lbLoginUsername.fill = GridBagConstraints.BOTH;
-			gbc_lbLoginUsername.insets = new Insets(0, 0, 5, 0);
-			gbc_lbLoginUsername.gridx = 1;
-			gbc_lbLoginUsername.gridy = 0;
-			pnLoginFields.add(getLbLoginUsername_1(), gbc_lbLoginUsername);
-			GridBagConstraints gbc_pnLoginLoginFieldsInput = new GridBagConstraints();
-			gbc_pnLoginLoginFieldsInput.fill = GridBagConstraints.BOTH;
-			gbc_pnLoginLoginFieldsInput.gridx = 1;
-			gbc_pnLoginLoginFieldsInput.gridy = 1;
-			pnLoginFields.add(getPnLoginLoginFieldsInput(), gbc_pnLoginLoginFieldsInput);
-		}
-		return pnLoginFields;
-	}
-
-	private JLabel getLbLoginUsername_1() {
-		if (lbLoginUsername == null) {
-			lbLoginUsername = new JLabel("USUARIO (DNI)");
-			lbLoginUsername.setHorizontalAlignment(SwingConstants.CENTER);
-			lbLoginUsername.setFont(new Font("Arial", Font.BOLD, 16));
-		}
-		return lbLoginUsername;
-	}
-
-	private JPanel getPnLoginLoginFieldsInput() {
-		if (pnLoginLoginFieldsInput == null) {
-			pnLoginLoginFieldsInput = new JPanel();
-			pnLoginLoginFieldsInput.setLayout(new GridLayout(0, 1, 0, 10));
-			pnLoginLoginFieldsInput.add(getTxColegiadoLoginDniInput());
-			pnLoginLoginFieldsInput.add(getBtnIniciarSesion_1_2());
-			pnLoginLoginFieldsInput.add(getBtnColegiadoLoginRegistrarse());
-		}
-		return pnLoginLoginFieldsInput;
-	}
-
-	private DefaultButton getBtnIniciarSesion_1_2() {
-		if (btnIniciarSesion_1 == null) {
-			btnIniciarSesion_1 = new DefaultButton("Iniciar Sesión", "ventana", "IniciarSesion", 'i',
-					ButtonColor.NORMAL);
-			btnIniciarSesion_1.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// TODO: COLEGIADO - INICIAR SESION
-				}
-			});
-			btnIniciarSesion_1.setFont(new Font("Tahoma", Font.BOLD, 14));
-		}
-		return btnIniciarSesion_1;
-	}
-
-	private JTextField getTxColegiadoLoginDniInput() {
-		if (txColegiadoLoginDniInput == null) {
-			txColegiadoLoginDniInput = new JTextField();
-			txColegiadoLoginDniInput.setToolTipText("Intro");
-			txColegiadoLoginDniInput.setColumns(10);
-		}
-		return txColegiadoLoginDniInput;
-	}
-
-	private DefaultButton getBtnColegiadoLoginRegistrarse() {
-		if (btnColegiadoLoginRegistrarse == null) {
-			btnColegiadoLoginRegistrarse = new DefaultButton("Registrarse", "ventana", "Registrarse", 't',
-					ButtonColor.NORMAL);
-			btnColegiadoLoginRegistrarse.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// TODO: COLEGIADO REGISTRARSE
-				}
-			});
-			btnColegiadoLoginRegistrarse.setFont(new Font("Tahoma", Font.BOLD, 14));
-		}
-		return btnColegiadoLoginRegistrarse;
 	}
 
 	private JPanel getPnCrearCursoCenterContainer() {
@@ -2464,6 +2245,8 @@ public class MainWindow extends JFrame {
 									"Lo sentimos, no puede hacerse cargo de pagar un curso en el que se ha preinscrito hace más de dos días\n"
 									+ "Inténtelo de nuevo la próxima vez",
 									"Inscripción no válida", JOptionPane.WARNING_MESSAGE);
+							reiniciarInscripcionColegiadoPagar();
+							mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 						}		
 					}
 				}
@@ -2481,7 +2264,6 @@ public class MainWindow extends JFrame {
 				JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío y el formato del DNI es el correcto\n"
 						+ "Sigue el ejemplo del campo correspondiente"
 						, "Datos no válidos", JOptionPane.WARNING_MESSAGE);
-				textFieldNumeroTarjetaColegiado.setText(null);
 				return false;
 			} 
 		} catch (NumberFormatException e) {
@@ -2525,6 +2307,8 @@ public class MainWindow extends JFrame {
 										"Lo sentimos, no puede hacerse cargo de pagar un curso en el que se ha preinscrito hace más de dos días\n"
 										+ "Inténtelo de nuevo la próxima vez",
 										"Inscripción no válida", JOptionPane.WARNING_MESSAGE);
+								reiniciarInscripcionColegiadoPagar();
+								mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 							} 
 					} 
 				}
@@ -2545,6 +2329,8 @@ public class MainWindow extends JFrame {
 					"Lo sentimos, no puede hacerse cargo de pagar un curso, no es usted ni colegiado ni precolegiado, formalice su solicitud primero\n"
 					+ "Inténtelo de nuevo la próxima vez",
 					"Dni inválido", JOptionPane.WARNING_MESSAGE);
+			reiniciarInscripcionColegiadoPagar();
+			mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 			return false;
 		}
 		// comprobamos que se ha inscrito en el curso
@@ -2556,14 +2342,12 @@ public class MainWindow extends JFrame {
 					"Lo sentimos, no puede hacerse cargo de pagar un curso, en el que no se ha preinscrito\n"
 					+ "Inténtelo de nuevo la próxima vez",
 					"Preinscripción no realizada", JOptionPane.WARNING_MESSAGE);
+			reiniciarInscripcionColegiadoPagar();
+			mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 			return false;
 		}
 	}
 
-	private void reiniciarCambios() {
-		textFieldDNIColegiado.setText("Ej: 71778880C");
-		textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
-	}
 
 	@SuppressWarnings("deprecation")
 	private boolean comprobarFechaCaducidad() {
@@ -2574,6 +2358,7 @@ public class MainWindow extends JFrame {
 			&& this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.DATE) <= date.getDay() + 19) {
 				JOptionPane.showMessageDialog(null, "La fecha de caducidad debe ser posterior a la actual"
 						, "Fecha de caducidad incorrecta", JOptionPane.ERROR_MESSAGE);
+			this.calendarioFechaCaducidad.setDate(new Date());
 			return false;
 		}
 		return true;
@@ -2589,12 +2374,11 @@ public class MainWindow extends JFrame {
 				JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío y los formatos de los datos que tiene que introducir\n"
 						+ "Sigue el ejemplo del campo correspondiente"
 						, "Datos no válidos", JOptionPane.WARNING_MESSAGE);
-				textFieldNumeroTarjetaColegiado.setText(null);
 				return false;
 			} 
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, "Por favor, introduzca números y no texto en el campo de la tarjeta"
-					, "Datos incorrectos", JOptionPane.ERROR_MESSAGE);
+					, "Datos incorrectos de la tarjeta", JOptionPane.ERROR_MESSAGE);
 			textFieldNumeroTarjetaColegiado.setText(null);
 			return false;
 		}
@@ -2607,17 +2391,17 @@ public class MainWindow extends JFrame {
 			pnNumeroTarjetaDatosColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnNumeroTarjetaDatosColegiado.add(getLblNumeroTarjetaDatosColegiado());
 			pnNumeroTarjetaDatosColegiado.add(getTextFieldNumeroTarjetaColegiado());
-			pnNumeroTarjetaDatosColegiado.setBorder(new LineBorder(Color.RED));
+			pnNumeroTarjetaDatosColegiado.setBorder(new LineBorder(Color.BLACK));
 		}
 		return pnNumeroTarjetaDatosColegiado;
 	}
 	private JPanel getPnNumeroFechaCaducidadDatosColegiado() {
 		if (pnNumeroFechaCaducidadDatosColegiado == null) {
 			pnNumeroFechaCaducidadDatosColegiado = new JPanel();
-			pnNumeroFechaCaducidadDatosColegiado.setLayout(new GridLayout(2, 1, 0, 0));
+			pnNumeroFechaCaducidadDatosColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnNumeroFechaCaducidadDatosColegiado.add(getLblFechaCaducidadDatosColegiado());
 			pnNumeroFechaCaducidadDatosColegiado.add(getCalendarioFechaCaducidad());
-			pnNumeroFechaCaducidadDatosColegiado.setBorder(new LineBorder(Color.RED));
+			pnNumeroFechaCaducidadDatosColegiado.setBorder(new LineBorder(Color.BLACK));
 		}
 		return pnNumeroFechaCaducidadDatosColegiado;
 	}
@@ -2661,6 +2445,7 @@ public class MainWindow extends JFrame {
 		if (calendarioFechaCaducidad==null) {
 			calendarioFechaCaducidad = new JCalendar();
 			calendarioFechaCaducidad.getDayChooser().getDayPanel().setToolTipText("Seleccione la fecha de caducidad de su tarjeta");
+			calendarioFechaCaducidad.setBorder(new LineBorder(Color.GRAY));
 		}
 		return calendarioFechaCaducidad;
 	}
@@ -2729,7 +2514,7 @@ public class MainWindow extends JFrame {
 	}
 	private JLabel getLblRellenarDatosInscripcionCurso() {
 		if (lblRellenarDatosInscripcionCurso == null) {
-			lblRellenarDatosInscripcionCurso = new JLabel("Debe de cumplimentar su número de colegiado y el identificador del curso independientemente del método de pago");
+			lblRellenarDatosInscripcionCurso = new JLabel("Debe de cumplimentar su número de colegiado y el identificador del curso independientemente del método de pago que elija");
 			lblRellenarDatosInscripcionCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lblRellenarDatosInscripcionCurso.setFont(new Font("Arial Black", Font.PLAIN, 14));
 		}
@@ -2738,6 +2523,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLblNewLabelIdentificadorCurso() {
 		if (lblNewLabelIdentificadorCurso == null) {
 			lblNewLabelIdentificadorCurso = new JLabel("Identificador del curso:");
+			lblNewLabelIdentificadorCurso.setLabelFor(getComboBoxIdentificadorCursosAbiertos());
 			lblNewLabelIdentificadorCurso.setDisplayedMnemonic('I');
 			lblNewLabelIdentificadorCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelIdentificadorCurso.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -2750,20 +2536,44 @@ public class MainWindow extends JFrame {
 			comboBoxIdentificadorCursosAbiertos = new JComboBox<String>();
 			comboBoxIdentificadorCursosAbiertos.setToolTipText("Selecciona el curso que desea pagar");
 				String[] elementsComboBox;
-				try {
-					List<CursoDto> lista = Curso.listarCursosPlanificados();
-					if (! lista.isEmpty()) {
-						elementsComboBox = new String[lista.size()];
-						for (int i=0; i < lista.size(); i++) {
-							elementsComboBox[i] = String.valueOf(lista.get(i).codigoCurso);
-						}
-						comboBoxIdentificadorCursosAbiertos = new JComboBox<String>(new DefaultComboBoxModel<String>(elementsComboBox));
-					}
-				} catch (BusinessException e) {
-					e.printStackTrace();
+				List<CursoDto> lista = Curso.listarCursosPlanificados();
+				elementsComboBox = new String[lista.size()];
+				for (int i=0; i < lista.size(); i++) {
+					elementsComboBox[i] = String.valueOf(lista.get(i).codigoCurso);
 				}
+				comboBoxIdentificadorCursosAbiertos = new JComboBox<String>(new DefaultComboBoxModel<String>(elementsComboBox));		
 		}
 		return comboBoxIdentificadorCursosAbiertos;
 	}
 	
+	private JPanel getPnPagarInscripcionColegiadoSur() {
+		if (pnPagarInscripcionColegiadoSur == null) {
+			pnPagarInscripcionColegiadoSur = new JPanel();
+			pnPagarInscripcionColegiadoSur.add(getBtnInicioInscripcion());
+		}
+		return pnPagarInscripcionColegiadoSur;
+	}
+	private DefaultButton getBtnInicioInscripcion() {
+		if (btnInicioInscripcion == null) {
+			btnInicioInscripcion = new DefaultButton("Vovler a Inicio", "ventana", "VolverAInicio", 'v', ButtonColor.CANCEL);
+			btnInicioInscripcion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (confirmarVolverPrinicipio()) {
+						reiniciarInscripcionColegiadoPagar();
+						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					}
+				}
+			});
+			btnInicioInscripcion.setToolTipText("Pulse para volver a la pantalla principal");
+			btnInicioInscripcion.setMnemonic('R');
+			btnInicioInscripcion.setBackground(Color.RED);
+		}
+		return btnInicioInscripcion;
+	}
+
+	private void reiniciarInscripcionColegiadoPagar() {
+		textFieldDNIColegiado.setText("Ej: 71778880C");
+		textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
+		this.calendarioFechaCaducidad.setDate(new Date());
+	}
 }
