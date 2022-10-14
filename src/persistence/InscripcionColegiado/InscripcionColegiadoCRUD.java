@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;

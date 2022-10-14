@@ -1,23 +1,12 @@
 package ui.util;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 
 /**
  * Class to manage the widths of colunmns in a table (Posted by Rob Camick on
@@ -148,7 +137,6 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
 	/*
 	 * Update the TableColumn with the newly calculated width
 	 */
-	@SuppressWarnings("removal")
 	private void updateTableColumn(int column, int width) {
 		final TableColumn tableColumn = table.getColumnModel().getColumn(column);
 
@@ -332,11 +320,6 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
 	 * Action to adjust or restore the width of a single column or all columns
 	 */
 	class ColumnAction extends AbstractAction {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
 		private boolean isSelectedColumn;
 		private boolean isAdjust;
 
@@ -372,8 +355,6 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
 	 * functionality to their preferences
 	 */
 	class ToggleAction extends AbstractAction {
-
-		private static final long serialVersionUID = -6578717024543152269L;
 		private boolean isToggleDynamic;
 		private boolean isToggleLarger;
 

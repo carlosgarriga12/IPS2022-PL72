@@ -1,4 +1,4 @@
-package persistence.recibo;
+package business.recibo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import business.recibo.EmisionCuotas;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.jdbc.Jdbc;
