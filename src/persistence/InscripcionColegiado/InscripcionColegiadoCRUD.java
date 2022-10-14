@@ -17,7 +17,6 @@ import persistence.util.Conf;
 public class InscripcionColegiadoCRUD {
 	private static final String SQL_INSCRIPCION_COLEGIADO = Conf.getInstance().getProperty("INSCRIPCION_COLEGIADO");
 	private static final String SQL_IS_INSCRITO = Conf.getInstance().getProperty("IS_INSCRITO");
-	private static final String SQL_ID_INSCRIPCION = Conf.getInstance().getProperty("ID_INSCRIPCION");
 	private static final String SQL_INSCRIPCION_FIND_FECHA = Conf.getInstance().getProperty("TINSCRIPCION_FIND_BY_FECHA");
 	private static final String SQL_INSCRIPCION_PAGAR = Conf.getInstance().getProperty("TINSCRIPCION_PAGAR");
 
@@ -86,6 +85,10 @@ public class InscripcionColegiadoCRUD {
 			ResultSet rs = stmt.executeQuery();
 			
 			rs.next();
+			
+			if (rs.getString(1) == null) {
+				return null;
+			}
 			
 			fecha = rs.getString(1);
 			

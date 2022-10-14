@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 
+import persistence.DtoAssembler;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
@@ -42,7 +43,7 @@ public class ColegiadoCrud {
 			if (rs.getString(atributo) == null) {
 				return null;
 			}
-			colegiado = ColegiadoAssembler.toColegiadoDto(rs);
+			colegiado = DtoAssembler.toColegiadoDto(rs);
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
@@ -128,7 +129,7 @@ public class ColegiadoCrud {
 			st = c.createStatement();
 			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
 			
-			return ColegiadoAssembler.toColegiadoList(rs);
+			return DtoAssembler.toColegiadoList(rs);
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {

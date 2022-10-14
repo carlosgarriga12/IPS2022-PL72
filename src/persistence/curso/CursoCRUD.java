@@ -19,9 +19,10 @@ public class CursoCRUD {
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
 	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
+	private static final String SQL_LIST_ALL_OPENED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_OPENED_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
-	
+
 	
 	public static int generarCodigoCurso() {
 		Connection c = null;
@@ -159,6 +160,29 @@ public class CursoCRUD {
 		}
 
 		return isOpen;
+	}
+	
+
+	public static List<CursoDto> listarCursosActualmenteAbiertos() throws PersistenceException {
+		Connection con = null;
+		PreparedStatement pst = null;
+		List<CursoDto> res = null;
+
+		try {
+
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_LIST_ALL_OPENED_COURSES);
+			
+			res = DtoAssembler.toCursoList(pst.executeQuery());
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return res;
 	}
 	
 	

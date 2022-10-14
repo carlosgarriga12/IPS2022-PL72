@@ -3,19 +3,13 @@ package business.InscripcionColegiado;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-
-import java.sql.SQLException;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 
 
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
-import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
-import persistence.jdbc.PersistenceException;
 
 
 public class InscripcionColegiado {

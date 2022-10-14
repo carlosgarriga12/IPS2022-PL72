@@ -40,4 +40,8 @@ public class Curso {
 		Argument.isNotNull(courseToCheck);
 		return CursoCRUD.isCursoAbierto(courseToCheck);
 	}
+	
+	public static List<CursoDto> listarCursosAbiertos() throws BusinessException  {
+		return CursoCRUD.listarCursosActualmenteAbiertos();
+	}
 }

@@ -9,20 +9,9 @@ import java.util.List;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 
 public class DtoAssembler {
 
-	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
-		List<ColegiadoDto> colegiados = new ArrayList<>();
-
-		while (rs.next()) {
-			colegiados.add(resultSetToColegiadoDto(rs));
-		}
-
-		return colegiados;
-	}
-	
 	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException{
 		List<CursoDto> inscripciones = new ArrayList<CursoDto>();
 		while(rs.next()) {
@@ -30,8 +19,18 @@ public class DtoAssembler {
 		}
 		return inscripciones;
 	}
+	
+	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
+		List<ColegiadoDto> colegiados = new ArrayList<>();
 
-	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
+		while (rs.next()) {
+			colegiados.add(toColegiadoDto(rs));
+		}
+
+		return colegiados;
+	}
+
+	public static ColegiadoDto toColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
 		c.DNI = rs.getString("DNI");
@@ -43,10 +42,10 @@ public class DtoAssembler {
 		c.annio = rs.getInt("ano");
 		c.numeroTarjeta = rs.getInt("numeroTarjeta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
+		c.estado = rs.getString("estado");
 		c.numeroColegiado = rs.getString("numero");
 
 		return c;
-
 	}
 
 	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {
