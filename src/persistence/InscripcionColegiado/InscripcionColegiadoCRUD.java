@@ -23,22 +23,16 @@ public class InscripcionColegiadoCRUD {
 
 	public static void InscribirColegiado(CursoDto curso, ColegiadoDto colegiado) throws PersistenceException {
 		PreparedStatement stmt = null;
-		PreparedStatement stmt2 = null;
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_COLEGIADO);
-			int idInscripcion;
-			stmt2 = cn.prepareStatement(SQL_ID_INSCRIPCION);
-			stmt2.setInt(1, curso.codigoCurso);
-			ResultSet rs = stmt2.executeQuery();
-			idInscripcion = rs.getInt("ID");
 			
 			int i = 1;
 			stmt.setString(i++, colegiado.DNI);
-			stmt.setInt(i++, idInscripcion);
+			stmt.setInt(i++, curso.codigoCurso);
 			stmt.setString(i++, LocalDate.now().toString());
 			stmt.setDouble(i++, curso.precio);
-			stmt.setInt(i++, 0);
+			stmt.setString(i++, "pre-inscrito");
 			stmt.execute();
 			
 			
@@ -48,7 +42,6 @@ public class InscripcionColegiadoCRUD {
 		}
 		finally {
 			Jdbc.close(stmt);
-			Jdbc.close(stmt2);
 		}
 		
 	}

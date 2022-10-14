@@ -3,6 +3,13 @@ package business.InscripcionColegiado;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
+
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoCrud;
@@ -46,18 +53,12 @@ public class InscripcionColegiado {
 	    }
 	}
 	
-	public static ColegiadoDto InicioSesion(String DNI) throws BusinessException {
-		try {
-			return ColegiadoCrud.findColegiadoDni(DNI);}
-		catch(PersistenceException e){
-			if(e.getMessage().equals("java.sql.SQLException: ResultSet closed")) {
-				return null;
-			}
-			else {
-				throw e;
-			}
-		} 
+	
+	public static void EmitirJustificante(ColegiadoDto colegiado, CursoDto curso) throws BusinessException {
+		String contenido = "Nombre: "+colegiado.nombre+" "+colegiado.apellidos+"  Número Colegiado: " + colegiado.numeroColegiado + "  Fecha Solicitud: "
+				+ LocalDate.now().toString() + "  Cantidad a Abonar: " + curso.precio;
+		
+		JOptionPane.showMessageDialog(null, "<html><p align='center'>Justificante de Inscripcion:</p><p>"+contenido+"</p></html>");
 	}
-	
-	
 }
+
