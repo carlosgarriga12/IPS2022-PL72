@@ -69,16 +69,8 @@ public class DtoAssembler {
 		newCursoDto.precio = rs.getDouble("PRECIO");
 		
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-		System.out.println(isCursoAbierto);
 		
 		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
-
-//		if (rs.getInt("PLAZAS") > 0) {
-//			newCursoDto.estado = CursoDto.CURSO_ABIERTO;
-//		} else {
-//			newCursoDto.estado = DateUtils.checkDateIsAfter(LocalDate.parse(rs.getString("FECHAIMPARTIR")),
-//					LocalDate.now()) ? CursoDto.CURSO_PLANIFICADO : CursoDto.CURSO_CERRADO;
-//		}
 
 		return newCursoDto;
 

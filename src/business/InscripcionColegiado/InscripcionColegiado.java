@@ -1,12 +1,8 @@
 package business.InscripcionColegiado;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoDto;
-import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 
 public class InscripcionColegiado {
