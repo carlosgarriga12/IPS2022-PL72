@@ -23,8 +23,8 @@ public class DtoAssembler {
 		return colegiados;
 	}
 	
-	public static List<InscripcionCursoFormacionDto> toInscripcionList(ResultSet rs) throws SQLException{
-		List<InscripcionCursoFormacionDto> inscripciones = new ArrayList<InscripcionCursoFormacionDto>();
+	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException{
+		List<CursoDto> inscripciones = new ArrayList<CursoDto>();
 		while(rs.next()) {
 			inscripciones.add(resultSetToInscripcionDto(rs));
 		}
@@ -84,21 +84,18 @@ public class DtoAssembler {
 
 	}
 	
-	private static InscripcionCursoFormacionDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
-		InscripcionCursoFormacionDto i = new InscripcionCursoFormacionDto();
+	private static CursoDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
 		CursoDto c = new CursoDto();
 		
-		c.codigoCurso = rs.getInt("ID_CURSO");
+		c.codigoCurso = rs.getInt("IDCURSO");
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		c.plazasDisponibles = rs.getInt("PLAZAS");
 		c.precio = rs.getDouble("PRECIO");
+		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
+		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
 		
-		i.curso = c;
-		i.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
-		i.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
-		
-		return i;
+		return c;
 		
 	}
 

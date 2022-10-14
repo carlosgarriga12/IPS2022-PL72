@@ -56,6 +56,16 @@ public class InscripcionCursoFormacionCRUD {
 			Jdbc.close(pst);
 		}
 	}
+	public static boolean isFechaDentro(LocalDate FechaInicio, LocalDate FechaFinal) {
+		LocalDate fAhora = LocalDate.now();
+		if(fAhora.isAfter(FechaInicio) && fAhora.isBefore(FechaFinal)) {
+			return true;
+		}
+		if(fAhora.isEqual(FechaInicio) || fAhora.isEqual(FechaFinal)) {
+			return true;
+		}
+		return false;
+	}
 	
 	public static List<CursoDto> listaCursosAbiertos() throws PersistenceException {
 		PreparedStatement stmt = null;
@@ -63,13 +73,12 @@ public class InscripcionCursoFormacionCRUD {
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_Lista_Inscripciones);
-			List<InscripcionCursoFormacionDto> respuesta = DtoAssembler.toInscripcionList(stmt.executeQuery());
+			List<CursoDto> respuesta = DtoAssembler.toInscripcionList(stmt.executeQuery());
 			LocalDate ahora = LocalDate.now();
 			cursos = new ArrayList<>();
-			for(InscripcionCursoFormacionDto inscripcion: respuesta) {
-				if((ahora.isAfter(inscripcion.fechaApertura) || ahora.isEqual(inscripcion.fechaApertura)) && 
-						(ahora.isBefore(inscripcion.fechaCierre) || ahora.isEqual(inscripcion.fechaCierre))) {
-					cursos.add(inscripcion.curso);
+			for(CursoDto curso: respuesta) {
+				if(isFechaDentro(curso.fechaApertura, curso.fechaCierre)) {
+					cursos.add(curso);
 				}
 			}
 			
@@ -102,38 +111,7 @@ public class InscripcionCursoFormacionCRUD {
 		
 	}
 	
-	public static boolean isFechaDentro(String FechaInicio, String FechaFinal) {
-		LocalDate fInicio = LocalDate.parse(FechaInicio);
-		LocalDate fFinal = LocalDate.parse(FechaFinal);
-		LocalDate fAhora = LocalDate.now();
-		if(fAhora.isAfter(fInicio) && fAhora.isBefore(fFinal)) {
-			return true;
-		}
-		if(fAhora.isEqual(fInicio) || fAhora.isEqual(fFinal)) {
-			return true;
-		}
-		return false;
-	}
+	
 
-	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
-		// TODO Auto-generated method stub
-		PreparedStatement stmt = null;
-		try {
-			Connection cn = Jdbc.getConnection();
-			stmt = cn.prepareStatement(SQL_Is_Curso_Abierto);
-			stmt.setInt(1, cursoSeleccionado.codigoCurso);
-			
-			ResultSet rs = stmt.executeQuery();
-			
-			return isFechaDentro(rs.getString("FechaApertura"), rs.getString("FechaCierre"));
-			
-			
-		}
-		catch(SQLException e){
-			throw new PersistenceException(e);
-		}
-		finally {
-			Jdbc.close(stmt);
-		}
-	}
+
 }

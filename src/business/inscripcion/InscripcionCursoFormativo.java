@@ -4,9 +4,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
+import persistence.colegiado.ColegiadoCrud;
+import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
@@ -102,9 +106,8 @@ public class InscripcionCursoFormativo {
 		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
 	}
 
-	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
-		// TODO Auto-generated method stub
-		return InscripcionCursoFormacionCRUD.isCursoAbierto(cursoSeleccionado);
-	}
+
+	
+	
 	
 }
