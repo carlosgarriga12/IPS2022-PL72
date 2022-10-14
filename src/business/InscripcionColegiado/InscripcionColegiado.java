@@ -1,16 +1,17 @@
 package business.InscripcionColegiado;
 
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
+
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
-import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 
 public class InscripcionColegiado {

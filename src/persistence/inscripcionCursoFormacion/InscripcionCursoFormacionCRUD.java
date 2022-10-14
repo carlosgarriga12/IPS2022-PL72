@@ -24,9 +24,9 @@ public class InscripcionCursoFormacionCRUD {
 
 	private static final String SQL_INSERT_INSCRIPCION_CURSO_FORMATIVO = Conf.getInstance()
 			.getProperty("TINSCRIPCION_CURSO_ADD");
-	private static final String SQL_Lista_Inscripciones = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
-	private static final String SQL_Plazas_Libres = Conf.getInstance().getProperty("PLAZAS_LIBRES");
-	private static final String SQL_Is_Curso_Abierto = Conf.getInstance().getProperty("Is_Curso_Abierto");
+	private static final String SQL_LISTA_INSCRIPCIONES = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
+	private static final String SQL_PLAZAS_LIBRES = Conf.getInstance().getProperty("PLAZAS_LIBRES");
+	private static final String SQL_IS_CURSO_ABIERTO = Conf.getInstance().getProperty("Is_Curso_Abierto");
 
 
 	/**
@@ -72,9 +72,11 @@ public class InscripcionCursoFormacionCRUD {
 		List<CursoDto> cursos = null;
 		try {
 			Connection cn = Jdbc.getConnection();
-			stmt = cn.prepareStatement(SQL_Lista_Inscripciones);
+
+
+			
+			stmt = cn.prepareStatement(SQL_LISTA_INSCRIPCIONES);
 			List<CursoDto> respuesta = DtoAssembler.toInscripcionList(stmt.executeQuery());
-			LocalDate ahora = LocalDate.now();
 			cursos = new ArrayList<>();
 			for(CursoDto curso: respuesta) {
 				if(isFechaDentro(curso.fechaApertura, curso.fechaCierre)) {
@@ -96,7 +98,7 @@ public class InscripcionCursoFormacionCRUD {
 		PreparedStatement stmt = null;
 		try {
 			Connection cn = Jdbc.getConnection();
-			stmt = cn.prepareStatement(SQL_Plazas_Libres);
+			stmt = cn.prepareStatement(SQL_PLAZAS_LIBRES);
 			stmt.setInt(1, curso.codigoCurso);
 			int respuesta = stmt.executeQuery().getInt("TOTAL");
 			return curso.plazasDisponibles > respuesta;
@@ -108,7 +110,6 @@ public class InscripcionCursoFormacionCRUD {
 		finally {
 			Jdbc.close(stmt);
 		}
-		
 	}
 	
 	

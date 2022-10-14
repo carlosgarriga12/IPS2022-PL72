@@ -2,7 +2,9 @@ package persistence.curso;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,33 @@ public class CursoCRUD {
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
 	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
+	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
+	
+	
+	public static int generarCodigoCurso() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			c = Jdbc.getConnection();
+			
+			st = c.createStatement();
+			
+			rs = st.executeQuery(SQL_FIND_MAX_CURSO_ID);
+			
+			if(rs.next()) {
+				return rs.getInt(1) + 1;
+			} else {
+				return 1;
+			}
+			
+		} catch(SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(rs, st, c);
+		}
+	}
 
 	public static void add(CursoDto curso) throws SQLException {
 		Connection con = null;
@@ -31,7 +60,8 @@ public class CursoCRUD {
 			pst.setString(i++, curso.titulo);
 			pst.setString(i++, curso.fechaInicio.toString());
 			pst.setDouble(i++, curso.precio);
-
+			pst.setInt(i++, curso.codigoCurso);
+			
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
@@ -83,13 +113,14 @@ public class CursoCRUD {
 			con = Jdbc.getConnection();
 			pst = con.prepareStatement(SQL_LIST_ALL_SCHEDULED_COURSES);
 			
-			res = DtoAssembler.toCursoList(pst.executeQuery());
-
-//			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
-//
-//			// Filtrar por curso planificado
-//			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
-//					.collect(Collectors.toList());
+			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
+			
+			// Filtrado de cursos planificados
+			for(CursoDto c: allCourses) {
+				if(c.estado.equals(CursoDto.CURSO_PLANIFICADO)) {
+					res.add(c);
+				}
+			}
 
 		} catch (SQLException e) {
 			throw new BusinessException(e);
@@ -129,5 +160,7 @@ public class CursoCRUD {
 
 		return isOpen;
 	}
+	
+	
 
 }

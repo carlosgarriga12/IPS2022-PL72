@@ -8,11 +8,16 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -49,11 +54,13 @@ import business.InscripcionColegiado.InscripcionColegiado;
 import business.colegiado.crud.commands.FindColegiadoPorDni;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
-import business.inscripcion.InscripcionCursoFormativo;
+import business.recibo.EmisionCuotas;
 import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
+import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.jdbc.PersistenceException;
+import persistence.recibo.ReciboCRUD;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -61,21 +68,28 @@ import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = -8203812316779660921L;
 
+	// Nombres de los paneles contenidos en mainPanel
+	private static final String HOME_PANEL_NAME = "homePanel";
+	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "solicitudColegiadoPanel";
+	private static final String LOGIN_COLEGIADO_PANEL = "loginColegiadoPanel";
+	private static final String APERTURA_INSCRIPCIONES_PANEL_NAME = "aperturaCursoPanel";
+	private static final String INSCRIPCION_CURSO_PANEL_NAME = "inscripicionCursoPanel";
+	private static final String ADD_CURSO_PANEL_NAME = "addCursoPanel";
+	private static final String PAGAR_INSCRIPCION_CURSO_PANEL_NAME = "pagarInscripcionCursoPanel";
+	private static final String LISTADO_CURSOS_PANEL_NAME = "listadoCursosPanel";
+	private static final String LISTADO_INSCRIPCIONES_PANEL_NAME = "listadoInscripcionesPanel";
+	private static final String CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME = "consultarTitulacionSolicitantePanel";
+	private static final String EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME = "emitirCuotasColegiadosPanels";
+
 	private JPanel mainPanel;
-	
-	private JLabel lblTitle;
-	private JButton btnSecretaria;
-	private JTextField txtDNI;
-	private JLabel lblDNI;
+
 	private JPanel pnHome;
-	private JPanel pnCoursesList;
+	private JPanel pnAbrirInscripcionesCurso;
 	private JScrollPane spCoursesListCenter;
 	private JTable tbCoursesList;
 
@@ -115,7 +129,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnSolicitudColegiadoSur;
 	private JButton btnLimpiar;
 	private JButton btnFinalizar;
-	private JButton btnSolicitud;
 	private JButton btnAtras;
 	private JLabel lbRellenarDatos;
 	private JPanel pnSolicitudDatosSur;
@@ -133,10 +146,17 @@ public class MainWindow extends JFrame {
 	private JLabel lblNewLabelA;
 	private JTextField textFieldApellidos;
 	private JLabel lblNewLabelD;
+
+
+	private JPanel pnLogin;
+	private JPanel pnLoginNorth;
+	private JLabel lbLoginTitle;
+	private JPanel pnLoginCenter;
+
 	private JPanel pnInscripcion;
 	private JScrollPane spCursos;
 	private JList<CursoDto> lsCursos;
-	private JLabel lbCursos;
+	private JLabel lbInscripcionSeleccionarCursos;
 	private JButton btnInscribete;
 	private JLabel lbAlerta;
 	private JLabel lbConfirmacionInscripcion;
@@ -170,13 +190,70 @@ public class MainWindow extends JFrame {
 	private JTextField textFieldTitulo;
 	private JLabel lblTitulacinSegunSus;
 	private JLabel lblNewLabelTitulacionColegiado;
+
 	private JButton btnRegistrarse_1;
 	private JPanel panel;
 	private JTextField txCursoDNI;
 	
 
+	private JPanel pnHomeNorth;
+	private JPanel pnHomeCenter;
+	private JPanel pnHomeSouth;
+	private JPanel pnHomeTituloColegiado;
+	private JPanel pnHomeTituloSecretaria;
+	private JLabel lbTituloHomeColegiado;
+	private JLabel lbTituloHomeSecretaria;
+	private JPanel pnHomeAccionesColegiado;
+	private JPanel pnHomeAccionesSecretaria;
+	private DefaultButton btHomeAltaColegiado;
+	private DefaultButton btHomeVerCursos;
+	private DefaultButton btHomeInscripcionCurso;
+	private DefaultButton btHomePagarInscripcion;
+	private DefaultButton btHomeSecretariaAbrirInscripciones;
+	private DefaultButton btHomeSecretariaConsultarTitulacionSolicitante;
+	private DefaultButton btHomeSecretariaEmitirCuotas;
+	private JPanel pnHomeSouthDatabaseOptions;
+	private JPanel pnHomeClearDatabase;
+	private JPanel pnHomeLoadDatabase;
+	private DefaultButton btHomeLoadDatabase;
+	private JPanel pnHomeSouthTitle;
+	private JLabel lbHomeSouthDatabaseTitle;
+	private DefaultButton btHomeSecretariaAddCurso;
+	private DefaultButton btHomeSecretariaListadoInscripciones;
+	private DefaultButton btHomeClearDatabase;
+	private JPanel pnListadoCursos;
+	private JPanel pnPagarInscripcion;
+	private JPanel pnListadoInscripciones;
+	private JPanel pnConsultarTitulacionSolicitante;
+	private JPanel pnEmitirCuotasColegiados;
+	private JPanel pnCrearCurso;
+	private JPanel pnCrearCursoTitulo;
+	private JLabel lblCrearCurso;
+	private JPanel pnCrearCursoCampos;
+	private JPanel pnCrearCursoButtons;
+	private DefaultButton btnCrearCursoCancelar;
+	private JButton btnCrearCursoCrear;
+	private JPanel pnLoginCenterContainer;
+	private JPanel pnLoginFields;
+	private JLabel lbLoginUsername;
+	private JPanel pnLoginLoginFieldsInput;
+	private DefaultButton btnIniciarSesion_1;
+	private JTextField txColegiadoLoginDniInput;
+	private DefaultButton btnColegiadoLoginRegistrarse;
+	private JPanel pnCrearCursoCenterContainer;
+	private JPanel pnCrearCursoTituloCurso;
+	private JPanel pnCrearCursoFechaImparticion;
+	private JPanel pnCrearCursoPrecioInscripcion;
+	private JLabel lblTituloCurso;
+	private JTextField txCrearCursoTituloCursoInput;
+	private JLabel lblFechaImparticion;
+	private JTextField txCrearCursoFechaImparticionInput;
+	private JLabel lblCrearCursoPrecio;
+	private JTextField txCrearCursoPrecioInscripcionInput;
+
+
 	public MainWindow() {
-		setTitle("COIIPA : GestiÃ³n de servicios");
+		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// TODO: Revisar dimensiones ventana
@@ -189,19 +266,31 @@ public class MainWindow extends JFrame {
 		
 		mainCardLayout = new CardLayout(0, 0);
 		mainPanel.setLayout(mainCardLayout);
-		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
-		mainPanel.add(getPnInscripcion(), "Instruccion");
-		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
-		mainPanel.add(getPnHome(), "homePanel");
+
+
+
+
+
+		// TODO: Cambiar orden para ver al arrancar el programa
+		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
+		mainPanel.add(getPnLogin(), "loginPanel");
+		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
+		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
+		mainPanel.add(getPnInscripcion(), INSCRIPCION_CURSO_PANEL_NAME);
+
 		mainPanel.add(getPnInicio(), "Inicio");
-		mainPanel.add(getPanel(), "name_900905980397400");
+		mainPanel.add(getPnListadoCursos(), LISTADO_CURSOS_PANEL_NAME);
+		mainPanel.add(getPnPagarInscripcion(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
+		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
+		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
+		mainPanel.add(getPnEmitirCuotasColegiados(), EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
+		mainPanel.add(getPnCrearCurso(), ADD_CURSO_PANEL_NAME);
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 		inicializarCampos();
-		System.out.print("");
 	}
 
 	private void inicializarCampos() {
@@ -217,59 +306,27 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 	}
 
-	private JLabel getLblTitle() {
-		if (lblTitle == null) {
-			lblTitle = new JLabel("Bienvenidos a la aplicaci\u00F3n del COIIPA");
-			lblTitle.setFont(new Font("Arial", Font.BOLD, 18));
-		}
-		return lblTitle;
-	}
-
-	private JButton getBtnSecretaria() {
-		if (btnSecretaria == null) {
-			btnSecretaria = new JButton("Secretaria");
-		}
-		return btnSecretaria;
-	}
-
-	private JTextField getTxtDNI() {
-		if (txtDNI == null) {
-			txtDNI = new JTextField();
-			txtDNI.setColumns(10);
-		}
-		return txtDNI;
-	}
-
-	private JLabel getLblDNI() {
-		if (lblDNI == null) {
-			lblDNI = new JLabel("DNI");
-		}
-		return lblDNI;
-	}
-
 	private JPanel getPnHome() {
 		if (pnHome == null) {
 			pnHome = new JPanel();
 			pnHome.setLayout(new BorderLayout(0, 0));
-			pnHome.add(getLblTitle(), BorderLayout.NORTH);
-			pnHome.add(getBtnSecretaria());
-			pnHome.add(getTxtDNI());
-			pnHome.add(getLblDNI());
-			pnHome.add(getBtnSolicitud(), BorderLayout.EAST);
+			pnHome.add(getPnHomeNorth(), BorderLayout.NORTH);
+			pnHome.add(getPnHomeCenter(), BorderLayout.CENTER);
+			pnHome.add(getPnHomeSouth(), BorderLayout.SOUTH);
 		}
 		return pnHome;
 	}
 
-	private JPanel getPnCoursesList() {
-		if (pnCoursesList == null) {
-			pnCoursesList = new JPanel();
-			pnCoursesList.setBorder(null);
-			pnCoursesList.setLayout(new BorderLayout(0, 20));
-			pnCoursesList.add(getSpCoursesListCenter(), BorderLayout.CENTER);
-			pnCoursesList.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
-			pnCoursesList.add(getPnCoursesListNorth(), BorderLayout.NORTH);
+	private JPanel getPnAbrirInscripcionesCurso() {
+		if (pnAbrirInscripcionesCurso == null) {
+			pnAbrirInscripcionesCurso = new JPanel();
+			pnAbrirInscripcionesCurso.setBorder(null);
+			pnAbrirInscripcionesCurso.setLayout(new BorderLayout(0, 20));
+			pnAbrirInscripcionesCurso.add(getSpCoursesListCenter(), BorderLayout.CENTER);
+			pnAbrirInscripcionesCurso.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
+			pnAbrirInscripcionesCurso.add(getPnCoursesListNorth(), BorderLayout.NORTH);
 		}
-		return pnCoursesList;
+		return pnAbrirInscripcionesCurso;
 	}
 
 	private JScrollPane getSpCoursesListCenter() {
@@ -517,6 +574,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private JFormattedTextField getFTxFechaInicioInscripcionesCursoSeleccionado() {
+		// TODO: Reemplazar por JCalendar
 		if (fTxFechaInicioInscripcionesCursoSeleccionado == null) {
 			fTxFechaInicioInscripcionesCursoSeleccionado = new JFormattedTextField(new TimeFormatter());
 			fTxFechaInicioInscripcionesCursoSeleccionado
@@ -612,6 +670,11 @@ public class MainWindow extends JFrame {
 	private DefaultButton getBtCancelarAperturaCurso() {
 		if (btCancelarAperturaCurso == null) {
 			btCancelarAperturaCurso = new DefaultButton("Cancelar", "ventana", "Cancelar", 'c', ButtonColor.CANCEL);
+			btCancelarAperturaCurso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
 			btCancelarAperturaCurso.setToolTipText("Cancelar apertura de curso");
 			btCancelarAperturaCurso.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			btCancelarAperturaCurso.setFocusPainted(false);
@@ -771,7 +834,7 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelDatosSur() {
 		if (pnSolicitudColegiadoSur == null) {
 			pnSolicitudColegiadoSur = new JPanel();
-			pnSolicitudColegiadoSur.setLayout(new GridLayout(1, 3, 0, 0));
+			pnSolicitudColegiadoSur.setLayout(new GridLayout(1, 3, 10, 0));
 			pnSolicitudColegiadoSur.add(getBtnAtras());
 			pnSolicitudColegiadoSur.add(getBtnLimpiar());
 			pnSolicitudColegiadoSur.add(getBtnFinalizar());
@@ -781,7 +844,7 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnLimpiar() {
 		if (btnLimpiar == null) {
-			btnLimpiar = new JButton("Limpiar");
+			btnLimpiar = new DefaultButton("Limpiar campos", "ventana", "LimpiarCampos", 'l', ButtonColor.NORMAL);
 			btnLimpiar.setMnemonic('L');
 			btnLimpiar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -798,18 +861,18 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnFinalizar() {
 		if (btnFinalizar == null) {
-			btnFinalizar = new JButton("Finalizar");
+			btnFinalizar = new DefaultButton("Finalizar solicitud y enviar", "ventana", "FinalizarSolicitudAlta", 'f',
+					ButtonColor.NORMAL);
 			btnFinalizar.setMnemonic('F');
 			btnFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (anadirColegiado()) {
 						mostrarEstadoPendiente();
-						mainCardLayout.show(mainPanel, "loginPanel");
+						mainCardLayout.show(mainPanel, LOGIN_COLEGIADO_PANEL);
 						reiniciarSolicitudRegistro();
 					}
 				}
 			});
-			btnFinalizar.setBackground(Color.GREEN);
 			btnFinalizar.setToolTipText("Pulse para formalizar su solicitud de ser colegiado");
 		}
 		return btnFinalizar;
@@ -902,30 +965,14 @@ public class MainWindow extends JFrame {
 		this.getTextFieldNombre().grabFocus();
 	}
 
-	private JButton getBtnSolicitud() {
-		if (btnSolicitud == null) {
-			btnSolicitud = new JButton("Solicitud de colegiado");
-			btnSolicitud.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					getPnHome().setVisible(false);
-					getPnSolicitudColegiado().setVisible(true);
-					inicializarCampos();
-				}
-			});
-			btnSolicitud.setMnemonic('S');
-			btnSolicitud.setToolTipText("Pulsa para formalizar su solicitud");
-		}
-		return btnSolicitud;
-	}
-
 	private JButton getBtnAtras() {
 		if (btnAtras == null) {
-			btnAtras = new JButton("AtrÃ¡s");
+			btnAtras = new DefaultButton("Vovler a Inicio", "ventana", "VolverAInicio", 'v', ButtonColor.CANCEL);
 			btnAtras.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (confirmarVolverPrinicipio()) {
 						reiniciarSolicitudRegistro();
-						mainCardLayout.show(mainPanel, "loginPanel");
+						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 					}
 				}
 			});
@@ -1176,7 +1223,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelPob() {
 		if (lblNewLabelPob == null) {
-			lblNewLabelPob = new JLabel("PoblaciÃ³n:");
+			lblNewLabelPob = new JLabel("Población:");
 			lblNewLabelPob.setToolTipText("Introduzca su poblaciÃ³n");
 			lblNewLabelPob.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -1195,7 +1242,7 @@ public class MainWindow extends JFrame {
 					textFieldPoblacion.setText(null);
 				}
 			});
-			textFieldPoblacion.setToolTipText("Introduzca su poblaciÃ³n");
+			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setText("Ej: Moreda");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldPoblacion.setColumns(10);
@@ -1215,7 +1262,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelTelefonoColegiado() {
 		if (lblNewLabelTelefono == null) {
-			lblNewLabelTelefono = new JLabel("TelÃ©fono de contacto:");
+			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
 			lblNewLabelTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblNewLabelTelefono.setDisplayedMnemonic('T');
@@ -1233,8 +1280,8 @@ public class MainWindow extends JFrame {
 					textFieldTelefono.setText(null);
 				}
 			});
-			textFieldTelefono.setToolTipText("Introduzca su telÃ©fono");
-			textFieldTelefono.setText("Ej: 681676654 [9 nÃºmeros]");
+			textFieldTelefono.setToolTipText("Introduzca su teléfono");
+			textFieldTelefono.setText("Ej: 681676654 [9 números]");
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTelefono.setColumns(10);
 		}
@@ -1245,8 +1292,8 @@ public class MainWindow extends JFrame {
 		if (panelDatosAcademicos == null) {
 			panelDatosAcademicos = new JPanel();
 			panelDatosAcademicos.setBorder(new TitledBorder(
-											new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-											"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
+					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+					"Datos acad\u00E9micos", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(128, 128, 128)));
 			panelDatosAcademicos.setLayout(new GridLayout(0, 1, 0, 0));
 			panelDatosAcademicos.add(getPnDatosTituloColegiado());
 			panelDatosAcademicos.add(getPnDatosCentroColegiado());
@@ -1369,8 +1416,8 @@ public class MainWindow extends JFrame {
 					textFieldTitulo.setText(null);
 				}
 			});
-			textFieldTitulo.setToolTipText("Teclee la titulaciÃ³n");
-			textFieldTitulo.setText("Ej: 0 (sin titulaciÃ³n)");
+			textFieldTitulo.setToolTipText("Teclee la titulación");
+			textFieldTitulo.setText("Ej: 0 (sin titulación)");
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 			textFieldTitulo.setColumns(10);
 		}
@@ -1379,7 +1426,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblTitulacinSegunSus() {
 		if (lblTitulacinSegunSus == null) {
-			lblTitulacinSegunSus = new JLabel("TitulaciÃ³n segun sus estudios:");
+			lblTitulacinSegunSus = new JLabel("Titulación segun sus estudios:");
 			lblTitulacinSegunSus.setHorizontalAlignment(SwingConstants.CENTER);
 			lblTitulacinSegunSus.setFont(new Font("Tahoma", Font.BOLD, 11));
 			lblTitulacinSegunSus.setDisplayedMnemonic('I');
@@ -1396,6 +1443,60 @@ public class MainWindow extends JFrame {
 		return lblNewLabelTitulacionColegiado;
 	}
 
+	private JPanel getPnLogin() {
+		if (pnLogin == null) {
+			pnLogin = new JPanel();
+			pnLogin.setName("panelLogin");
+			GridBagLayout gbl_pnLogin = new GridBagLayout();
+			gbl_pnLogin.columnWidths = new int[] { 1100, 0 };
+			gbl_pnLogin.rowHeights = new int[] { 60, 600, 0 };
+			gbl_pnLogin.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+			gbl_pnLogin.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			pnLogin.setLayout(gbl_pnLogin);
+			GridBagConstraints gbc_pnLoginNorth = new GridBagConstraints();
+			gbc_pnLoginNorth.fill = GridBagConstraints.BOTH;
+			gbc_pnLoginNorth.insets = new Insets(0, 0, 5, 0);
+			gbc_pnLoginNorth.gridx = 0;
+			gbc_pnLoginNorth.gridy = 0;
+			pnLogin.add(getPnLoginNorth(), gbc_pnLoginNorth);
+			GridBagConstraints gbc_pnLoginCenter = new GridBagConstraints();
+			gbc_pnLoginCenter.fill = GridBagConstraints.BOTH;
+			gbc_pnLoginCenter.gridx = 0;
+			gbc_pnLoginCenter.gridy = 1;
+			pnLogin.add(getPnLoginCenter(), gbc_pnLoginCenter);
+		}
+		return pnLogin;
+	}
+
+	private JPanel getPnLoginNorth() {
+		if (pnLoginNorth == null) {
+			pnLoginNorth = new JPanel();
+			pnLoginNorth.setOpaque(false);
+			pnLoginNorth.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnLoginNorth.add(getLbLoginTitle());
+		}
+		return pnLoginNorth;
+	}
+
+	private JLabel getLbLoginTitle() {
+		if (lbLoginTitle == null) {
+			lbLoginTitle = new JLabel("Iniciar sesión");
+			lbLoginTitle.setFont(LookAndFeel.HEADING_1_FONT);
+		}
+		return lbLoginTitle;
+	}
+
+	private JPanel getPnLoginCenter() {
+		if (pnLoginCenter == null) {
+			pnLoginCenter = new JPanel();
+			pnLoginCenter.setOpaque(false);
+			pnLoginCenter.setLayout(new BorderLayout(0, 0));
+			pnLoginCenter.add(getPnLoginCenterContainer(), BorderLayout.CENTER);
+		}
+		return pnLoginCenter;
+	}
+
+
 	private JPanel getPnInscripcion() {
 		if (pnInscripcion == null) {
 			pnInscripcion = new JPanel();
@@ -1403,7 +1504,7 @@ public class MainWindow extends JFrame {
 			pnInscripcion.setFont(new Font("Arial", Font.BOLD, 14));
 			pnInscripcion.setLayout(null);
 			pnInscripcion.add(getSpCursos());
-			pnInscripcion.add(getLbCursos());
+			pnInscripcion.add(getLbInscripcionSeleccionarCursos());
 			pnInscripcion.add(getBtnInscribete());
 			pnInscripcion.add(getLbAlerta());
 			pnInscripcion.add(getLbConfirmacionInscripcion());
@@ -1442,20 +1543,21 @@ public class MainWindow extends JFrame {
 		return lsCursos;
 	}
 
-	private JLabel getLbCursos() {
-		if (lbCursos == null) {
-			lbCursos = new JLabel("Selecciona un Curso:");
-			lbCursos.setDisplayedMnemonic('s');
-			lbCursos.setLabelFor(getLsCursos());
-			lbCursos.setFont(new Font("Arial", Font.BOLD, 16));
-			lbCursos.setBounds(18, 94, 361, 35);
+
+	private JLabel getLbInscripcionSeleccionarCursos() {
+		if (lbInscripcionSeleccionarCursos == null) {
+			lbInscripcionSeleccionarCursos = new JLabel("Selecciona un Curso:");
+			lbInscripcionSeleccionarCursos.setDisplayedMnemonic('s');
+			lbInscripcionSeleccionarCursos.setLabelFor(getLsCursos());
+			lbInscripcionSeleccionarCursos.setFont(new Font("Arial", Font.BOLD, 16));
+			lbInscripcionSeleccionarCursos.setBounds(18, 70, 361, 35);
 		}
-		return lbCursos;
+		return lbInscripcionSeleccionarCursos;
 	}
 
 	private JButton getBtnInscribete() {
 		if (btnInscribete == null) {
-			btnInscribete = new JButton("Inscribirme");
+			btnInscribete = new DefaultButton("Inscribirme", "ventana", "Inscribirme", 'n', ButtonColor.NORMAL);
 			btnInscribete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					CursoDto cursoSeleccionado = lsCursos.getSelectedValue();
@@ -1494,24 +1596,30 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
+
 			btnInscribete.setBorder(new LineBorder(Color.BLACK, 2));
 			btnInscribete.setMnemonic('i');
 			btnInscribete.setBackground(Color.GREEN);
 			btnInscribete.setFont(new Font("Arial", Font.BOLD, 16));
 			btnInscribete.setBounds(731, 581, 191, 61);
+
 		}
 		return btnInscribete;
 	}
 
 	private JLabel getLbAlerta() {
 		if (lbAlerta == null) {
-			lbAlerta = new JLabel("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
+
+			lbAlerta = new JLabel("Para Realizar la Inscripción es Necesario Seleccionar un Curso");
+			lbAlerta.setHorizontalTextPosition(SwingConstants.LEFT);
 			lbAlerta.setVisible(false);
 			lbAlerta.setBorder(new LineBorder(Color.BLACK));
 			lbAlerta.setForeground(Color.RED);
 			lbAlerta.setFont(new Font("Arial", Font.BOLD, 14));
+
 			lbAlerta.setHorizontalAlignment(SwingConstants.CENTER);
 			lbAlerta.setBounds(209, 98, 678, 29);
+
 		}
 		return lbAlerta;
 	}
@@ -1525,7 +1633,9 @@ public class MainWindow extends JFrame {
 			lbConfirmacionInscripcion.setHorizontalAlignment(SwingConstants.CENTER);
 			lbConfirmacionInscripcion.setFont(new Font("Arial", Font.BOLD, 18));
 			lbConfirmacionInscripcion.setBorder(new LineBorder(Color.BLACK));
+
 			lbConfirmacionInscripcion.setBounds(18, 584, 678, 61);
+
 		}
 		return lbConfirmacionInscripcion;
 	}
@@ -1568,6 +1678,7 @@ public class MainWindow extends JFrame {
 			});
 			btMostrarCursos.setFont(new Font("Arial", Font.BOLD, 14));
 			btMostrarCursos.setBounds(749, 39, 250, 42);
+
 		}
 		return btMostrarCursos;
 	}
@@ -1611,7 +1722,7 @@ public class MainWindow extends JFrame {
 			btnInscripcionCurso.setOpaque(false);
 			btnInscripcionCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, "Instruccion");
+					mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_PANEL_NAME);
 				}
 			});
 			btnInscripcionCurso.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -1622,22 +1733,691 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnInscripcionToInicio() {
 		if (btnInscripcionToInicio == null) {
-			btnInscripcionToInicio = new JButton("<html><p>Volver  </p>  <p>a Inicio</p></html>");
+
+			btnInscripcionToInicio = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v',
+					ButtonColor.NORMAL);
 			btnInscripcionToInicio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, "Inicio");
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 				}
 			});
 			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
-			btnInscripcionToInicio.setBounds(935, 581, 140, 61);
+
+			btnInscripcionToInicio.setBounds(561, 602, 267, 64);
+
 		}
 		return btnInscripcionToInicio;
 	}
-	private JPanel getPanel() {
-		if (panel == null) {
-			panel = new JPanel();
+
+	private JPanel getPnHomeNorth() {
+		if (pnHomeNorth == null) {
+			pnHomeNorth = new JPanel();
+			pnHomeNorth.setOpaque(false);
+			pnHomeNorth.setLayout(new GridLayout(0, 2, 10, 0));
+			pnHomeNorth.add(getPnHomeTituloColegiado());
+			pnHomeNorth.add(getPnHomeTituloSecretaria());
 		}
-		return panel;
+		return pnHomeNorth;
+	}
+
+	private JPanel getPnHomeCenter() {
+		if (pnHomeCenter == null) {
+			pnHomeCenter = new JPanel();
+			pnHomeCenter.setOpaque(false);
+			pnHomeCenter.setLayout(new GridLayout(0, 2, 10, 0));
+			pnHomeCenter.add(getPnHomeAccionesColegiado());
+			pnHomeCenter.add(getPnHomeAccionesSecretaria());
+		}
+		return pnHomeCenter;
+	}
+
+	private JPanel getPnHomeSouth() {
+		if (pnHomeSouth == null) {
+			pnHomeSouth = new JPanel();
+			pnHomeSouth.setBackground(LookAndFeel.SECONDARY_COLOR);
+			pnHomeSouth.setLayout(new BorderLayout(0, 0));
+			pnHomeSouth.add(getPnHomeSouthTitle_1(), BorderLayout.NORTH);
+			pnHomeSouth.add(getPnHomeSouthDatabaseOptions());
+		}
+		return pnHomeSouth;
+	}
+
+	private JPanel getPnHomeTituloColegiado() {
+		if (pnHomeTituloColegiado == null) {
+			pnHomeTituloColegiado = new JPanel();
+			pnHomeTituloColegiado.setOpaque(false);
+			pnHomeTituloColegiado.add(getLbTituloHomeColegiado());
+		}
+		return pnHomeTituloColegiado;
+	}
+
+	private JPanel getPnHomeTituloSecretaria() {
+		if (pnHomeTituloSecretaria == null) {
+			pnHomeTituloSecretaria = new JPanel();
+			pnHomeTituloSecretaria.add(getLbTituloHomeSecretaria());
+		}
+		return pnHomeTituloSecretaria;
+	}
+
+	private JLabel getLbTituloHomeColegiado() {
+		if (lbTituloHomeColegiado == null) {
+			lbTituloHomeColegiado = new JLabel("Colegiado");
+			lbTituloHomeColegiado.setFont(LookAndFeel.HEADING_1_FONT);
+			lbTituloHomeColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbTituloHomeColegiado;
+	}
+
+	private JLabel getLbTituloHomeSecretaria() {
+		if (lbTituloHomeSecretaria == null) {
+			lbTituloHomeSecretaria = new JLabel("Secretaría");
+			lbTituloHomeSecretaria.setFont(LookAndFeel.HEADING_1_FONT);
+			lbTituloHomeSecretaria.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbTituloHomeSecretaria;
+	}
+
+	private JPanel getPnCrearCurso() {
+		if (pnCrearCurso == null) {
+			pnCrearCurso = new JPanel();
+			pnCrearCurso.setLayout(new BorderLayout(0, 0));
+			pnCrearCurso.add(getPnCrearCursoTitulo(), BorderLayout.NORTH);
+			pnCrearCurso.add(getPnCrearCursoCampos(), BorderLayout.CENTER);
+			pnCrearCurso.add(getPnCrearCursoButtons(), BorderLayout.SOUTH);
+		}
+		return pnCrearCurso;
+	}
+
+	private JPanel getPnCrearCursoTitulo() {
+		if (pnCrearCursoTitulo == null) {
+			pnCrearCursoTitulo = new JPanel();
+			pnCrearCursoTitulo.setBorder(new EmptyBorder(30, 30, 30, 30));
+			pnCrearCursoTitulo.add(getLblCrearCurso());
+		}
+		return pnCrearCursoTitulo;
+	}
+
+	private JLabel getLblCrearCurso() {
+		if (lblCrearCurso == null) {
+			lblCrearCurso = new JLabel("Crear curso");
+			lblCrearCurso.setFont(new Font("Tahoma", Font.BOLD, 24));
+		}
+		return lblCrearCurso;
+	}
+
+	private JPanel getPnCrearCursoCampos() {
+		if (pnCrearCursoCampos == null) {
+			pnCrearCursoCampos = new JPanel();
+			pnCrearCursoCampos.setOpaque(false);
+			pnCrearCursoCampos.setBorder(new EmptyBorder(0, 100, 0, 100));
+			pnCrearCursoCampos.setLayout(new BorderLayout(0, 0));
+			pnCrearCursoCampos.add(getPnCrearCursoCenterContainer());
+		}
+		return pnCrearCursoCampos;
+	}
+
+	private JPanel getPnCrearCursoButtons() {
+		if (pnCrearCursoButtons == null) {
+			pnCrearCursoButtons = new JPanel();
+			pnCrearCursoButtons.setOpaque(false);
+			pnCrearCursoButtons.setBorder(new EmptyBorder(20, 20, 20, 20));
+			pnCrearCursoButtons.setLayout(new GridLayout(0, 2, 10, 0));
+			pnCrearCursoButtons.add(getBtnCrearCursoCancelar());
+			pnCrearCursoButtons.add(getBtnCrearCursoCrear());
+		}
+		return pnCrearCursoButtons;
+	}
+
+	private DefaultButton getBtnCrearCursoCancelar() {
+		if (btnCrearCursoCancelar == null) {
+			btnCrearCursoCancelar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
+					ButtonColor.CANCEL);
+			btnCrearCursoCancelar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
+			btnCrearCursoCancelar.setBackground(Color.RED);
+		}
+		return btnCrearCursoCancelar;
+	}
+
+	private JButton getBtnCrearCursoCrear() {
+		if (btnCrearCursoCrear == null) {
+			btnCrearCursoCrear = new DefaultButton("Crear curso", "ventana", "CrearCurso", 'c', ButtonColor.NORMAL);
+			btnCrearCursoCrear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO: Pasar comprobaciones a business. Aqui solo imprimir y mostrar mensajes.
+					LocalDate fecha;
+					double precio = 0.0;
+					if (txCrearCursoTituloCursoInput.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "El titulo del curso esta vacio");
+						return;
+					}
+					if (txCrearCursoFechaImparticionInput.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "La fecha de imparticion del curso esta vacio");
+						return;
+					}
+					try {
+						fecha = LocalDate.parse(txCrearCursoFechaImparticionInput.getText());
+					} catch (Exception e) {
+						txCrearCursoFechaImparticionInput.setText("");
+						txCrearCursoFechaImparticionInput.grabFocus();
+						JOptionPane.showMessageDialog(pnCrearCurso, "Introduzca un formato de fecha valido");
+						return;
+					}
+					if (fecha.compareTo(LocalDate.now()) < 0) {
+						JOptionPane.showMessageDialog(pnCrearCurso,
+								"No puede crear un curso con una fecha anterior a la actual");
+						return;
+					}
+
+					if (txCrearCursoPrecioInscripcionInput.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "El precio del curso esta vacio");
+						return;
+					}
+					try {
+						precio = Double.valueOf(txCrearCursoPrecioInscripcionInput.getText());
+					} catch (Exception e) {
+						txCrearCursoPrecioInscripcionInput.setText("");
+						txCrearCursoPrecioInscripcionInput.grabFocus();
+						JOptionPane.showMessageDialog(pnCrearCurso,
+								"Introduzca un valor decimal " + "para el precio del curso");
+						return;
+					}
+					if (precio <= 0) {
+						txCrearCursoPrecioInscripcionInput.setText("");
+						txCrearCursoPrecioInscripcionInput.grabFocus();
+						JOptionPane.showMessageDialog(pnCrearCurso, "El precio tiene que ser positivo");
+						return;
+					}
+					CursoDto curso = new CursoDto();
+					curso.titulo = txCrearCursoTituloCursoInput.getText();
+					curso.precio = precio;
+					curso.fechaInicio = fecha;
+					curso.estado = CursoDto.CURSO_PLANIFICADO;
+					curso.codigoCurso = CursoCRUD.generarCodigoCurso();
+
+					try {
+						CursoCRUD.add(curso);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "Algo fue mal mientras se creo el curso");
+						return;
+					}
+
+					JOptionPane.showMessageDialog(pnCrearCurso, "Curso creado correctamente");
+				}
+			});
+		}
+		return btnCrearCursoCrear;
+	}
+
+	private JPanel getPnHomeAccionesColegiado() {
+		if (pnHomeAccionesColegiado == null) {
+			pnHomeAccionesColegiado = new JPanel();
+			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
+			pnHomeAccionesColegiado.setOpaque(false);
+			pnHomeAccionesColegiado.setLayout(new GridLayout(4, 1, 0, 10));
+
+			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
+			pnHomeAccionesColegiado.add(getBtHomeVerCursos());
+			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
+			pnHomeAccionesColegiado.add(getBtHomePagarInscripcion());
+		}
+		return pnHomeAccionesColegiado;
+	}
+
+	private JPanel getPnHomeAccionesSecretaria() {
+		if (pnHomeAccionesSecretaria == null) {
+			pnHomeAccionesSecretaria = new JPanel();
+			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
+			pnHomeAccionesSecretaria.setOpaque(false);
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(5, 1, 0, 10));
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAddCurso());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaListadoInscripciones());
+		}
+		return pnHomeAccionesSecretaria;
+	}
+
+	private DefaultButton getBtHomeAltaColegiado() {
+		if (btHomeAltaColegiado == null) {
+			btHomeAltaColegiado = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l',
+					ButtonColor.NORMAL);
+			btHomeAltaColegiado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, SOLICITUD_COLEGIADO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeAltaColegiado;
+	}
+
+	private DefaultButton getBtHomeVerCursos() {
+		if (btHomeVerCursos == null) {
+			btHomeVerCursos = new DefaultButton("Ver cursos", "ventana", "VerCursos", 'v', ButtonColor.NORMAL);
+			btHomeVerCursos.setEnabled(false);
+			btHomeVerCursos.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, LISTADO_CURSOS_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeVerCursos;
+	}
+
+	private DefaultButton getBtHomeInscripcionCurso() {
+		if (btHomeInscripcionCurso == null) {
+			btHomeInscripcionCurso = new DefaultButton("Inscribirse a un curso", "ventana", "InscribirseCursoColegiado",
+					'n', ButtonColor.NORMAL);
+			btHomeInscripcionCurso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeInscripcionCurso;
+	}
+
+	private DefaultButton getBtHomePagarInscripcion() {
+		if (btHomePagarInscripcion == null) {
+			btHomePagarInscripcion = new DefaultButton("Pagar una inscripción", "ventana", "PagarInscripcionColegiado",
+					'p', ButtonColor.NORMAL);
+			btHomePagarInscripcion.setEnabled(false);
+			btHomePagarInscripcion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomePagarInscripcion;
+	}
+
+	private DefaultButton getBtHomeSecretariaAbrirInscripciones() {
+		if (btHomeSecretariaAbrirInscripciones == null) {
+			btHomeSecretariaAbrirInscripciones = new DefaultButton("Abrir inscripciones de un curso", "ventana",
+					"AbrirInscrionesCurso", 'b', ButtonColor.NORMAL);
+			btHomeSecretariaAbrirInscripciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, APERTURA_INSCRIPCIONES_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaAbrirInscripciones;
+	}
+
+	private DefaultButton getBtHomeSecretariaConsultarTitulacionSolicitante() {
+		if (btHomeSecretariaConsultarTitulacionSolicitante == null) {
+			btHomeSecretariaConsultarTitulacionSolicitante = new DefaultButton("Consultar titulación de un solicitante",
+					"ventana", "ConsultarTitulacionSolicitante", 'c', ButtonColor.NORMAL);
+			btHomeSecretariaConsultarTitulacionSolicitante.setEnabled(false);
+			btHomeSecretariaConsultarTitulacionSolicitante.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaConsultarTitulacionSolicitante;
+	}
+
+	private DefaultButton getBtHomeSecretariaEmitirCuotas() {
+		if (btHomeSecretariaEmitirCuotas == null) {
+			btHomeSecretariaEmitirCuotas = new DefaultButton("Emitir cuotas colegiados", "ventana",
+					"EmitirCuotasColegiados", 't', ButtonColor.NORMAL);
+			btHomeSecretariaEmitirCuotas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
+					if (ReciboCRUD.emitirCuotas()) {
+						JOptionPane.showMessageDialog(null, "Cuotas emitidads correctamente");;
+					} else {
+						JOptionPane.showMessageDialog(null, "No hay cuotas pendientes");
+					}
+				}
+			});
+		}
+		return btHomeSecretariaEmitirCuotas;
+	}
+
+	private JPanel getPnHomeSouthDatabaseOptions() {
+		if (pnHomeSouthDatabaseOptions == null) {
+			pnHomeSouthDatabaseOptions = new JPanel();
+			pnHomeSouthDatabaseOptions.setOpaque(false);
+			pnHomeSouthDatabaseOptions.setBorder(new EmptyBorder(30, 50, 30, 50));
+			pnHomeSouthDatabaseOptions.setBackground(LookAndFeel.SECONDARY_COLOR);
+			pnHomeSouthDatabaseOptions.setLayout(new GridLayout(0, 2, 30, 0));
+			pnHomeSouthDatabaseOptions.add(getPnHomeLoadDatabase());
+			pnHomeSouthDatabaseOptions.add(getPnHomeClearDatabase());
+		}
+		return pnHomeSouthDatabaseOptions;
+	}
+
+	private JPanel getPnHomeClearDatabase() {
+		if (pnHomeClearDatabase == null) {
+			pnHomeClearDatabase = new JPanel();
+			pnHomeClearDatabase.setOpaque(false);
+			pnHomeClearDatabase.setLayout(new BorderLayout(0, 0));
+			pnHomeClearDatabase.add(getBtHomeLoadDatabase());
+		}
+		return pnHomeClearDatabase;
+	}
+
+	private JPanel getPnHomeLoadDatabase() {
+		if (pnHomeLoadDatabase == null) {
+			pnHomeLoadDatabase = new JPanel();
+			pnHomeLoadDatabase.setOpaque(false);
+			pnHomeLoadDatabase.setLayout(new BorderLayout(0, 0));
+			pnHomeLoadDatabase.add(getBtHomeClearDatabase());
+		}
+		return pnHomeLoadDatabase;
+	}
+
+	private DefaultButton getBtHomeLoadDatabase() {
+		if (btHomeLoadDatabase == null) {
+			btHomeLoadDatabase = new DefaultButton("Cargar datos", "ventana", "CargarDatos", 'r', ButtonColor.INFO);
+			btHomeLoadDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: Cargar datos en la base de datos
+				}
+			});
+		}
+		return btHomeLoadDatabase;
+	}
+
+	private JPanel getPnHomeSouthTitle_1() {
+		if (pnHomeSouthTitle == null) {
+			pnHomeSouthTitle = new JPanel();
+			pnHomeSouthTitle.setOpaque(false);
+			FlowLayout fl_pnHomeSouthTitle = new FlowLayout(FlowLayout.CENTER, 5, 5);
+			fl_pnHomeSouthTitle.setAlignOnBaseline(true);
+			pnHomeSouthTitle.setLayout(fl_pnHomeSouthTitle);
+			pnHomeSouthTitle.add(getLbHomeSouthDatabaseTitle_1());
+		}
+		return pnHomeSouthTitle;
+	}
+
+	private JLabel getLbHomeSouthDatabaseTitle_1() {
+		if (lbHomeSouthDatabaseTitle == null) {
+			lbHomeSouthDatabaseTitle = new JLabel("Base de datos");
+			lbHomeSouthDatabaseTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			lbHomeSouthDatabaseTitle.setFont(new Font("Arial", Font.PLAIN, 24));
+			lbHomeSouthDatabaseTitle.setForeground(LookAndFeel.TERTIARY_COLOR);
+		}
+		return lbHomeSouthDatabaseTitle;
+	}
+
+	private DefaultButton getBtHomeSecretariaAddCurso() {
+		if (btHomeSecretariaAddCurso == null) {
+			btHomeSecretariaAddCurso = new DefaultButton("Añadir un curso", "ventana", "AddCurso", 'd',
+					ButtonColor.NORMAL);
+			btHomeSecretariaAddCurso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, ADD_CURSO_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaAddCurso;
+	}
+
+	private DefaultButton getBtHomeSecretariaListadoInscripciones() {
+		if (btHomeSecretariaListadoInscripciones == null) {
+			btHomeSecretariaListadoInscripciones = new DefaultButton("Ver todas las inscripciones", "ventana",
+					"ListadoInscripciones", 'l', ButtonColor.NORMAL);
+			btHomeSecretariaListadoInscripciones.setEnabled(false);
+			btHomeSecretariaListadoInscripciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, LISTADO_INSCRIPCIONES_PANEL_NAME);
+				}
+			});
+		}
+		return btHomeSecretariaListadoInscripciones;
+	}
+
+	private DefaultButton getBtHomeClearDatabase() {
+		if (btHomeClearDatabase == null) {
+			btHomeClearDatabase = new DefaultButton("Vaciar BBDD", "ventana", "VaciarDB", 'v', ButtonColor.INFO);
+			btHomeClearDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: Vaciar base de datos
+				}
+			});
+		}
+		return btHomeClearDatabase;
+	}
+
+	private JPanel getPnListadoCursos() {
+		if (pnListadoCursos == null) {
+			pnListadoCursos = new JPanel();
+			pnListadoCursos.setLayout(new BorderLayout(0, 0));
+		}
+		return pnListadoCursos;
+	}
+
+	private JPanel getPnPagarInscripcion() {
+		if (pnPagarInscripcion == null) {
+			pnPagarInscripcion = new JPanel();
+			pnPagarInscripcion.setLayout(new BorderLayout(0, 0));
+		}
+		return pnPagarInscripcion;
+	}
+
+	private JPanel getPnListadoInscripciones() {
+		if (pnListadoInscripciones == null) {
+			pnListadoInscripciones = new JPanel();
+			pnListadoInscripciones.setLayout(new BorderLayout(0, 0));
+		}
+		return pnListadoInscripciones;
+	}
+
+	private JPanel getPnConsultarTitulacionSolicitante() {
+		if (pnConsultarTitulacionSolicitante == null) {
+			pnConsultarTitulacionSolicitante = new JPanel();
+			pnConsultarTitulacionSolicitante.setLayout(new BorderLayout(0, 0));
+		}
+		return pnConsultarTitulacionSolicitante;
+	}
+
+	private JPanel getPnEmitirCuotasColegiados() {
+		if (pnEmitirCuotasColegiados == null) {
+			pnEmitirCuotasColegiados = new JPanel();
+			pnEmitirCuotasColegiados.setLayout(new BorderLayout(0, 0));
+		}
+		return pnEmitirCuotasColegiados;
+	}
+
+	private JPanel getPnLoginCenterContainer() {
+		if (pnLoginCenterContainer == null) {
+			pnLoginCenterContainer = new JPanel();
+			pnLoginCenterContainer.setOpaque(false);
+			pnLoginCenterContainer.setBorder(new EmptyBorder(50, 50, 50, 50));
+			pnLoginCenterContainer.setLayout(new GridLayout(0, 1, 0, 0));
+			pnLoginCenterContainer.add(getPnLoginFields_1());
+		}
+		return pnLoginCenterContainer;
+	}
+
+	private JPanel getPnLoginFields_1() {
+		if (pnLoginFields == null) {
+			pnLoginFields = new JPanel();
+			pnLoginFields.setBorder(new EmptyBorder(0, 50, 0, 50));
+			pnLoginFields.setOpaque(false);
+			GridBagLayout gbl_pnLoginFields = new GridBagLayout();
+			gbl_pnLoginFields.columnWidths = new int[] { 50, 900, 0 };
+			gbl_pnLoginFields.rowHeights = new int[] { 100, 250, 0 };
+			gbl_pnLoginFields.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			gbl_pnLoginFields.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			pnLoginFields.setLayout(gbl_pnLoginFields);
+			GridBagConstraints gbc_lbLoginUsername = new GridBagConstraints();
+			gbc_lbLoginUsername.fill = GridBagConstraints.BOTH;
+			gbc_lbLoginUsername.insets = new Insets(0, 0, 5, 0);
+			gbc_lbLoginUsername.gridx = 1;
+			gbc_lbLoginUsername.gridy = 0;
+			pnLoginFields.add(getLbLoginUsername_1(), gbc_lbLoginUsername);
+			GridBagConstraints gbc_pnLoginLoginFieldsInput = new GridBagConstraints();
+			gbc_pnLoginLoginFieldsInput.fill = GridBagConstraints.BOTH;
+			gbc_pnLoginLoginFieldsInput.gridx = 1;
+			gbc_pnLoginLoginFieldsInput.gridy = 1;
+			pnLoginFields.add(getPnLoginLoginFieldsInput(), gbc_pnLoginLoginFieldsInput);
+		}
+		return pnLoginFields;
+	}
+
+	private JLabel getLbLoginUsername_1() {
+		if (lbLoginUsername == null) {
+			lbLoginUsername = new JLabel("USUARIO (DNI)");
+			lbLoginUsername.setHorizontalAlignment(SwingConstants.CENTER);
+			lbLoginUsername.setFont(new Font("Arial", Font.BOLD, 16));
+		}
+		return lbLoginUsername;
+	}
+
+	private JPanel getPnLoginLoginFieldsInput() {
+		if (pnLoginLoginFieldsInput == null) {
+			pnLoginLoginFieldsInput = new JPanel();
+			pnLoginLoginFieldsInput.setLayout(new GridLayout(0, 1, 0, 10));
+			pnLoginLoginFieldsInput.add(getTxColegiadoLoginDniInput());
+			pnLoginLoginFieldsInput.add(getBtnIniciarSesion_1_2());
+			pnLoginLoginFieldsInput.add(getBtnColegiadoLoginRegistrarse());
+		}
+		return pnLoginLoginFieldsInput;
+	}
+
+	private DefaultButton getBtnIniciarSesion_1_2() {
+		if (btnIniciarSesion_1 == null) {
+			btnIniciarSesion_1 = new DefaultButton("Iniciar Sesión", "ventana", "IniciarSesion", 'i',
+					ButtonColor.NORMAL);
+			btnIniciarSesion_1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: COLEGIADO - INICIAR SESION
+				}
+			});
+			btnIniciarSesion_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		}
+		return btnIniciarSesion_1;
+	}
+
+	private JTextField getTxColegiadoLoginDniInput() {
+		if (txColegiadoLoginDniInput == null) {
+			txColegiadoLoginDniInput = new JTextField();
+			txColegiadoLoginDniInput.setToolTipText("Intro");
+			txColegiadoLoginDniInput.setColumns(10);
+		}
+		return txColegiadoLoginDniInput;
+	}
+
+	private DefaultButton getBtnColegiadoLoginRegistrarse() {
+		if (btnColegiadoLoginRegistrarse == null) {
+			btnColegiadoLoginRegistrarse = new DefaultButton("Registrarse", "ventana", "Registrarse", 't',
+					ButtonColor.NORMAL);
+			btnColegiadoLoginRegistrarse.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// TODO: COLEGIADO REGISTRARSE
+				}
+			});
+			btnColegiadoLoginRegistrarse.setFont(new Font("Tahoma", Font.BOLD, 14));
+		}
+		return btnColegiadoLoginRegistrarse;
+	}
+
+	private JPanel getPnCrearCursoCenterContainer() {
+		if (pnCrearCursoCenterContainer == null) {
+			pnCrearCursoCenterContainer = new JPanel();
+			pnCrearCursoCenterContainer.setOpaque(false);
+			pnCrearCursoCenterContainer.setBounds(new Rectangle(0, 0, 500, 0));
+			pnCrearCursoCenterContainer.setBorder(new EmptyBorder(70, 100, 70, 100));
+			pnCrearCursoCenterContainer.setLayout(new GridLayout(3, 1, 0, 10));
+			pnCrearCursoCenterContainer.add(getPnCrearCursoTituloCurso());
+			pnCrearCursoCenterContainer.add(getPnCrearCursoFechaImparticion());
+			pnCrearCursoCenterContainer.add(getPnCrearCursoPrecioInscripcion());
+		}
+		return pnCrearCursoCenterContainer;
+	}
+
+	private JPanel getPnCrearCursoTituloCurso() {
+		if (pnCrearCursoTituloCurso == null) {
+			pnCrearCursoTituloCurso = new JPanel();
+			pnCrearCursoTituloCurso.setOpaque(false);
+			pnCrearCursoTituloCurso.setLayout(new GridLayout(0, 2, 10, 0));
+			pnCrearCursoTituloCurso.add(getLblTituloCurso());
+			pnCrearCursoTituloCurso.add(getTxCrearCursoTituloCursoInput());
+		}
+		return pnCrearCursoTituloCurso;
+	}
+
+	private JPanel getPnCrearCursoFechaImparticion() {
+		if (pnCrearCursoFechaImparticion == null) {
+			pnCrearCursoFechaImparticion = new JPanel();
+			pnCrearCursoFechaImparticion.setOpaque(false);
+			pnCrearCursoFechaImparticion.setLayout(new GridLayout(0, 2, 10, 0));
+			pnCrearCursoFechaImparticion.add(getLblFechaImparticion_1());
+			pnCrearCursoFechaImparticion.add(getTxCrearCursoFechaImparticionInput());
+		}
+		return pnCrearCursoFechaImparticion;
+	}
+
+	private JPanel getPnCrearCursoPrecioInscripcion() {
+		if (pnCrearCursoPrecioInscripcion == null) {
+			pnCrearCursoPrecioInscripcion = new JPanel();
+			pnCrearCursoPrecioInscripcion.setOpaque(false);
+			pnCrearCursoPrecioInscripcion.setLayout(new GridLayout(0, 2, 10, 0));
+			pnCrearCursoPrecioInscripcion.add(getLblCrearCursoPrecio());
+			pnCrearCursoPrecioInscripcion.add(getTxCrearCursoPrecioInscripcionInput());
+		}
+		return pnCrearCursoPrecioInscripcion;
+	}
+
+	private JLabel getLblTituloCurso() {
+		if (lblTituloCurso == null) {
+			lblTituloCurso = new JLabel("Título curso:");
+			lblTituloCurso.setLabelFor(getTxCrearCursoTituloCursoInput());
+			lblTituloCurso.setHorizontalAlignment(SwingConstants.CENTER);
+			lblTituloCurso.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lblTituloCurso;
+	}
+
+	private JTextField getTxCrearCursoTituloCursoInput() {
+		if (txCrearCursoTituloCursoInput == null) {
+			txCrearCursoTituloCursoInput = new JTextField();
+			txCrearCursoTituloCursoInput.setColumns(10);
+		}
+		return txCrearCursoTituloCursoInput;
+	}
+
+	private JLabel getLblFechaImparticion_1() {
+		if (lblFechaImparticion == null) {
+			lblFechaImparticion = new JLabel("Fecha imparticion: ");
+			lblFechaImparticion.setLabelFor(getTxCrearCursoFechaImparticionInput());
+			lblFechaImparticion.setHorizontalAlignment(SwingConstants.CENTER);
+			lblFechaImparticion.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lblFechaImparticion;
+	}
+
+	private JTextField getTxCrearCursoFechaImparticionInput() {
+		if (txCrearCursoFechaImparticionInput == null) {
+			txCrearCursoFechaImparticionInput = new JTextField();
+			txCrearCursoFechaImparticionInput.setColumns(10);
+		}
+		return txCrearCursoFechaImparticionInput;
+	}
+
+	private JLabel getLblCrearCursoPrecio() {
+		if (lblCrearCursoPrecio == null) {
+			lblCrearCursoPrecio = new JLabel("Precio inscripcion: ");
+			lblCrearCursoPrecio.setLabelFor(getTxCrearCursoPrecioInscripcionInput());
+			lblCrearCursoPrecio.setHorizontalAlignment(SwingConstants.CENTER);
+			lblCrearCursoPrecio.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lblCrearCursoPrecio;
+	}
+
+	private JTextField getTxCrearCursoPrecioInscripcionInput() {
+		if (txCrearCursoPrecioInscripcionInput == null) {
+			txCrearCursoPrecioInscripcionInput = new JTextField();
+			txCrearCursoPrecioInscripcionInput.setColumns(10);
+		}
+		return txCrearCursoPrecioInscripcionInput;
 	}
 }
-
