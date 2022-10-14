@@ -6,10 +6,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 
 public class DtoAssembler {
 
@@ -22,10 +22,10 @@ public class DtoAssembler {
 
 		return colegiados;
 	}
-	
-	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException{
+
+	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException {
 		List<CursoDto> inscripciones = new ArrayList<CursoDto>();
-		while(rs.next()) {
+		while (rs.next()) {
 			inscripciones.add(resultSetToInscripcionDto(rs));
 		}
 		return inscripciones;
@@ -62,23 +62,30 @@ public class DtoAssembler {
 	public static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
-		newCursoDto.codigoCurso = rs.getInt("ID");
+		newCursoDto.codigoCurso = rs.getInt("IDCURSO");
 		newCursoDto.titulo = rs.getString("TITULO");
 		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
 		newCursoDto.precio = rs.getDouble("PRECIO");
-		
+		if (rs.getString("FECHAAPERTURA") != null) {
+			newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
+		}
+
+		if (rs.getString("FECHACIERRE") != null) {
+			newCursoDto.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
+		}
+
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-		
+
 		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
 
 		return newCursoDto;
 
 	}
-	
+
 	private static CursoDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
 		CursoDto c = new CursoDto();
-		
+
 		c.codigoCurso = rs.getInt("IDCURSO");
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
@@ -86,9 +93,9 @@ public class DtoAssembler {
 		c.precio = rs.getDouble("PRECIO");
 		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
-		
+
 		return c;
-		
+
 	}
 
 }

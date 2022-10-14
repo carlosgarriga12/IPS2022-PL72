@@ -43,6 +43,10 @@ public class DateUtils {
 	 * @return
 	 */
 	public static LocalDate convertStringIntoLocalDate(final String date) {
+		
+		if(date == null || date.split("/").length < 3) {
+			return null;
+		}
 		String day = date.split("/")[0];
 		String month = date.split("/")[1];
 		String year = date.split("/")[2];
@@ -50,6 +54,7 @@ public class DateUtils {
 		String parsedDate = year.concat("-").concat(month).concat("-").concat(day);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		
 		return LocalDate.parse(parsedDate, formatter);
 	}
 }

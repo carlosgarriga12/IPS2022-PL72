@@ -4,14 +4,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
-import persistence.colegiado.ColegiadoCrud;
-import persistence.colegiado.ColegiadoDto;
-import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
@@ -88,12 +83,12 @@ public class InscripcionCursoFormativo {
 		inscripcionCurso.fechaApertura = fechaApertura;
 		inscripcionCurso.fechaCierre = fechaCierre;
 
-		InscripcionCursoFormacionCRUD.addNewInscripcion(inscripcionCurso);
+		InscripcionCursoFormacionCRUD.openNewInscripcion(inscripcionCurso);
 
-		curso.plazasDisponibles = plazas;
-		curso.estado = CursoDto.CURSO_ABIERTO;
-
-		CursoCRUD.abrirCurso(curso);
+//		curso.plazasDisponibles = plazas;
+//		curso.estado = CursoDto.CURSO_ABIERTO;
+//
+//		CursoCRUD.abrirCurso(curso);
 	}
 	
 	public static List<CursoDto> getCursosAbiertos(){

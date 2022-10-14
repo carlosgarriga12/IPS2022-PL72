@@ -27,6 +27,17 @@ public class Curso {
 		return CursoCRUD.listarCursosActualmentePlanificados();
 	}
 
+	/**
+	 * Listado de todos los cursos actualmente disponibles en el COIIPA
+	 * (PLANIFICADOS y ABIERTOS).
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	public static List<CursoDto> listarTodosLosCursos() throws BusinessException {
+		return CursoCRUD.listTodosLosCursos();
+	}
+
 	public static CursoDto getSelectedCourse() {
 		return selectedCourse;
 	}

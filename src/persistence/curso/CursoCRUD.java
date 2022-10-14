@@ -18,30 +18,32 @@ public class CursoCRUD {
 
 	private static final String SQL_INSERT_CURSO = Conf.getInstance().getProperty("TCURSO_INSERT");
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
-	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
+	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance()
+			.getProperty("TCURSO_LIST_SCHEDULED_COURSES");
+	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance()
+			.getProperty("TCURSO_LIST_ALL_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
-	
-	
+
 	public static int generarCodigoCurso() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
-			
+
 			st = c.createStatement();
-			
+
 			rs = st.executeQuery(SQL_FIND_MAX_CURSO_ID);
-			
-			if(rs.next()) {
+
+			if (rs.next()) {
 				return rs.getInt(1) + 1;
 			} else {
 				return 1;
 			}
-			
-		} catch(SQLException e) {
+
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, st, c);
@@ -61,7 +63,7 @@ public class CursoCRUD {
 			pst.setString(i++, curso.fechaInicio.toString());
 			pst.setDouble(i++, curso.precio);
 			pst.setInt(i++, curso.codigoCurso);
-			
+
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
@@ -112,15 +114,8 @@ public class CursoCRUD {
 
 			con = Jdbc.getConnection();
 			pst = con.prepareStatement(SQL_LIST_ALL_SCHEDULED_COURSES);
-			
-			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
-			
-			// Filtrado de cursos planificados
-			for(CursoDto c: allCourses) {
-				if(c.estado.equals(CursoDto.CURSO_PLANIFICADO)) {
-					res.add(c);
-				}
-			}
+
+			res = DtoAssembler.toCursoList(pst.executeQuery());
 
 		} catch (SQLException e) {
 			throw new BusinessException(e);
@@ -160,7 +155,33 @@ public class CursoCRUD {
 
 		return isOpen;
 	}
-	
-	
+
+	/**
+	 * Listado de todos los cursos PLANIFICADOS y ABIERTOS en el COIIPA.
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	public static List<CursoDto> listTodosLosCursos() throws BusinessException {
+		Connection con = null;
+		PreparedStatement pst = null;
+		List<CursoDto> res = new ArrayList<CursoDto>();
+
+		try {
+
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_LIST_ALL_COURSES);
+
+			res = DtoAssembler.toCursoList(pst.executeQuery());
+
+		} catch (SQLException e) {
+			throw new BusinessException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return res;
+	}
 
 }
