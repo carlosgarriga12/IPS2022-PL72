@@ -11,7 +11,6 @@ import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 
 /**
  * 
@@ -103,7 +102,6 @@ public class InscripcionCursoFormativo {
 	}
 
 	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
-		// TODO Auto-generated method stub
 		return InscripcionCursoFormacionCRUD.isCursoAbierto(cursoSeleccionado);
 	}
 	

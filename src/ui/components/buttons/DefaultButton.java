@@ -112,6 +112,7 @@ public class DefaultButton extends JButton {
 		if (!type.equalsIgnoreCase(sizes[0]) || type.equalsIgnoreCase(sizes[1]) || type.equalsIgnoreCase(sizes[2])) {
 			this.setBorder(
 					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));
+			
 		}
 
 		// Boton pequeño
@@ -122,7 +123,9 @@ public class DefaultButton extends JButton {
 		} else if (type.equalsIgnoreCase(sizes[1])) {
 			this.setBorder(
 					new EmptyBorder(REGULAR_TYPE_HEIGHT, REGULAR_TYPE_WIDTH, REGULAR_TYPE_HEIGHT, REGULAR_TYPE_WIDTH));
+					
 
+			// Boton ventana
 		} else if (type.equalsIgnoreCase(sizes[1])) {
 			this.setBorder(
 					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));

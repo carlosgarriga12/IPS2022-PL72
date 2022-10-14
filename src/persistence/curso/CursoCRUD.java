@@ -113,13 +113,14 @@ public class CursoCRUD {
 			con = Jdbc.getConnection();
 			pst = con.prepareStatement(SQL_LIST_ALL_SCHEDULED_COURSES);
 			
-			res = DtoAssembler.toCursoList(pst.executeQuery());
-
-//			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
-//
-//			// Filtrar por curso planificado
-//			res = allCourses.stream().filter(c -> c.estado.equals(CursoDto.CURSO_PLANIFICADO))
-//					.collect(Collectors.toList());
+			List<CursoDto> allCourses = DtoAssembler.toCursoList(pst.executeQuery());
+			
+			// Filtrado de cursos planificados
+			for(CursoDto c: allCourses) {
+				if(c.estado.equals(CursoDto.CURSO_PLANIFICADO)) {
+					res.add(c);
+				}
+			}
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
