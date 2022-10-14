@@ -103,7 +103,7 @@ public class CursoCRUD {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public static List<CursoDto> listarCursosActualmentePlanificados() throws BusinessException {
+	public static List<CursoDto> listarCursosActualmentePlanificados() throws PersistenceException {
 		Connection con = null;
 		PreparedStatement pst = null;
 		List<CursoDto> res = new ArrayList<CursoDto>();
@@ -122,7 +122,7 @@ public class CursoCRUD {
 //					.collect(Collectors.toList());
 
 		} catch (SQLException e) {
-			throw new BusinessException(e);
+			throw new PersistenceException(e);
 
 		} finally {
 			Jdbc.close(pst);

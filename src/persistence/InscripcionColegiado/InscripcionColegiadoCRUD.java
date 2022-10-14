@@ -81,14 +81,14 @@ public class InscripcionColegiadoCRUD {
 		return inscrito;
 	}
 	
-	public static String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws PersistenceException {
+	public static String findFechaPreinscripcion(String dni, int cursoSeleccionado) throws PersistenceException {
 		PreparedStatement stmt = null;
 		String fecha = null;
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_FECHA);
-			stmt.setString(1, colegiado.numeroColegiado);
-			stmt.setInt(2, cursoSeleccionado.codigoCurso);
+			stmt.setString(1, dni);
+			stmt.setInt(2, cursoSeleccionado);
 			
 			ResultSet rs = stmt.executeQuery();
 			
@@ -106,15 +106,15 @@ public class InscripcionColegiadoCRUD {
 		return fecha;
 	}
 	
-	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws PersistenceException {
+	public static void pagarCursoColegiado(String dni, int curso, String estado, String formaDePago) throws PersistenceException {
 		PreparedStatement stmt = null;
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_PAGAR);
 			stmt.setString(1, estado);
 			stmt.setString(2, formaDePago);
-			stmt.setString(3, colegiado.numeroColegiado);
-			stmt.setInt(4, cursoSeleccionado.codigoCurso);
+			stmt.setString(3, dni);
+			stmt.setInt(4, curso);
 			
 			stmt.executeUpdate();
 		}

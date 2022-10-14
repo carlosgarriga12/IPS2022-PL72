@@ -24,14 +24,18 @@ public class InscripcionColegiado {
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
 	
-	public static String findFechaPreinscripcion(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
+	public static String findFechaPreinscripcion(String dni, int cursoSeleccionado) throws BusinessException {
 		// devuelve la fecha de la preinscripcion
-		return InscripcionColegiadoCRUD.findFechaPreinscripcion(colegiado, cursoSeleccionado);
+		String fecha = InscripcionColegiadoCRUD.findFechaPreinscripcion(dni, cursoSeleccionado);
+		if (fecha == null) {
+			throw new BusinessException("No puede inscribirse a un curso en el que no se ha preinscrito");
+		} 
+		return fecha;
 	}
 	
-	public static void pagarCursoColegiado(ColegiadoDto colegiado, CursoDto cursoSeleccionado, String estado, String formaDePago) throws BusinessException {
+	public static void pagarCursoColegiado(String dni, int curso, String estado, String formaDePago) throws BusinessException {
 		// paga un curso, establece el m�todo y el estado del pago
-		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
+		InscripcionColegiadoCRUD.pagarCursoColegiado(dni, curso, estado, formaDePago);
 	}
 	
 	public static void comprobarFecha(String fechaPreInscripcion) throws BusinessException {

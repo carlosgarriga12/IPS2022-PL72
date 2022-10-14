@@ -9,7 +9,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -22,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -36,7 +36,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -66,6 +65,7 @@ import ui.components.messages.MessageType;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
 import com.toedter.calendar.JCalendar;
+import javax.swing.JComboBox;
 
 public class MainWindow extends JFrame {
 
@@ -216,11 +216,12 @@ public class MainWindow extends JFrame {
 	private JLabel lbInscripcionPagoAviso;
 	private JPanel pnDatosInicialesIdColegiado;
 	private JPanel pnDatosInicialesIdCurso;
-	private JLabel lblNewLabelNumeroColegiado;
-	private JTextField textFieldNumeroColegiado;
+	private JLabel lblNewLabelDNIColegiado;
+	private JTextField textFieldDNIColegiado;
 	private JLabel lblRellenarDatosInscripcionCurso;
 	private JLabel lblNewLabelIdentificadorCurso;
-	private JTextField textFieldIdentificadorCursoColegiado;
+
+	private JComboBox<String> comboBoxIdentificadorCursosAbiertos;
 
 	public MainWindow() {
 		setTitle("COIIPA : GestiÃ³n de servicios");
@@ -238,13 +239,13 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(mainCardLayout);
 
 		// TODO: Cambiar orden para ver al arrancar el programa
+		mainPanel.add(getPnPagarInscripcionColegiado(), "inscripcionColegiado");
 		mainPanel.add(getPnLogin(), "loginPanel");
 		mainPanel.add(getPnSolicitudColegiado(), "solicitudColegiadoPanel");
 		mainPanel.add(getPnCoursesList(), "coursesTablePanel");
 		mainPanel.add(getPnHome(), "homePanel");
 		mainPanel.add(getPnInscripcion(), "Instruccion");
 		mainPanel.add(getPnInicio(), "Inicio");
-		mainPanel.add(getPnPagarInscripcionColegiado(), "name_675900424461400");
 		mainPanel.add(getPnCrearCurso(), "name_3485468920900");
 
 		// Centrar la ventana
@@ -2012,13 +2013,14 @@ public class MainWindow extends JFrame {
 	private JButton getBtnTransferenciaColegiado() {
 		if (btnTransferenciaColegiado == null) {
 			btnTransferenciaColegiado = new JButton("Transferencia bancaria");
+			btnTransferenciaColegiado.setBackground(new Color(152, 251, 152));
 			btnTransferenciaColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// mirar si existe colegiado,curso y fecha preinscripcion para ese curso
-					if (comprobarCampos()) {
+					if (comprobarCamposT() && comprobarColegiadoInscripcion()) {
 						try {
-							InscripcionColegiado.comprobarFecha(getCalendarioFechaCaducidad().getCalendar().toString());
-							// BusinessFactory.forInscripcionColegiadoService().pagarCursoColegiado(colegiado, /* curso */, "PENDIENTE", "TRANSFERENCIA");
+							InscripcionColegiado.comprobarFecha(InscripcionColegiado.findFechaPreinscripcion
+									(textFieldDNIColegiado.getText(), Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem())));
+							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()) , "PENDIENTE", "TRANSFERENCIA");
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por transferencia bancaria\n"
 									+ "El pago se queda en estado pendiente",
@@ -2038,6 +2040,25 @@ public class MainWindow extends JFrame {
 		}
 		return btnTransferenciaColegiado;
 	}
+	
+	private boolean comprobarCamposT() {
+		try {
+			if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9 ) {
+				JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío y el formato del DNI es el correcto\n"
+						+ "Sigue el ejemplo del campo correspondiente"
+						, "Datos no válidos", JOptionPane.WARNING_MESSAGE);
+				textFieldNumeroTarjetaColegiado.setText(null);
+				return false;
+			} 
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, "Por favor, introduzca números y no texto en el campo de la tarjeta"
+					, "Datos incorrectos", JOptionPane.ERROR_MESSAGE);
+			textFieldNumeroTarjetaColegiado.setText(null);
+			return false;
+		}
+		return true;
+	}
+	
 	private JPanel getPnTarjetaDatosColegiado() {
 		if (pnTarjetaDatosColegiado == null) {
 			pnTarjetaDatosColegiado = new JPanel();
@@ -2052,13 +2073,15 @@ public class MainWindow extends JFrame {
 	private JButton getBtnTarjetaCreditoColegiado() {
 		if (btnTarjetaCreditoColegiado == null) {
 			btnTarjetaCreditoColegiado = new JButton("Validar tarjeta de crédito");
+			btnTarjetaCreditoColegiado.setBackground(new Color(255, 69, 0));
 			btnTarjetaCreditoColegiado.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// mirar si existe colegiado,curso y fecha preinscripcion para ese curso
-					if (comprobarCampos() && comprobarFecha()) {
+				public void actionPerformed(ActionEvent e) {					
+					if (comprobarCampos() && comprobarColegiadoInscripcion() && comprobarFechaCaducidad()) {
 							try {
-								InscripcionColegiado.comprobarFecha(getCalendarioFechaCaducidad().getCalendar().toString());
-								//InscripcionColegiado.pagarCursoColegiado(colegiado, curso , "PAGADO", "TARJETA");
+								InscripcionColegiado.comprobarFecha(InscripcionColegiado.findFechaPreinscripcion
+										(textFieldDNIColegiado.getText(), Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem())));
+								InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), 
+										Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()) , "PAGADO", "TARJETA");
 								JOptionPane.showMessageDialog(null,
 										"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
 										+ "El pago se ha inscrito con éxito",
@@ -2079,8 +2102,37 @@ public class MainWindow extends JFrame {
 		return btnTarjetaCreditoColegiado;
 	}
 	
+	private boolean comprobarColegiadoInscripcion() {
+		// comprobamos que el dni asociado sea un colegiado
+		try {
+			Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText());
+		} catch (BusinessException e) {
+			JOptionPane.showMessageDialog(null,
+					"Lo sentimos, no puede hacerse cargo de pagar un curso, no es usted ni colegiado ni precolegiado, formalice su solicitud primero\n"
+					+ "Inténtelo de nuevo la próxima vez",
+					"Dni inválido", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		// comprobamos que se ha inscrito en el curso
+		try {
+			InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(), Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()));
+			return true;
+		} catch (BusinessException e) {
+			JOptionPane.showMessageDialog(null,
+					"Lo sentimos, no puede hacerse cargo de pagar un curso, en el que no se ha preinscrito\n"
+					+ "Inténtelo de nuevo la próxima vez",
+					"Preinscripción no realizada", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+	}
+
+	private void reiniciarCambios() {
+		textFieldDNIColegiado.setText("Ej: 71778880C");
+		textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
+	}
+
 	@SuppressWarnings("deprecation")
-	private boolean comprobarFecha() {
+	private boolean comprobarFechaCaducidad() {
 		Date date = new Date();
 		if (this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.YEAR) < date.getYear() + 1900 || 
 			this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.YEAR) == date.getYear() + 1900  && this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.MONTH) + 1 < date.getMonth() + 1 ||
@@ -2099,10 +2151,10 @@ public class MainWindow extends JFrame {
 			@SuppressWarnings("unused")
 			int tarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
 			if (textFieldNumeroTarjetaColegiado.getText().isBlank() || textFieldNumeroTarjetaColegiado.getText().length() != 5
-				|| textFieldIdentificadorCursoColegiado.getText().isBlank()) {
-				JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío (excepto el número de colegiado que puede estar vacío) y los formatos de los datos que tiene que introducir\n"
+				|| textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9 ) {
+				JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío y los formatos de los datos que tiene que introducir\n"
 						+ "Sigue el ejemplo del campo correspondiente"
-						, "Tarjeta de crédito incorrecta", JOptionPane.WARNING_MESSAGE);
+						, "Datos no válidos", JOptionPane.WARNING_MESSAGE);
 				textFieldNumeroTarjetaColegiado.setText(null);
 				return false;
 			} 
@@ -2121,6 +2173,7 @@ public class MainWindow extends JFrame {
 			pnNumeroTarjetaDatosColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnNumeroTarjetaDatosColegiado.add(getLblNumeroTarjetaDatosColegiado());
 			pnNumeroTarjetaDatosColegiado.add(getTextFieldNumeroTarjetaColegiado());
+			pnNumeroTarjetaDatosColegiado.setBorder(new LineBorder(Color.RED));
 		}
 		return pnNumeroTarjetaDatosColegiado;
 	}
@@ -2130,6 +2183,7 @@ public class MainWindow extends JFrame {
 			pnNumeroFechaCaducidadDatosColegiado.setLayout(new GridLayout(2, 1, 0, 0));
 			pnNumeroFechaCaducidadDatosColegiado.add(getLblFechaCaducidadDatosColegiado());
 			pnNumeroFechaCaducidadDatosColegiado.add(getCalendarioFechaCaducidad());
+			pnNumeroFechaCaducidadDatosColegiado.setBorder(new LineBorder(Color.RED));
 		}
 		return pnNumeroFechaCaducidadDatosColegiado;
 	}
@@ -2199,8 +2253,8 @@ public class MainWindow extends JFrame {
 		if (pnDatosInicialesIdColegiado == null) {
 			pnDatosInicialesIdColegiado = new JPanel();
 			pnDatosInicialesIdColegiado.setLayout(new GridLayout(1, 0, 0, 0));
-			pnDatosInicialesIdColegiado.add(getLblNewLabelNumeroColegiado());
-			pnDatosInicialesIdColegiado.add(getTextFieldNumeroColegiado());
+			pnDatosInicialesIdColegiado.add(getLblNewLabelDNIColegiado());
+			pnDatosInicialesIdColegiado.add(getTextFieldDNIColegiado());
 		}
 		return pnDatosInicialesIdColegiado;
 	}
@@ -2209,28 +2263,35 @@ public class MainWindow extends JFrame {
 			pnDatosInicialesIdCurso = new JPanel();
 			pnDatosInicialesIdCurso.setLayout(new GridLayout(1, 0, 0, 0));
 			pnDatosInicialesIdCurso.add(getLblNewLabelIdentificadorCurso());
-			pnDatosInicialesIdCurso.add(getTextField_1());
+			pnDatosInicialesIdCurso.add(getComboBoxIdentificadorCursosAbiertos());
 		}
 		return pnDatosInicialesIdCurso;
 	}
-	private JLabel getLblNewLabelNumeroColegiado() {
-		if (lblNewLabelNumeroColegiado == null) {
-			lblNewLabelNumeroColegiado = new JLabel("Número de colegiado:");
-			lblNewLabelNumeroColegiado.setLabelFor(getTextFieldNumeroColegiado());
-			lblNewLabelNumeroColegiado.setDisplayedMnemonic('U');
-			lblNewLabelNumeroColegiado.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblNewLabelNumeroColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+	private JLabel getLblNewLabelDNIColegiado() {
+		if (lblNewLabelDNIColegiado == null) {
+			lblNewLabelDNIColegiado = new JLabel("DNI:");
+			lblNewLabelDNIColegiado.setLabelFor(getTextFieldDNIColegiado());
+			lblNewLabelDNIColegiado.setDisplayedMnemonic('D');
+			lblNewLabelDNIColegiado.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDNIColegiado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
-		return lblNewLabelNumeroColegiado;
+		return lblNewLabelDNIColegiado;
 	}
-	private JTextField getTextFieldNumeroColegiado() {
-		if (textFieldNumeroColegiado == null) {
-			textFieldNumeroColegiado = new JTextField();
-			textFieldNumeroColegiado.setToolTipText("Introduce su número de colegiado");
-			textFieldNumeroColegiado.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldNumeroColegiado.setColumns(10);
+	private JTextField getTextFieldDNIColegiado() {
+		if (textFieldDNIColegiado == null) {
+			textFieldDNIColegiado = new JTextField();
+			textFieldDNIColegiado.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					textFieldDNIColegiado.setText(null);
+				}
+			});
+			textFieldDNIColegiado.setText("Ej: 71778880C");
+			textFieldDNIColegiado.setToolTipText("Introduce su DNI");
+			textFieldDNIColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldDNIColegiado.setColumns(10);
 		}
-		return textFieldNumeroColegiado;
+		return textFieldDNIColegiado;
 	}
 	private JLabel getLblRellenarDatosInscripcionCurso() {
 		if (lblRellenarDatosInscripcionCurso == null) {
@@ -2243,21 +2304,33 @@ public class MainWindow extends JFrame {
 	private JLabel getLblNewLabelIdentificadorCurso() {
 		if (lblNewLabelIdentificadorCurso == null) {
 			lblNewLabelIdentificadorCurso = new JLabel("Identificador del curso:");
-			lblNewLabelIdentificadorCurso.setLabelFor(getTextField_1());
 			lblNewLabelIdentificadorCurso.setDisplayedMnemonic('I');
 			lblNewLabelIdentificadorCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lblNewLabelIdentificadorCurso.setFont(new Font("Tahoma", Font.BOLD, 11));
 		}
 		return lblNewLabelIdentificadorCurso;
 	}
-	private JTextField getTextField_1() {
-		if (textFieldIdentificadorCursoColegiado == null) {
-			textFieldIdentificadorCursoColegiado = new JTextField();
-			textFieldIdentificadorCursoColegiado.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldIdentificadorCursoColegiado.setToolTipText("Introduce el identificador del curso:");
-			textFieldIdentificadorCursoColegiado.setColumns(10);
+	
+	private JComboBox<String> getComboBoxIdentificadorCursosAbiertos() {
+		if (comboBoxIdentificadorCursosAbiertos == null) {
+			comboBoxIdentificadorCursosAbiertos = new JComboBox<String>();
+			comboBoxIdentificadorCursosAbiertos.setToolTipText("Selecciona el curso que desea pagar");
+				String[] elementsComboBox;
+				try {
+					List<CursoDto> lista = Curso.listarCursosPlanificados();
+					if (! lista.isEmpty()) {
+						elementsComboBox = new String[lista.size()];
+						for (int i=0; i < lista.size(); i++) {
+							elementsComboBox[i] = String.valueOf(lista.get(i).codigoCurso);
+						}
+						comboBoxIdentificadorCursosAbiertos = new JComboBox<String>(new DefaultComboBoxModel<String>(elementsComboBox));
+					}
+				} catch (BusinessException e) {
+					e.printStackTrace();
+				}
 		}
-		return textFieldIdentificadorCursoColegiado;
+		return comboBoxIdentificadorCursosAbiertos;
 	}
+	
 }
 
