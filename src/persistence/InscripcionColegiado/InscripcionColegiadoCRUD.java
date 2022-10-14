@@ -112,7 +112,7 @@ public class InscripcionColegiadoCRUD {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_PAGAR);
 			stmt.setString(1, estado);
-			stmt.setString(1, formaDePago);
+			stmt.setString(2, formaDePago);
 			stmt.setString(3, colegiado.numeroColegiado);
 			stmt.setInt(4, cursoSeleccionado.codigoCurso);
 			

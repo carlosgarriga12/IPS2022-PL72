@@ -34,10 +34,12 @@ public class InscripcionColegiado {
 		InscripcionColegiadoCRUD.pagarCursoColegiado(colegiado, cursoSeleccionado, estado, formaDePago);
 	}
 	
-	public static boolean comprobarFecha(String fechaPreInscripcion) throws BusinessException {
+	public static void comprobarFecha(String fechaPreInscripcion) throws BusinessException {
 		// comprueba que no han pasado dos dias desde la fecha actual
 		LocalDate fecha = LocalDate.parse(fechaPreInscripcion);
-	    return ChronoUnit.DAYS.between(LocalDate.now(), fecha) <= 2 ? true : false;
+	    if (ChronoUnit.DAYS.between(LocalDate.now(), fecha) > 2) {
+	    	throw new BusinessException("No puede inscribirse a un curso en el que han pasado más de dos días desde la fecha de pre-inscripcion");
+	    }
 	}
 	
 	public static ColegiadoDto InicioSesion(String DNI) throws BusinessException {
