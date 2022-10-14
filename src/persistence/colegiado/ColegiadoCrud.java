@@ -19,10 +19,16 @@ public class ColegiadoCrud {
 
 	private static final String SQL_ANADIR_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
-	
+
 	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
 
-	public static ColegiadoDto findColegiadoDni(String dni) throws BusinessException {
+	private static final String SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS = Conf.getInstance()
+			.getProperty("TCOLEGIADO_FIND_ALL_CANDIDATES");
+
+	private static final String SQL_OBTENER_TITULACION_COLEGIADO = Conf.getInstance()
+			.getProperty("TCOLEGIADO_FIND_TITULACION_BY_DNI");
+
+	public static ColegiadoDto findColegiadoDni(final String dni) throws BusinessException {
 		ColegiadoDto colegiado;
 
 		Connection c = null;
@@ -45,22 +51,9 @@ public class ColegiadoCrud {
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
+
 		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					/* ignore */ }
-			if (pst != null)
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					/* ignore */ }
-			if (c != null)
-				try {
-					c.close();
-				} catch (SQLException e) {
-					/* ignore */ }
+			Jdbc.close(rs, pst, c);
 		}
 
 		return colegiado;
@@ -91,37 +84,91 @@ public class ColegiadoCrud {
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
+
 		} finally {
-			if (pst != null)
-				try {
-					pst.close();
-				} catch (SQLException e) {
-					/* ignore */ }
-			if (con != null)
-				try {
-					con.close();
-				} catch (SQLException e) {
-					/* ignore */ }
+			Jdbc.close(pst);
+			Jdbc.close(con);
 		}
 		return colegiado;
 	}
-	
+
 	public static List<ColegiadoDto> findAllColegiados() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
-		
+
 			st = c.createStatement();
 			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
-			
+
 			return ColegiadoAssembler.toColegiadoList(rs);
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, st, c);
 		}
+	}
+
+	/**
+	 * Listado de todas las solicitudes de alta de colegiados.
+	 * 
+	 * @return
+	 */
+	public static List<ColegiadoDto> findAllSolicitudesAltaColegiados() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+
+		try {
+			c = Jdbc.getConnection();
+
+			st = c.createStatement();
+			rs = st.executeQuery(SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS);
+
+			return ColegiadoAssembler.toColegiadoList(rs);
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(rs, st, c);
+		}
+	}
+
+	/**
+	 * Obtiene la titulación del colegiado
+	 * 
+	 * @param dniToSearch Dni del colegiado a buscar.
+	 * @return
+	 */
+	public static int findTitulacionColegiadoByDni(final String dniToSearch) {
+		int titulacion = -1;
+
+		Connection c = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+
+		try {
+			c = Jdbc.getConnection();
+
+			pst = c.prepareStatement(SQL_OBTENER_TITULACION_COLEGIADO);
+
+			pst.setString(1, dniToSearch);
+
+			rs = pst.executeQuery();
+			rs.next();
+
+			titulacion = rs.getInt("titulacion");
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(rs, pst, c);
+		}
+
+		return titulacion;
 	}
 }

@@ -32,4 +32,17 @@ public interface ColegiadoService {
 	 */
 	ColegiadoDto findColegiadoPorDni(String DNI) throws BusinessException;
 
+	/**
+	 * Obtiene la titulacion de un colegiado dado su dni.
+	 * 
+	 * @param dni
+	 * @return 0 si no tiene titulación, 1 si es titulado en Ingeniería Informática
+	 *         y 2 para otras titulaciones.
+	 * 
+	 * @throws BusinessException
+	 * @throws IllegalArgumentException Si el dni no es válido.
+	 * <a>business.util.Argument</a>
+	 * 
+	 */
+	int findTitulacionByDni(final String dni) throws BusinessException;
 }

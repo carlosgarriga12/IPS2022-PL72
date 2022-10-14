@@ -238,6 +238,16 @@ public class MainWindow extends JFrame {
 	private JTextField txCrearCursoFechaImparticionInput;
 	private JLabel lblCrearCursoPrecio;
 	private JTextField txCrearCursoPrecioInscripcionInput;
+	private JPanel pnConsultarTitulacionNorth;
+	private JPanel pnConsultarTitulacionCenter;
+	private JPanel pnConsultarTitulacionSouth;
+	private JLabel lbConsultarTitulacionTitle;
+	private JScrollPane spListadoAltaSolicitudesColegiado;
+	private JPanel pnConsultarTitulacionSouthButtons;
+	private JButton btConsultarSolicitudColegiadoVolver;
+	private DefaultButton btConsultarSolicitudColegiadoConfirmar;
+	private JPanel pnConsultarColegiadoDatosColegiadoSeleccionado;
+	private JLabel lbColegiadoSeleccionadoSolicitudRespuesta;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -1562,10 +1572,8 @@ public class MainWindow extends JFrame {
 							}
 						}
 					} catch (PersistenceException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (BusinessException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -2158,7 +2166,11 @@ public class MainWindow extends JFrame {
 	private JPanel getPnConsultarTitulacionSolicitante() {
 		if (pnConsultarTitulacionSolicitante == null) {
 			pnConsultarTitulacionSolicitante = new JPanel();
-			pnConsultarTitulacionSolicitante.setLayout(new BorderLayout(0, 0));
+			pnConsultarTitulacionSolicitante.setOpaque(false);
+			pnConsultarTitulacionSolicitante.setLayout(new BorderLayout(0, 10));
+			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionNorth(), BorderLayout.NORTH);
+			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionCenter(), BorderLayout.CENTER);
+			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionSouth(), BorderLayout.SOUTH);
 		}
 		return pnConsultarTitulacionSolicitante;
 	}
@@ -2364,5 +2376,86 @@ public class MainWindow extends JFrame {
 			txCrearCursoPrecioInscripcionInput.setColumns(10);
 		}
 		return txCrearCursoPrecioInscripcionInput;
+	}
+	private JPanel getPnConsultarTitulacionNorth() {
+		if (pnConsultarTitulacionNorth == null) {
+			pnConsultarTitulacionNorth = new JPanel();
+			pnConsultarTitulacionNorth.setOpaque(false);
+			pnConsultarTitulacionNorth.add(getLbConsultarTitulacionTitle());
+		}
+		return pnConsultarTitulacionNorth;
+	}
+	private JPanel getPnConsultarTitulacionCenter() {
+		if (pnConsultarTitulacionCenter == null) {
+			pnConsultarTitulacionCenter = new JPanel();
+			pnConsultarTitulacionCenter.setOpaque(false);
+			pnConsultarTitulacionCenter.add(getSpListadoAltaSolicitudesColegiado());
+		}
+		return pnConsultarTitulacionCenter;
+	}
+	private JPanel getPnConsultarTitulacionSouth() {
+		if (pnConsultarTitulacionSouth == null) {
+			pnConsultarTitulacionSouth = new JPanel();
+			pnConsultarTitulacionSouth.setOpaque(false);
+			pnConsultarTitulacionSouth.setLayout(new BorderLayout(0, 10));
+			pnConsultarTitulacionSouth.add(getPnConsultarTitulacionSouthButtons());
+			pnConsultarTitulacionSouth.add(getPnConsultarColegiadoDatosColegiadoSeleccionado(), BorderLayout.NORTH);
+		}
+		return pnConsultarTitulacionSouth;
+	}
+	private JLabel getLbConsultarTitulacionTitle() {
+		if (lbConsultarTitulacionTitle == null) {
+			lbConsultarTitulacionTitle = new JLabel("Consultar titulación de un solicitante de Ingreso");
+			lbConsultarTitulacionTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			lbConsultarTitulacionTitle.setFont(LookAndFeel.HEADING_1_FONT);
+		}
+		return lbConsultarTitulacionTitle;
+	}
+	private JScrollPane getSpListadoAltaSolicitudesColegiado() {
+		if (spListadoAltaSolicitudesColegiado == null) {
+			spListadoAltaSolicitudesColegiado = new JScrollPane();
+		}
+		return spListadoAltaSolicitudesColegiado;
+	}
+	private JPanel getPnConsultarTitulacionSouthButtons() {
+		if (pnConsultarTitulacionSouthButtons == null) {
+			pnConsultarTitulacionSouthButtons = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnConsultarTitulacionSouthButtons.getLayout();
+			flowLayout.setHgap(10);
+			flowLayout.setAlignment(FlowLayout.RIGHT);
+			pnConsultarTitulacionSouthButtons.add(getBtConsultarSolicitudColegiadoVolver());
+			pnConsultarTitulacionSouthButtons.add(getBtConsultarSolicitudColegiadoConfirmar());
+		}
+		return pnConsultarTitulacionSouthButtons;
+	}
+	private JButton getBtConsultarSolicitudColegiadoVolver() {
+		if (btConsultarSolicitudColegiadoVolver == null) {
+			btConsultarSolicitudColegiadoVolver = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+		}
+		return btConsultarSolicitudColegiadoVolver;
+	}
+	private DefaultButton getBtConsultarSolicitudColegiadoConfirmar() {
+		if (btConsultarSolicitudColegiadoConfirmar == null) {
+			btConsultarSolicitudColegiadoConfirmar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btConsultarSolicitudColegiadoConfirmar.setEnabled(false);
+		}
+		return btConsultarSolicitudColegiadoConfirmar;
+	}
+	private JPanel getPnConsultarColegiadoDatosColegiadoSeleccionado() {
+		if (pnConsultarColegiadoDatosColegiadoSeleccionado == null) {
+			pnConsultarColegiadoDatosColegiadoSeleccionado = new JPanel();
+			pnConsultarColegiadoDatosColegiadoSeleccionado.setBorder(new EmptyBorder(20, 0, 20, 0));
+			pnConsultarColegiadoDatosColegiadoSeleccionado.setBackground(LookAndFeel.TERTIARY_COLOR);
+			pnConsultarColegiadoDatosColegiadoSeleccionado.add(getLbColegiadoSeleccionadoSolicitudRespuesta());
+		}
+		return pnConsultarColegiadoDatosColegiadoSeleccionado;
+	}
+	private JLabel getLbColegiadoSeleccionadoSolicitudRespuesta() {
+		if (lbColegiadoSeleccionadoSolicitudRespuesta == null) {
+			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel("<< SIN RESPUESTA >>");
+			lbColegiadoSeleccionadoSolicitudRespuesta.setFont(LookAndFeel.HEADING_3_FONT);
+			lbColegiadoSeleccionadoSolicitudRespuesta.setForeground(LookAndFeel.SECONDARY_COLOR);
+		}
+		return lbColegiadoSeleccionadoSolicitudRespuesta;
 	}
 }
