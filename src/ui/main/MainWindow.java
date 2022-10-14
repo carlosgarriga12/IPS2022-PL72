@@ -50,6 +50,7 @@ import javax.swing.table.TableModel;
 import business.BusinessException;
 import business.BusinessFactory;
 import business.InscripcionColegiado.InscripcionColegiado;
+import business.colegiado.crud.ColegiadoServiceImpl;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
@@ -63,6 +64,7 @@ import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
 import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
+import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
 
@@ -257,6 +259,7 @@ public class MainWindow extends JFrame {
 	private DefaultButton btListadoCursosVolver;
 	private JScrollPane spListadoCursosCenter;
 	private JTable tbListadoTodosCursos;
+	private JTable tbListadoSolicitudesColegiado;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -2049,7 +2052,6 @@ public class MainWindow extends JFrame {
 		if (btHomeSecretariaConsultarTitulacionSolicitante == null) {
 			btHomeSecretariaConsultarTitulacionSolicitante = new DefaultButton("Consultar titulación de un solicitante",
 					"ventana", "ConsultarTitulacionSolicitante", 'c', ButtonColor.NORMAL);
-			btHomeSecretariaConsultarTitulacionSolicitante.setEnabled(false);
 			btHomeSecretariaConsultarTitulacionSolicitante.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
@@ -2439,6 +2441,7 @@ public class MainWindow extends JFrame {
 		if (pnConsultarTitulacionCenter == null) {
 			pnConsultarTitulacionCenter = new JPanel();
 			pnConsultarTitulacionCenter.setOpaque(false);
+			pnConsultarTitulacionCenter.setLayout(new BorderLayout(0, 0));
 			pnConsultarTitulacionCenter.add(getSpListadoAltaSolicitudesColegiado());
 		}
 		return pnConsultarTitulacionCenter;
@@ -2466,7 +2469,8 @@ public class MainWindow extends JFrame {
 
 	private JScrollPane getSpListadoAltaSolicitudesColegiado() {
 		if (spListadoAltaSolicitudesColegiado == null) {
-			spListadoAltaSolicitudesColegiado = new JScrollPane();
+			spListadoAltaSolicitudesColegiado = new JScrollPane(getTbListadoSolicitudesColegiado());
+			spListadoAltaSolicitudesColegiado.setBorder(null);
 		}
 		return spListadoAltaSolicitudesColegiado;
 	}
@@ -2589,5 +2593,35 @@ public class MainWindow extends JFrame {
 			}
 		}
 		return tbListadoTodosCursos;
+	}
+	private JTable getTbListadoSolicitudesColegiado() {
+		if (tbListadoSolicitudesColegiado == null) {
+			tbListadoSolicitudesColegiado = new JTable();
+			
+			tbListadoSolicitudesColegiado.setIntercellSpacing(new Dimension(0, 0));
+			tbListadoSolicitudesColegiado.setShowGrid(false);
+			tbListadoSolicitudesColegiado.setRowMargin(0);
+			tbListadoSolicitudesColegiado.setRequestFocusEnabled(false);
+			tbListadoSolicitudesColegiado.setFocusable(false);
+			tbListadoSolicitudesColegiado.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbListadoSolicitudesColegiado.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbListadoSolicitudesColegiado.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbListadoSolicitudesColegiado.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbListadoSolicitudesColegiado.setShowVerticalLines(false);
+			tbListadoSolicitudesColegiado.setOpaque(false);
+
+			tbListadoSolicitudesColegiado.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbListadoSolicitudesColegiado.setGridColor(new Color(255, 255, 255));
+
+			try {
+				TableModel allSolicitudesColegiado = new ColegiadoModel(new ColegiadoServiceImpl().findAllSolicitudesColegiado()).getColegiadoModel(false);
+				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
+
+			} catch (BusinessException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		return tbListadoSolicitudesColegiado;
 	}
 }

@@ -1,5 +1,7 @@
 package business.colegiado;
 
+import java.util.List;
+
 import business.BusinessException;
 import persistence.colegiado.ColegiadoDto;
 
@@ -41,8 +43,24 @@ public interface ColegiadoService {
 	 * 
 	 * @throws BusinessException
 	 * @throws IllegalArgumentException Si el dni no es válido.
-	 * <a>business.util.Argument</a>
+	 *                                  <a>business.util.Argument</a>
 	 * 
 	 */
 	int findTitulacionByDni(final String dni) throws BusinessException;
+
+	/**
+	 * Asignacion de un número de colegiado a un solicitante.
+	 * 
+	 * @param colegiado
+	 * @throws BusinessException
+	 */
+	void updateNumColegiado(final ColegiadoDto colegiado) throws BusinessException;
+
+	/**
+	 * Listado de solicitudes de colegiado.
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	List<ColegiadoDto> findAllSolicitudesColegiado() throws BusinessException;
 }

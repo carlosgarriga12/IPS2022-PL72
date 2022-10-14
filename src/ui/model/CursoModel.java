@@ -33,7 +33,7 @@ public class CursoModel {
 		this.cursos = cursos;
 	}
 
-	public TableModel getCursoModel(boolean showAllFields) throws BusinessException {
+	public TableModel getCursoModel(final boolean showAllFields) throws BusinessException {
 
 		// Listado de cursos actualmente planificados
 

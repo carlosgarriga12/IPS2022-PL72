@@ -6,9 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import business.util.DateUtils;
 import persistence.colegiado.ColegiadoDto;
-import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 
 public class DtoAssembler {
@@ -74,10 +72,8 @@ public class DtoAssembler {
 		if (rs.getString("FECHACIERRE") != null) {
 			newCursoDto.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
 		}
-
-		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-
-		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
+		
+		newCursoDto.estado = rs.getString("ESTADOCURSO");
 
 		return newCursoDto;
 
