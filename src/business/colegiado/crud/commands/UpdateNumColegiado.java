@@ -1,8 +1,7 @@
 package business.colegiado.crud.commands;
 
-import java.time.LocalDate;
-
-import business.util.Argument;
+import business.BusinessException;
+import business.util.GeneradorNumeroColegiado;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 
@@ -14,25 +13,20 @@ import persistence.colegiado.ColegiadoDto;
  */
 public class UpdateNumColegiado {
 
-	private ColegiadoDto colegiado;
+	private String dni;
 
-	public UpdateNumColegiado(final ColegiadoDto colegiado) {
-		Argument.isNotNull(colegiado);
-		Argument.isNotEmpty(colegiado.DNI);
-		Argument.isNotEmpty(colegiado.nombre);
-
-		this.colegiado = colegiado;
+	public UpdateNumColegiado(final String dni) {
+		this.dni = dni;
 	}
 
-	public void execute() {
-		int n = ColegiadoCrud.findAllColegiados().size() + 1;
+	public String execute() throws BusinessException {
 
-		int currentYear = LocalDate.now().getYear();
-
-		String defNumeroColegiado = String.valueOf(currentYear).concat(String.valueOf(n));
-
-		colegiado.numeroColegiado = defNumeroColegiado;
+		ColegiadoDto colegiado = new ColegiadoDto();
+		colegiado.DNI = dni;
+		colegiado.numeroColegiado = GeneradorNumeroColegiado.generateNumber();
 
 		ColegiadoCrud.updateNumColegiado(colegiado);
+
+		return colegiado.numeroColegiado;
 	}
 }

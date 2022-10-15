@@ -30,8 +30,8 @@ public class ColegiadoServiceImpl implements ColegiadoService {
 	}
 
 	@Override
-	public void updateNumColegiado(ColegiadoDto colegiado) throws BusinessException {
-		new UpdateNumColegiado(colegiado).execute();
+	public String updateNumColegiado(final String dni) throws BusinessException {
+		return new UpdateNumColegiado(dni).execute();
 	}
 
 	@Override

@@ -72,7 +72,7 @@ public class InscripcionCursoFormacionCRUD {
 			Connection cn = Jdbc.getConnection();
 
 			stmt = cn.prepareStatement(SQL_LISTA_INSCRIPCIONES);
-			List<CursoDto> respuesta = DtoAssembler.toInscripcionList(stmt.executeQuery());
+			List<CursoDto> respuesta = DtoAssembler.toCursoList(stmt.executeQuery());
 			cursos = new ArrayList<>();
 			for (CursoDto curso : respuesta) {
 				if (isFechaDentro(curso.fechaApertura, curso.fechaCierre)) {

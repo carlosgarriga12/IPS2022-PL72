@@ -54,6 +54,7 @@ import business.colegiado.crud.ColegiadoServiceImpl;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
+import business.util.GeneradorNumeroColegiado;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -251,7 +252,6 @@ public class MainWindow extends JFrame {
 	private JScrollPane spListadoAltaSolicitudesColegiado;
 	private JPanel pnConsultarTitulacionSouthButtons;
 	private JButton btConsultarSolicitudColegiadoVolver;
-	private DefaultButton btConsultarSolicitudColegiadoConfirmar;
 	private JPanel pnConsultarColegiadoDatosColegiadoSeleccionado;
 	private JLabel lbColegiadoSeleccionadoSolicitudRespuesta;
 	private JPanel pnListadoCursosSouth;
@@ -260,6 +260,8 @@ public class MainWindow extends JFrame {
 	private JScrollPane spListadoCursosCenter;
 	private JTable tbListadoTodosCursos;
 	private JTable tbListadoSolicitudesColegiado;
+	private JPanel pnListadoAltaSolicitudesColegiadoActualizarLista;
+	private DefaultButton btActualizarListaSolicitudesColegiado;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -2443,6 +2445,7 @@ public class MainWindow extends JFrame {
 			pnConsultarTitulacionCenter.setOpaque(false);
 			pnConsultarTitulacionCenter.setLayout(new BorderLayout(0, 0));
 			pnConsultarTitulacionCenter.add(getSpListadoAltaSolicitudesColegiado());
+			pnConsultarTitulacionCenter.add(getPnListadoAltaSolicitudesColegiadoActualizarLista(), BorderLayout.SOUTH);
 		}
 		return pnConsultarTitulacionCenter;
 	}
@@ -2482,7 +2485,6 @@ public class MainWindow extends JFrame {
 			flowLayout.setHgap(10);
 			flowLayout.setAlignment(FlowLayout.RIGHT);
 			pnConsultarTitulacionSouthButtons.add(getBtConsultarSolicitudColegiadoVolver());
-			pnConsultarTitulacionSouthButtons.add(getBtConsultarSolicitudColegiadoConfirmar());
 		}
 		return pnConsultarTitulacionSouthButtons;
 	}
@@ -2491,17 +2493,13 @@ public class MainWindow extends JFrame {
 		if (btConsultarSolicitudColegiadoVolver == null) {
 			btConsultarSolicitudColegiadoVolver = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
 					ButtonColor.NORMAL);
+			btConsultarSolicitudColegiadoVolver.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
 		}
 		return btConsultarSolicitudColegiadoVolver;
-	}
-
-	private DefaultButton getBtConsultarSolicitudColegiadoConfirmar() {
-		if (btConsultarSolicitudColegiadoConfirmar == null) {
-			btConsultarSolicitudColegiadoConfirmar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio",
-					'v', ButtonColor.NORMAL);
-			btConsultarSolicitudColegiadoConfirmar.setEnabled(false);
-		}
-		return btConsultarSolicitudColegiadoConfirmar;
 	}
 
 	private JPanel getPnConsultarColegiadoDatosColegiadoSeleccionado() {
@@ -2516,7 +2514,8 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbColegiadoSeleccionadoSolicitudRespuesta() {
 		if (lbColegiadoSeleccionadoSolicitudRespuesta == null) {
-			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel("<< SIN RESPUESTA >>");
+			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel(
+					"Seleccione un colegiado de la lista y, si tiene titulación, se procederá a darle de alta en el COIIPA");
 			lbColegiadoSeleccionadoSolicitudRespuesta.setFont(LookAndFeel.HEADING_3_FONT);
 			lbColegiadoSeleccionadoSolicitudRespuesta.setForeground(LookAndFeel.SECONDARY_COLOR);
 		}
@@ -2594,10 +2593,11 @@ public class MainWindow extends JFrame {
 		}
 		return tbListadoTodosCursos;
 	}
+
 	private JTable getTbListadoSolicitudesColegiado() {
 		if (tbListadoSolicitudesColegiado == null) {
 			tbListadoSolicitudesColegiado = new JTable();
-			
+
 			tbListadoSolicitudesColegiado.setIntercellSpacing(new Dimension(0, 0));
 			tbListadoSolicitudesColegiado.setShowGrid(false);
 			tbListadoSolicitudesColegiado.setRowMargin(0);
@@ -2614,14 +2614,115 @@ public class MainWindow extends JFrame {
 			tbListadoSolicitudesColegiado.setGridColor(new Color(255, 255, 255));
 
 			try {
-				TableModel allSolicitudesColegiado = new ColegiadoModel(new ColegiadoServiceImpl().findAllSolicitudesColegiado()).getColegiadoModel(false);
+				TableModel allSolicitudesColegiado = new ColegiadoModel(
+						new ColegiadoServiceImpl().findAllSolicitudesColegiado()).getColegiadoModel(false);
+
 				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
 
 			} catch (BusinessException e) {
 				e.printStackTrace();
 			}
-			
+
+			tbListadoSolicitudesColegiado.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent event) {
+
+					if (event.getValueIsAdjusting())
+						return;
+
+					try {
+
+						int selectedRow = tbListadoSolicitudesColegiado.getSelectedRow();
+
+						if (selectedRow == -1) {
+							selectedRow = 0;
+						}
+
+						// Titulacion del colegiado seleccionado
+						String colegiadoSeleccionadoDni = tbListadoSolicitudesColegiado.getValueAt(selectedRow, 0)
+								.toString();
+
+						int titulacionColegiadoSeleccionado = new ColegiadoServiceImpl()
+								.findTitulacionByDni(colegiadoSeleccionadoDni);
+
+						String simulacionNumeroColegiado = GeneradorNumeroColegiado.generateNumber();
+
+						// Si el solicitante tiene la titulacion = 1, se procede a darle de alta en el
+						// COIIPA con el numero {@link #simulacionNumeroColegiado}
+						String isColegiadoMsg = titulacionColegiadoSeleccionado == 1
+								? " posee titulación y se dará de alta en el COIIPA con el número: "
+										+ simulacionNumeroColegiado
+								: " no tiene titulación";
+
+						lbColegiadoSeleccionadoSolicitudRespuesta
+								.setText("El solicitante de ingreso seleccionado " + isColegiadoMsg);
+
+						// Si el solicitante está graduado, se procederá a su alta automática en el
+						// COIIPA.
+						if (titulacionColegiadoSeleccionado == 1) {
+
+							String numeroColegiado = new ColegiadoServiceImpl()
+									.updateNumColegiado(colegiadoSeleccionadoDni);
+
+							lbColegiadoSeleccionadoSolicitudRespuesta.setText(
+									"Se ha dado de alta en el COIIPA al solicitante con DNI " + colegiadoSeleccionadoDni
+											+ " con el número de colegiado " + numeroColegiado);
+
+							// Actualizar la lista de solicitudes con los nuevos cambios
+							refrescarListaSolicitudesColegiado();
+						}
+
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException | BusinessException nfe) {
+						// TODO: MOSTRAR MENSAJE DE ERROR
+					}
+				}
+
+			});
+
 		}
 		return tbListadoSolicitudesColegiado;
+	}
+
+	private JPanel getPnListadoAltaSolicitudesColegiadoActualizarLista() {
+		if (pnListadoAltaSolicitudesColegiadoActualizarLista == null) {
+			pnListadoAltaSolicitudesColegiadoActualizarLista = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnListadoAltaSolicitudesColegiadoActualizarLista.getLayout();
+			flowLayout.setAlignment(FlowLayout.LEFT);
+			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getBtActualizarListaSolicitudesColegiado());
+		}
+		return pnListadoAltaSolicitudesColegiadoActualizarLista;
+	}
+
+	private DefaultButton getBtActualizarListaSolicitudesColegiado() {
+		if (btActualizarListaSolicitudesColegiado == null) {
+			btActualizarListaSolicitudesColegiado = new DefaultButton("Refrescar lista", "regular",
+					"RefrescarListaSolicitudesColegiado", 'r', ButtonColor.NORMAL);
+			btActualizarListaSolicitudesColegiado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						refrescarListaSolicitudesColegiado();
+					} catch (BusinessException e1) {
+						// TODO: MOSTRAR MENSAJE DE ERROR
+						e1.printStackTrace();
+					}
+				}
+			});
+		}
+		return btActualizarListaSolicitudesColegiado;
+	}
+
+	/**
+	 * Refresca el modelo de la tabla de la lista de solicitudes de alta para
+	 * Colegiados.
+	 * 
+	 * @throws BusinessException
+	 */
+	private void refrescarListaSolicitudesColegiado() throws BusinessException {
+		TableModel allSolicitudesColegiado = new ColegiadoModel(
+				new ColegiadoServiceImpl().findAllSolicitudesColegiado()).getColegiadoModel(false);
+
+		tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
+
+		lbColegiadoSeleccionadoSolicitudRespuesta.setText(
+				"Seleccione un colegiado de la lista y, si tiene titulación, se procederá a darle de alta en el COIIPA");
 	}
 }

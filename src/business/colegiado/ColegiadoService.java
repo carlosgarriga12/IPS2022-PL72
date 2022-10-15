@@ -51,10 +51,13 @@ public interface ColegiadoService {
 	/**
 	 * Asignacion de un número de colegiado a un solicitante.
 	 * 
-	 * @param colegiado
+	 * @param dni DNI del colegiado a dar de alta en el COIIPA. El número se genera
+	 *            de forma automática.
+	 * 
+	 * @return
 	 * @throws BusinessException
 	 */
-	void updateNumColegiado(final ColegiadoDto colegiado) throws BusinessException;
+	String updateNumColegiado(final String dni) throws BusinessException;
 
 	/**
 	 * Listado de solicitudes de colegiado.

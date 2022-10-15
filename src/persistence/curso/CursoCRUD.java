@@ -20,8 +20,7 @@ public class CursoCRUD {
 	private static final String SQL_ABRIR_CURSO = Conf.getInstance().getProperty("TCURSO_ABRIR_CURSO");
 	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance()
 			.getProperty("TCURSO_LIST_SCHEDULED_COURSES");
-	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance()
-			.getProperty("TCURSO_LIST_ALL_COURSES");
+	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
 
