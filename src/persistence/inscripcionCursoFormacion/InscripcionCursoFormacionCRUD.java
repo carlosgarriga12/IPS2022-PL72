@@ -2,7 +2,6 @@ package persistence.inscripcionCursoFormacion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ public class InscripcionCursoFormacionCRUD {
 			.getProperty("TINSCRIPCION_CURSO_ADD");
 	private static final String SQL_LISTA_INSCRIPCIONES = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
 	private static final String SQL_PLAZAS_LIBRES = Conf.getInstance().getProperty("PLAZAS_LIBRES");
-	private static final String SQL_IS_CURSO_ABIERTO = Conf.getInstance().getProperty("Is_Curso_Abierto");
 
 
 	/**

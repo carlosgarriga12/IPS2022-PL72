@@ -37,7 +37,7 @@ public class Colegiado {
 	 */
 	public static ColegiadoDto findColegiadoPorDni(String dni) throws BusinessException {
 		comprobarArgumentos(dni);
-
+		
 		return ColegiadoCrud.findColegiadoDni(dni);
 	}
 

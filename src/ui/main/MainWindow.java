@@ -9,7 +9,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -74,7 +73,6 @@ public class MainWindow extends JFrame {
 	// Nombres de los paneles contenidos en mainPanel
 	private static final String HOME_PANEL_NAME = "homePanel";
 	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "solicitudAltaColegiado";
-	private static final String LOGIN_COLEGIADO_PANEL = "loginColegiadoPanel";
 	private static final String APERTURA_INSCRIPCIONES_PANEL_NAME = "aperturaCursoPanel";
 	private static final String INSCRIPCION_CURSO_PANEL_NAME = "inscripicionCursoPanel";
 	private static final String ADD_CURSO_PANEL_NAME = "addCursoPanel";
@@ -1907,8 +1905,8 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						if (Curso.listarCursosAbiertos().isEmpty()) {
-							JOptionPane.showMessageDialog(null, "No puede pagar la inscripción de un curso debido a que no hay ninguno abierto"
-									, "No puede hacerse cargo de la inscripción", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(null, "No puede pagar la inscripción de un curso debido a que no hay ninguno abierto o no hay suficientes plazas"
+									, "No puede hacerse cargo de ninguna inscripción", JOptionPane.WARNING_MESSAGE);
 						} else {
 							textFieldDNIColegiado.grabFocus();
 							mainCardLayout.show(mainPanel, PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
@@ -2240,8 +2238,10 @@ public class MainWindow extends JFrame {
 							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), (int) comboBoxIdentificadorCursosAbiertos.getSelectedItem() , "PENDIENTE", "TRANSFERENCIA");
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por transferencia bancaria\n"
-									+ "El pago se queda en estado pendiente",
-									"Pago pendiente", JOptionPane.INFORMATION_MESSAGE);	
+									+ "La inscripción al curso " + (int) comboBoxIdentificadorCursosAbiertos.getSelectedItem() + " se ha tramitado correctamente, queda en estado pendiente",
+									"Pago pendiente", JOptionPane.INFORMATION_MESSAGE);
+							reiniciarInscripcionColegiadoPagar();
+							mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 						} catch (BusinessException e1) {
 							JOptionPane.showMessageDialog(null,
 									"Lo sentimos, no puede hacerse cargo de pagar un curso en el que se ha preinscrito hace más de dos días\n"
@@ -2290,13 +2290,16 @@ public class MainWindow extends JFrame {
 					if (comprobarCampos() && comprobarColegiadoInscripcion() && comprobarFechaCaducidad()) {
 							try {
 								InscripcionColegiado.comprobarFecha(InscripcionColegiado.findFechaPreinscripcion
-										(textFieldDNIColegiado.getText(), Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem())));
+										(textFieldDNIColegiado.getText(), (int) comboBoxIdentificadorCursosAbiertos.getSelectedItem()));
 								InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), 
 										Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()) , "PAGADO", "TARJETA");
 								JOptionPane.showMessageDialog(null,
 										"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
 										+ "El pago se ha inscrito con éxito",
 										"Pago verificado", JOptionPane.INFORMATION_MESSAGE);
+								reiniciarInscripcionColegiadoPagar();
+								mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+								
 							} catch (BusinessException e1) {
 								JOptionPane.showMessageDialog(null,
 										"Lo sentimos, no puede hacerse cargo de pagar un curso en el que se ha preinscrito hace más de dos días\n"
@@ -2318,15 +2321,17 @@ public class MainWindow extends JFrame {
 	private boolean comprobarColegiadoInscripcion() {
 		// comprobamos que el dni asociado sea un colegiado
 		try {
-			Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText());
+			if (Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText()) == null) {
+				JOptionPane.showMessageDialog(null,
+						"Lo sentimos, no puede hacerse cargo de pagar un curso, no es usted ni colegiado ni precolegiado, formalice su solicitud primero\n"
+						+ "Inténtelo de nuevo la próxima vez",
+						"Dni inválido", JOptionPane.WARNING_MESSAGE);
+				reiniciarInscripcionColegiadoPagar();
+				mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				return false;
+			}
 		} catch (BusinessException e) {
-			JOptionPane.showMessageDialog(null,
-					"Lo sentimos, no puede hacerse cargo de pagar un curso, no es usted ni colegiado ni precolegiado, formalice su solicitud primero\n"
-					+ "Inténtelo de nuevo la próxima vez",
-					"Dni inválido", JOptionPane.WARNING_MESSAGE);
-			reiniciarInscripcionColegiadoPagar();
-			mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
-			return false;
+			e.printStackTrace();
 		}
 		// comprobamos que se ha inscrito en el curso
 		try {
@@ -2334,8 +2339,8 @@ public class MainWindow extends JFrame {
 			return true;
 		} catch (BusinessException e) {
 			JOptionPane.showMessageDialog(null,
-					"Lo sentimos, no puede hacerse cargo de pagar un curso, en el que no se ha preinscrito\n"
-					+ "Inténtelo de nuevo la próxima vez",
+					"Lo sentimos, no puede hacerse cargo de pagar un curso, en el que no se ha preinscrito o ya lo ha pagado\n"
+					+ "Consulte sus pagos a las inscripciones del curso",
 					"Preinscripción no realizada", JOptionPane.WARNING_MESSAGE);
 			reiniciarInscripcionColegiadoPagar();
 			mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -2375,7 +2380,6 @@ public class MainWindow extends JFrame {
 			JOptionPane.showMessageDialog(null, "Revise que no haya dejado ningún campo vacío y los formatos de los datos que tiene que introducir\n"
 					+ "Sigue el ejemplo del campo correspondiente"
 					, "Datos no válidos", JOptionPane.ERROR_MESSAGE);
-			textFieldNumeroTarjetaColegiado.setText(null);
 			return false;
 		}
 		return true;
