@@ -2292,7 +2292,7 @@ public class MainWindow extends JFrame {
 								InscripcionColegiado.comprobarFecha(InscripcionColegiado.findFechaPreinscripcion
 										(textFieldDNIColegiado.getText(), (int) comboBoxIdentificadorCursosAbiertos.getSelectedItem()));
 								InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), 
-										Integer.parseInt((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()) , "PAGADO", "TARJETA");
+										(int) comboBoxIdentificadorCursosAbiertos.getSelectedItem() , "PAGADO", "TARJETA");
 								JOptionPane.showMessageDialog(null,
 										"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
 										+ "El pago se ha inscrito con éxito",
@@ -2348,21 +2348,16 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-
-	@SuppressWarnings("deprecation")
-	private boolean comprobarFechaCaducidad() {
-		Date date = new Date();
-		if (this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.YEAR) < date.getYear() + 1900 || 
-			this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.YEAR) == date.getYear() + 1900  && this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.MONTH) + 1 < date.getMonth() + 1 ||
-			this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.YEAR) == date.getYear() + 1900  && this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.MONTH) + 1 == date.getMonth() + 1
-			&& this.getCalendarioFechaCaducidad().getCalendar().get(java.util.Calendar.DATE) <= date.getDay() + 19) {
-				JOptionPane.showMessageDialog(null, "La fecha de caducidad debe ser posterior a la actual"
-						, "Fecha de caducidad incorrecta", JOptionPane.ERROR_MESSAGE);
-			this.calendarioFechaCaducidad.setDate(new Date());
-			return false;
-		}
-		return true;
-				
+	private boolean comprobarFechaCaducidad() {		 
+		Date fechaCaducidad = calendarioFechaCaducidad.getDate();
+		Date ahora = new Date();
+	    if (fechaCaducidad.after(ahora)) {
+	    	return true;
+	    }
+		JOptionPane.showMessageDialog(null, "La fecha de caducidad debe ser posterior a la actual"
+				, "Fecha de caducidad incorrecta", JOptionPane.ERROR_MESSAGE);
+		this.calendarioFechaCaducidad.setDate(new Date());
+		return false;			
 	}
 
 	private boolean comprobarCampos() {

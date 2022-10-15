@@ -1,7 +1,7 @@
 package business.InscripcionColegiado;
 
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 import javax.swing.JOptionPane;
 
@@ -42,8 +42,10 @@ public class InscripcionColegiado {
 	public static void comprobarFecha(String fechaPreInscripcion) throws BusinessException {
 		// comprueba que no han pasado dos dias desde la fecha actual
 		LocalDate fecha = LocalDate.parse(fechaPreInscripcion);
-	    if (ChronoUnit.DAYS.between(LocalDate.now(), fecha) > 2) {
-	    	throw new BusinessException("No puede inscribirse a un curso en el que han pasado más de dos días desde la fecha de pre-inscripcion");
+		LocalDate ahora = LocalDate.now();
+	    if (Duration.between(ahora.atStartOfDay(), fecha.atStartOfDay()).toDays() < -2 ||
+	    		Duration.between(ahora.atStartOfDay(), fecha.atStartOfDay()).toDays() > 0) {
+	    	throw new BusinessException("No puede inscribirse a un curso en el que han pasado más de dos días desde la fecha de pre-inscripcion (ni antes)");
 	    }
 	}
 	
