@@ -75,12 +75,15 @@ public class ReciboCRUD {
 					numerosRecibo.add(recibo.numeroRecibo);
 					if(col.numeroColegiado != null) {
 						if(col.numeroColegiado.isEmpty()) {
-							cantidades.add(30.0);
+							recibo.cantidad = 30.0;
+							cantidades.add(recibo.cantidad);
 						} else {
-							cantidades.add(50.0);
+							recibo.cantidad = 50.0;
+							cantidades.add(recibo.cantidad);
 						}
 					} else {
-						cantidades.add(30.0);
+						recibo.cantidad = 30.0;
+						cantidades.add(recibo.cantidad);
 					}
 					addRecibo(recibo);
 				}
