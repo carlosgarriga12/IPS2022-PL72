@@ -22,7 +22,7 @@ public class EmisionCuotas {
 			bw = new BufferedWriter(new FileWriter(fichero));
 
 			bw.write("Fichero de recibos \n");
-			bw.write("Numero de recibo\tFecha de emision\tDNI\t\t\t\tNumero cuenta\t\t\tCantidad\n");
+			bw.write("Numero de recibo\tFecha de emision\tDNI\t\t\t\tNumero cuenta\tCantidad\n");
 			
 			for(int i = 0; i < colegiados.size(); i++) {
 				bw.write(numerosRecibo.get(i) +"\t\t\t\t\t"+
