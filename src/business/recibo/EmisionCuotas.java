@@ -11,10 +11,8 @@ import persistence.colegiado.ColegiadoDto;
 
 public class EmisionCuotas {
 
-	public static void emitirCuotas(List<ColegiadoDto> colegiados, List<Integer> numerosRecibo) {
+	public static void emitirCuotas(List<ColegiadoDto> colegiados, List<Integer> numerosRecibo, List<Double> cantidades) {
 		LocalDate fechaEmision = LocalDate.now();
-		double cantidad = 50.0; // Cantidad fija a pagar tanto para colegiados como pre-colegiados
-		
 		int year = LocalDate.now().getYear();
 		
 		BufferedWriter bw = null;
@@ -24,12 +22,12 @@ public class EmisionCuotas {
 			bw = new BufferedWriter(new FileWriter(fichero));
 
 			bw.write("Fichero de recibos \n");
-			bw.write("Numero de recibo\tFecha de emision\tDNI\t\tNumero cuenta\t\tCantidad\n");
+			bw.write("Numero de recibo\tFecha de emision\tDNI\t\t\t\tNumero cuenta\t\t\tCantidad\n");
 			
 			for(int i = 0; i < colegiados.size(); i++) {
 				bw.write(numerosRecibo.get(i) +"\t\t\t\t\t"+
 						fechaEmision + "\t\t\t" + colegiados.get(i).DNI+ 
-						"\t\t" + colegiados.get(i).numeroTarjeta + "\t\t" + cantidad + "\n");
+						"\t\t" + colegiados.get(i).numeroTarjeta + "\t\t\t" + cantidades.get(i) + "\n");
 			}
 			
 			bw.write("");
