@@ -7,6 +7,7 @@ import java.util.List;
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
+import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
@@ -83,12 +84,12 @@ public class InscripcionCursoFormativo {
 		inscripcionCurso.fechaApertura = fechaApertura;
 		inscripcionCurso.fechaCierre = fechaCierre;
 
-		InscripcionCursoFormacionCRUD.openNewInscripcion(inscripcionCurso);
+		InscripcionCursoFormacionCRUD.addNewInscripcion(inscripcionCurso);
 
-//		curso.plazasDisponibles = plazas;
-//		curso.estado = CursoDto.CURSO_ABIERTO;
-//
-//		CursoCRUD.abrirCurso(curso);
+		curso.plazasDisponibles = plazas;
+		curso.estado = CursoDto.CURSO_ABIERTO;
+
+		CursoCRUD.abrirCurso(curso);
 	}
 	
 	public static List<CursoDto> getCursosAbiertos(){
@@ -100,8 +101,8 @@ public class InscripcionCursoFormativo {
 		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
 	}
 
-
-
-
+	public static boolean isCursoAbierto(CursoDto cursoSeleccionado) {
+		return InscripcionCursoFormacionCRUD.isCursoAbierto(cursoSeleccionado);
+	}
 	
 }

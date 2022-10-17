@@ -19,7 +19,7 @@ public class ColegiadoCrud {
 
 	private static final String SQL_ANADIR_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
-
+	
 	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
 	private static final String SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO = Conf.getInstance()
 			.getProperty("BUSCAR_COLEGIADO_NUM_COLEGIADO");
@@ -44,13 +44,13 @@ public class ColegiadoCrud {
 		try {
 			c = Jdbc.getConnection();
 
-			pst = c.prepareStatement(QuerySQL);
+			pst = c.prepareStatement(SQL_BUSCAR_COLEGIADO_DNI);
 
 			pst.setString(1, dni);
 
 			rs = pst.executeQuery();
 			rs.next();
-			if (rs.getString(atributo) == null) {
+			if (rs.getString("DNI") == null) {
 				return null;
 			}
 			colegiado = ColegiadoAssembler.toColegiadoDto(rs);
@@ -105,42 +105,18 @@ public class ColegiadoCrud {
 		}
 		return colegiado;
 	}
-
+	
 	public static List<ColegiadoDto> findAllColegiados() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-
+		
 		try {
 			c = Jdbc.getConnection();
-
+		
 			st = c.createStatement();
 			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
-
-			return ColegiadoAssembler.toColegiadoList(rs);
-		} catch (SQLException e) {
-			throw new PersistenceException(e);
-		} finally {
-			Jdbc.close(rs, st, c);
-		}
-	}
-
-	/**
-	 * Listado de todas las solicitudes de alta de colegiados.
-	 * 
-	 * @return
-	 */
-	public static List<ColegiadoDto> findAllSolicitudesAltaColegiados() {
-		Connection c = null;
-		Statement st = null;
-		ResultSet rs = null;
-
-		try {
-			c = Jdbc.getConnection();
-
-			st = c.createStatement();
-			rs = st.executeQuery(SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS);
-
+			
 			return ColegiadoAssembler.toColegiadoList(rs);
 
 		} catch (SQLException e) {
@@ -207,5 +183,31 @@ public class ColegiadoCrud {
 			Jdbc.close(con);
 		}
 
+	}
+	
+	/**
+	 * Listado de todas las solicitudes de alta de colegiados.
+	 * 
+	 * @return
+	 */
+	public static List<ColegiadoDto> findAllSolicitudesAltaColegiados() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+
+		try {
+			c = Jdbc.getConnection();
+
+			st = c.createStatement();
+			rs = st.executeQuery(SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS);
+
+			return ColegiadoAssembler.toColegiadoList(rs);
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(rs, st, c);
+		}
 	}
 }

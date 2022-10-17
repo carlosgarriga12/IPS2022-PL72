@@ -8,7 +8,7 @@ import persistence.curso.CursoDto;
  * Inscripcion a un curso de formación.
  * 
  * @author Francisco Coya Abajo
- * @version v2.0.0
+ * @version v1.0.0
  *
  */
 public class InscripcionCursoFormacionDto {

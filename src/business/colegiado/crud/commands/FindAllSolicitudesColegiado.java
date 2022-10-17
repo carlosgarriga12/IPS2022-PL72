@@ -11,3 +11,4 @@ public class FindAllSolicitudesColegiado {
 		return ColegiadoCrud.findAllSolicitudesAltaColegiados();
 	}
 }
+

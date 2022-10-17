@@ -7,11 +7,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import persistence.colegiado.ColegiadoDto;
+import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 
 public class DtoAssembler {
 
-	public static ColegiadoDto toColegiadoDto(ResultSet rs) throws SQLException {
+	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
+		List<ColegiadoDto> colegiados = new ArrayList<>();
+
+		while (rs.next()) {
+			colegiados.add(resultSetToColegiadoDto(rs));
+		}
+
+		return colegiados;
+	}
+	
+	public static List<InscripcionCursoFormacionDto> toInscripcionList(ResultSet rs) throws SQLException{
+		List<InscripcionCursoFormacionDto> inscripciones = new ArrayList<InscripcionCursoFormacionDto>();
+		while(rs.next()) {
+			inscripciones.add(resultSetToInscripcionDto(rs));
+		}
+		return inscripciones;
+	}
+
+	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
 		c.DNI = rs.getString("DNI");
@@ -28,24 +48,6 @@ public class DtoAssembler {
 		return c;
 	}
 
-	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
-		List<ColegiadoDto> colegiados = new ArrayList<>();
-
-		while (rs.next()) {
-			colegiados.add(toColegiadoDto(rs));
-		}
-
-		return colegiados;
-	}
-
-	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException {
-		List<CursoDto> inscripciones = new ArrayList<CursoDto>();
-		while (rs.next()) {
-			inscripciones.add(toInscripcionDto(rs));
-		}
-		return inscripciones;
-	}
-
 	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {
 		List<CursoDto> cursos = new ArrayList<>();
 
@@ -56,6 +58,41 @@ public class DtoAssembler {
 		return cursos;
 	}
 
+	public static CursoDto resultSetToCursoDto(ResultSet rs) throws SQLException {
+		CursoDto newCursoDto = new CursoDto();
+
+		newCursoDto.codigoCurso = rs.getInt("ID");
+		newCursoDto.titulo = rs.getString("TITULO");
+		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
+		newCursoDto.plazasDisponibles = rs.getInt("PLAZAS");
+		newCursoDto.precio = rs.getDouble("PRECIO");
+		
+		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
+		
+		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
+
+		return newCursoDto;
+
+	}
+	
+	private static InscripcionCursoFormacionDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
+		InscripcionCursoFormacionDto i = new InscripcionCursoFormacionDto();
+		CursoDto c = new CursoDto();
+		
+		c.codigoCurso = rs.getInt("ID_CURSO");
+		c.titulo = rs.getString("TITULO");
+		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
+		c.plazasDisponibles = rs.getInt("PLAZAS");
+		c.precio = rs.getDouble("PRECIO");
+		
+		i.curso = c;
+		i.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
+		i.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
+		
+		return i;
+		
+	}
+	
 	public static CursoDto toCursoDto(ResultSet rs) throws SQLException {
 		CursoDto newCursoDto = new CursoDto();
 
@@ -77,23 +114,6 @@ public class DtoAssembler {
 		}
 
 		return newCursoDto;
-
-	}
-
-	// TODO: Este assembler tiene que ser para inscripciones no para cursos.
-	// CORREGIR
-	private static CursoDto toInscripcionDto(ResultSet rs) throws SQLException {
-		CursoDto c = new CursoDto();
-
-		c.codigoCurso = rs.getInt("IDCURSO");
-		c.titulo = rs.getString("TITULO");
-		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
-		c.plazasDisponibles = rs.getInt("PLAZAS");
-		c.precio = rs.getDouble("PRECIO");
-		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
-		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
-
-		return c;
 
 	}
 

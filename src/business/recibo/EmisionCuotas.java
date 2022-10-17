@@ -16,6 +16,11 @@ public class EmisionCuotas {
 		double cantidad = 50.0; // Cantidad fija a pagar tanto para colegiados como pre-colegiados
 		
 		int year = LocalDate.now().getYear();
+				
+//		File archivo = new File("recibos/fichero" + year + ".txt");
+//		if (archivo.exists()) {
+//		    return;
+//		}
 		
 		BufferedWriter bw = null;
 		try {

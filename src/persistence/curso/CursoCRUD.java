@@ -23,26 +23,27 @@ public class CursoCRUD {
 	private static final String SQL_LIST_ALL_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_ALL_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
-
+	
+	
 	public static int generarCodigoCurso() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-
+		
 		try {
 			c = Jdbc.getConnection();
-
+			
 			st = c.createStatement();
-
+			
 			rs = st.executeQuery(SQL_FIND_MAX_CURSO_ID);
-
-			if (rs.next()) {
+			
+			if(rs.next()) {
 				return rs.getInt(1) + 1;
 			} else {
 				return 1;
 			}
-
-		} catch (SQLException e) {
+			
+		} catch(SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, st, c);
@@ -62,7 +63,7 @@ public class CursoCRUD {
 			pst.setString(i++, curso.fechaInicio.toString());
 			pst.setDouble(i++, curso.precio);
 			pst.setInt(i++, curso.codigoCurso);
-
+			
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
@@ -154,6 +155,8 @@ public class CursoCRUD {
 
 		return isOpen;
 	}
+	
+	
 
 	/**
 	 * Listado de todos los cursos PLANIFICADOS y ABIERTOS en el COIIPA.
