@@ -35,5 +35,4 @@ public class InscripcionColegiado {
 		
 		return ColegiadoCrud.findColegiadoNumColegiado(Num);
 		}
-		
 	}
