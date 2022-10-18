@@ -57,6 +57,7 @@ public class ReciboCRUD {
 		List<ColegiadoDto> colegiados = ColegiadoCrud.findAllColegiados();
 		List<ColegiadoDto> emitidos = new ArrayList<>();
 		List<Integer> numerosRecibo = new ArrayList<>();
+		List<Double> cantidades = new ArrayList<>();
 		try {
 			c = Jdbc.getConnection();
 			
@@ -72,13 +73,25 @@ public class ReciboCRUD {
 					recibo.numeroRecibo = generateNumeroRecibo();
 					emitidos.add(col);
 					numerosRecibo.add(recibo.numeroRecibo);
+					if(col.numeroColegiado != null) {
+						if(col.numeroColegiado.isEmpty()) {
+							recibo.cantidad = 30.0;
+							cantidades.add(recibo.cantidad);
+						} else {
+							recibo.cantidad = 50.0;
+							cantidades.add(recibo.cantidad);
+						}
+					} else {
+						recibo.cantidad = 30.0;
+						cantidades.add(recibo.cantidad);
+					}
 					addRecibo(recibo);
 				}
 			}
 			if (emitidos.size() == 0) {
 				return false;
 			}
-			EmisionCuotas.emitirCuotas(emitidos, numerosRecibo);
+			EmisionCuotas.emitirCuotas(emitidos, numerosRecibo, cantidades);
 			return true;
 			
 		} catch(SQLException e) {
