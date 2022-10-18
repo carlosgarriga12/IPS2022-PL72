@@ -1,12 +1,11 @@
 package business.InscripcionColegiado;
 
 
-import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-
 
 import business.BusinessException;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -45,6 +44,7 @@ public class InscripcionColegiado {
 	}
 		
 	}
+
 
 
 
