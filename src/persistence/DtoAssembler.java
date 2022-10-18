@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
+import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -88,6 +90,29 @@ public class DtoAssembler {
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
 		
 		return c;
+		
+	}
+	
+	
+	public static ArrayList<Colegiado_Inscripcion> toInscripcionColegiadosList(ResultSet rs) throws SQLException{
+		ArrayList<Colegiado_Inscripcion> inscripciones = new ArrayList<Colegiado_Inscripcion>();
+		while(rs.next()) {
+			inscripciones.add(resultSetToInscripcionColegiadosDto(rs));
+		}
+		return inscripciones;
+	}
+	
+	private static Colegiado_Inscripcion resultSetToInscripcionColegiadosDto(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto I = new InscripcionColegiadoDto();
+		ColegiadoDto c = new ColegiadoDto();
+		
+		c.nombre = rs.getString("nombre");
+		c.apellidos = rs.getString("apellidos");
+		I.cantidadPagar = rs.getDouble("CantidadPagar");
+		I.estado = rs.getString("ESTADO");
+		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
+		
+		return new Colegiado_Inscripcion(c, I);
 		
 	}
 

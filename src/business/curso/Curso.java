@@ -40,4 +40,9 @@ public class Curso {
 		Argument.isNotNull(courseToCheck);
 		return CursoCRUD.isCursoAbierto(courseToCheck);
 	}
+	
+	
+	public static List<CursoDto> listaCursos(){
+		return CursoCRUD.listaCursos();
+	}
 }

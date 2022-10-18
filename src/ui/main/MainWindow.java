@@ -56,6 +56,7 @@ import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.recibo.EmisionCuotas;
 import business.util.DateUtils;
+import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -250,6 +251,14 @@ public class MainWindow extends JFrame {
 	private JTextField txCrearCursoFechaImparticionInput;
 	private JLabel lblCrearCursoPrecio;
 	private JTextField txCrearCursoPrecioInscripcionInput;
+	private JScrollPane spnCursos;
+	private JLabel lbAlertaListadoInscripciones;
+	
+	private JLabel lbTotalIngresos;
+	private JLabel lbTotalIngresosText;
+	
+	private JList<Colegiado_Inscripcion> lInscripciones;
+	private JList<CursoDto> lCursos;
 
 
 	public MainWindow() {
@@ -322,9 +331,9 @@ public class MainWindow extends JFrame {
 			pnAbrirInscripcionesCurso = new JPanel();
 			pnAbrirInscripcionesCurso.setBorder(null);
 			pnAbrirInscripcionesCurso.setLayout(new BorderLayout(0, 20));
-			pnAbrirInscripcionesCurso.add(getSpCoursesListCenter(), BorderLayout.CENTER);
-			pnAbrirInscripcionesCurso.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
-			pnAbrirInscripcionesCurso.add(getPnCoursesListNorth(), BorderLayout.NORTH);
+//			pnAbrirInscripcionesCurso.add(getSpCoursesListCenter(), BorderLayout.CENTER);
+//			pnAbrirInscripcionesCurso.add(getPnCoursesListSouth(), BorderLayout.SOUTH);
+//			pnAbrirInscripcionesCurso.add(getPnCoursesListNorth(), BorderLayout.NORTH);
 		}
 		return pnAbrirInscripcionesCurso;
 	}
@@ -1560,6 +1569,8 @@ public class MainWindow extends JFrame {
 			btnInscribete = new DefaultButton("Inscribirme", "ventana", "Inscribirme", 'n', ButtonColor.NORMAL);
 			btnInscribete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					lbConfirmacionInscripcion.setVisible(false);
+					lbAlerta.setVisible(false);
 					CursoDto cursoSeleccionado = lsCursos.getSelectedValue();
 					try {
 						if (cursoSeleccionado == null) {
@@ -1601,7 +1612,7 @@ public class MainWindow extends JFrame {
 			btnInscribete.setMnemonic('i');
 			btnInscribete.setBackground(Color.GREEN);
 			btnInscribete.setFont(new Font("Arial", Font.BOLD, 16));
-			btnInscribete.setBounds(731, 581, 191, 61);
+			btnInscribete.setBounds(779, 558, 153, 61);
 
 		}
 		return btnInscribete;
@@ -1634,7 +1645,7 @@ public class MainWindow extends JFrame {
 			lbConfirmacionInscripcion.setFont(new Font("Arial", Font.BOLD, 18));
 			lbConfirmacionInscripcion.setBorder(new LineBorder(Color.BLACK));
 
-			lbConfirmacionInscripcion.setBounds(18, 584, 678, 61);
+			lbConfirmacionInscripcion.setBounds(18, 558, 719, 61);
 
 		}
 		return lbConfirmacionInscripcion;
@@ -1743,7 +1754,7 @@ public class MainWindow extends JFrame {
 			});
 			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
 
-			btnInscripcionToInicio.setBounds(561, 602, 267, 64);
+			btnInscripcionToInicio.setBounds(779, 629, 280, 64);
 
 		}
 		return btnInscripcionToInicio;
@@ -2164,10 +2175,10 @@ public class MainWindow extends JFrame {
 		if (btHomeSecretariaListadoInscripciones == null) {
 			btHomeSecretariaListadoInscripciones = new DefaultButton("Ver todas las inscripciones", "ventana",
 					"ListadoInscripciones", 'l', ButtonColor.NORMAL);
-			btHomeSecretariaListadoInscripciones.setEnabled(false);
 			btHomeSecretariaListadoInscripciones.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, LISTADO_INSCRIPCIONES_PANEL_NAME);
+					ActualizaModeloListaCursos();
 				}
 			});
 		}
@@ -2205,7 +2216,53 @@ public class MainWindow extends JFrame {
 	private JPanel getPnListadoInscripciones() {
 		if (pnListadoInscripciones == null) {
 			pnListadoInscripciones = new JPanel();
-			pnListadoInscripciones.setLayout(new BorderLayout(0, 0));
+			pnListadoInscripciones.setLayout(null);
+			pnListadoInscripciones.add(getSpnCursos());
+			
+			JScrollPane spnInscripciones = new JScrollPane();
+			spnInscripciones.setBounds(547, 99, 481, 417);
+			pnListadoInscripciones.add(spnInscripciones);
+			
+			lInscripciones = new JList();
+			
+			spnInscripciones.setViewportView(lInscripciones);
+			
+			lbTotalIngresosText = new JLabel("Total Ingresos:");
+			lbTotalIngresosText.setVisible(false);
+			lbTotalIngresosText.setBorder(new LineBorder(Color.BLACK, 2));
+			lbTotalIngresosText.setHorizontalAlignment(SwingConstants.CENTER);
+			lbTotalIngresosText.setFont(new Font("Arial", Font.BOLD, 14));
+			lbTotalIngresosText.setBounds(885, 517, 142, 42);
+			pnListadoInscripciones.add(lbTotalIngresosText);
+			
+			lbTotalIngresos = new JLabel("");
+			lbTotalIngresos.setVisible(false);
+			lbTotalIngresos.setFont(new Font("Arial", Font.PLAIN, 14));
+			lbTotalIngresos.setHorizontalAlignment(SwingConstants.CENTER);
+			lbTotalIngresos.setBorder(new LineBorder(new Color(0, 0, 0)));
+			lbTotalIngresos.setBounds(885, 559, 142, 42);
+			pnListadoInscripciones.add(lbTotalIngresos);
+			
+			JLabel lbListadoCursos = new JLabel("Listado Cursos de formación:");
+			lbListadoCursos.setFont(new Font("Arial", Font.BOLD, 14));
+			lbListadoCursos.setBounds(67, 67, 481, 32);
+			pnListadoInscripciones.add(lbListadoCursos);
+			
+			JLabel lbListadoInscripciones = new JLabel("Listado Inscripciones:");
+			lbListadoInscripciones.setFont(new Font("Arial", Font.BOLD, 14));
+			lbListadoInscripciones.setBounds(547, 67, 481, 32);
+			pnListadoInscripciones.add(lbListadoInscripciones);
+			pnListadoInscripciones.add(getLbAlertaListadoInscripciones());
+			
+			DefaultButton btnListadoInscripcionesToInicio = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btnListadoInscripcionesToInicio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
+			btnListadoInscripcionesToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
+			btnListadoInscripcionesToInicio.setBounds(812, 611, 280, 64);
+			pnListadoInscripciones.add(btnListadoInscripcionesToInicio);
 		}
 		return pnListadoInscripciones;
 	}
@@ -2419,5 +2476,82 @@ public class MainWindow extends JFrame {
 			txCrearCursoPrecioInscripcionInput.setColumns(10);
 		}
 		return txCrearCursoPrecioInscripcionInput;
+	}
+	private JScrollPane getSpnCursos() {
+		if (spnCursos == null) {
+			spnCursos = new JScrollPane();
+			spnCursos.setBounds(67, 99, 481, 417);
+			
+			lCursos = new JList();
+			spnCursos.add(lCursos);
+			lCursos.addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					getLbAlertaListadoInscripciones().setVisible(false);
+					List<Colegiado_Inscripcion> listInscripciones = InscripcionColegiado.Lista_Inscritos_Curso(lCursos.getSelectedValue());
+					if(listInscripciones.isEmpty()) {
+						getLbAlertaListadoInscripciones().setVisible(true);
+						getLbAlertaListadoInscripciones().setText("Actualmente no hay inscritos en el curso seleccionado");
+					}
+					else {
+					
+						lInscripciones.setModel(new AbstractListModel<Colegiado_Inscripcion>() {
+						private static final long serialVersionUID = 1L;
+						Colegiado_Inscripcion[] values = listInscripciones.toArray(new Colegiado_Inscripcion[listInscripciones.size()]);
+						public int getSize() {
+							return values.length;
+						}
+						public Colegiado_Inscripcion getElementAt(int index) {
+							return values[index];
+						}
+						});
+						
+						lbTotalIngresosText.setVisible(true);
+						lbTotalIngresos.setVisible(true);
+						lbTotalIngresos.setText(listInscripciones.stream().mapToDouble(I -> I.cantidadPagada()).sum()+"");
+					}
+						
+						
+				}
+			});
+			
+			
+			
+			
+			spnCursos.setViewportView(lCursos);
+			
+		}
+		return spnCursos;
+	}
+	
+	public void ActualizaModeloListaCursos() {
+		List<CursoDto> listCursos = Curso.listaCursos();
+		if(listCursos.isEmpty()) {
+			getLbAlertaListadoInscripciones().setVisible(true);
+			getLbAlertaListadoInscripciones().setText("Lo sentimos, no hay cursos disponibles actualmente");
+		}
+		else {
+			lCursos.setModel(new AbstractListModel<CursoDto>() {
+			private static final long serialVersionUID = 1L;
+			CursoDto[] values = listCursos.toArray(new CursoDto[listCursos.size()]);
+			public int getSize() {
+				return values.length;
+			}
+			public CursoDto getElementAt(int index) {
+				return values[index];
+			}
+		});
+		}
+	}
+	private JLabel getLbAlertaListadoInscripciones() {
+		if (lbAlertaListadoInscripciones == null) {
+			lbAlertaListadoInscripciones = new JLabel("Actualmente no hay inscritos en el curso seleccionado");
+			lbAlertaListadoInscripciones.setBorder(new LineBorder(Color.BLACK));
+			lbAlertaListadoInscripciones.setBackground(Color.RED);
+			lbAlertaListadoInscripciones.setOpaque(true);
+			lbAlertaListadoInscripciones.setVisible(false);
+			lbAlertaListadoInscripciones.setFont(new Font("Arial", Font.BOLD, 20));
+			lbAlertaListadoInscripciones.setBounds(67, 533, 748, 68);
+		}
+		return lbAlertaListadoInscripciones;
 	}
 }

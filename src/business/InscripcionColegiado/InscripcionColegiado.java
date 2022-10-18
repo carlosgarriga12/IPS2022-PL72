@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 
 import business.BusinessException;
+import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
@@ -38,6 +39,12 @@ public class InscripcionColegiado {
 		
 		return ColegiadoCrud.findColegiadoNumColegiado(Num);
 		}
+	
+	public static List<Colegiado_Inscripcion> Lista_Inscritos_Curso(CursoDto c){
+		return InscripcionColegiadoCRUD.Lista_Inscritos_Curso(c);
+	}
 		
 	}
+
+
 

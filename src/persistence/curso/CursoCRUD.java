@@ -21,6 +21,7 @@ public class CursoCRUD {
 	private static final String SQL_LIST_ALL_SCHEDULED_COURSES = Conf.getInstance().getProperty("TCURSO_LIST_SCHEDULED_COURSES");
 	private static final String SQL_CHECK_COURSE_OPEN = Conf.getInstance().getProperty("T_CURSO_IS_ABIERTO");
 	private static final String SQL_FIND_MAX_CURSO_ID = Conf.getInstance().getProperty("TCURSO_MAX_NUMBER");
+	private static final String SQL_LISTA_INSCRIPCIONES = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
 	
 	
 	public static int generarCodigoCurso() {
@@ -159,6 +160,30 @@ public class CursoCRUD {
 		}
 
 		return isOpen;
+	}
+	
+	public static List<CursoDto> listaCursos() {
+		Connection con = null;
+		PreparedStatement pst = null;
+		List<CursoDto> allCourses;
+
+		try {
+
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_LISTA_INSCRIPCIONES);
+			
+			allCourses = DtoAssembler.toInscripcionList(pst.executeQuery());
+			
+			
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return allCourses;
 	}
 	
 	
