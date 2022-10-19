@@ -108,6 +108,7 @@ public class InscripcionColegiadoCRUD {
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_FECHA);
+			
 			stmt.setString(1, dni);
 			stmt.setInt(2, cursoSeleccionado);
 			
