@@ -23,10 +23,10 @@ public class DtoAssembler {
 
 		return colegiados;
 	}
-	
-	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException{
+
+	public static List<CursoDto> toInscripcionList(ResultSet rs) throws SQLException {
 		List<CursoDto> inscripciones = new ArrayList<CursoDto>();
-		while(rs.next()) {
+		while (rs.next()) {
 			inscripciones.add(resultSetToInscripcionDto(rs));
 		}
 		return inscripciones;
@@ -65,21 +65,22 @@ public class DtoAssembler {
 
 		newCursoDto.codigoCurso = rs.getInt("IdCurso");
 		newCursoDto.titulo = rs.getString("Titulo");
-		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaApertura"));
+		newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));
+		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaImpartir"));
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
 		newCursoDto.precio = rs.getDouble("Precio");
-		
+
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-		
+
 		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
 
 		return newCursoDto;
 
 	}
-	
+
 	private static CursoDto resultSetToInscripcionDto(ResultSet rs) throws SQLException {
 		CursoDto c = new CursoDto();
-		
+
 		c.codigoCurso = rs.getInt("IDCURSO");
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
@@ -87,31 +88,30 @@ public class DtoAssembler {
 		c.precio = rs.getDouble("PRECIO");
 		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
-		
-		return c;	
+
+		return c;
 	}
-	
-	
-	public static ArrayList<Colegiado_Inscripcion> toInscripcionColegiadosList(ResultSet rs) throws SQLException{
+
+	public static ArrayList<Colegiado_Inscripcion> toInscripcionColegiadosList(ResultSet rs) throws SQLException {
 		ArrayList<Colegiado_Inscripcion> inscripciones = new ArrayList<Colegiado_Inscripcion>();
-		while(rs.next()) {
+		while (rs.next()) {
 			inscripciones.add(resultSetToInscripcionColegiadosDto(rs));
 		}
 		return inscripciones;
 	}
-	
+
 	private static Colegiado_Inscripcion resultSetToInscripcionColegiadosDto(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto I = new InscripcionColegiadoDto();
 		ColegiadoDto c = new ColegiadoDto();
-		
+
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
 		I.cantidadPagar = rs.getDouble("CantidadPagar");
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
-		
+
 		return new Colegiado_Inscripcion(c, I);
-		
+
 	}
 
 	public static ColegiadoDto toColegiadoDto(ResultSet rs) throws SQLException {

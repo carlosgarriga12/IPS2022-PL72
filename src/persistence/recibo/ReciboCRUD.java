@@ -17,40 +17,38 @@ import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
 
 public class ReciboCRUD {
-	
-	private static final String SQL_INSERT_RECIBO = 
-			Conf.getInstance().getProperty("TRECIBO_INSERT");
-	
-	private static final String SQL_FIND_RECIBO_COLEGIADO_YEAR =
-			Conf.getInstance().getProperty("TRECIBO_FIND_BY_YEAR_COLEGIADO");
-	
-	private static final String SQL_FIND_MAX_NUMERO_RECIBO = 
-			Conf.getInstance().getProperty("TRECIBO_MAX_NUMBER");
-	
-	private static boolean findReciboColegiadoByYear(String dni, int year) {		
+
+	private static final String SQL_INSERT_RECIBO = Conf.getInstance().getProperty("TRECIBO_INSERT");
+
+	private static final String SQL_FIND_RECIBO_COLEGIADO_YEAR = Conf.getInstance()
+			.getProperty("TRECIBO_FIND_BY_YEAR_COLEGIADO");
+
+	private static final String SQL_FIND_MAX_NUMERO_RECIBO = Conf.getInstance().getProperty("TRECIBO_MAX_NUMBER");
+
+	private static boolean findReciboColegiadoByYear(String dni, int year) {
 		Connection c = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
-			
+
 			pst = c.prepareStatement(SQL_FIND_RECIBO_COLEGIADO_YEAR);
 			int i = 1;
 			pst.setString(i++, dni);
 			pst.setInt(i++, year);
-			
+
 			rs = pst.executeQuery();
-			
+
 			return rs.next();
-			
-		} catch(SQLException e) {
+
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, pst, c);
 		}
 	}
-	
+
 	public static boolean emitirCuotas() {
 		Connection c = null;
 		PreparedStatement pst = null;
@@ -60,21 +58,21 @@ public class ReciboCRUD {
 		List<Double> cantidades = new ArrayList<>();
 		try {
 			c = Jdbc.getConnection();
-			
+
 			if (colegiados.size() == 0) {
 				return false;
 			}
-			for(ColegiadoDto col : colegiados) {
-				if(!findReciboColegiadoByYear(col.DNI, LocalDate.now().getYear())) {
+			for (ColegiadoDto col : colegiados) {
+				if (!findReciboColegiadoByYear(col.DNI, LocalDate.now().getYear())) {
 					ReciboDto recibo = new ReciboDto();
-					
+
 					recibo.dniColegiado = col.DNI;
 					recibo.year = LocalDate.now().getYear();
 					recibo.numeroRecibo = generateNumeroRecibo();
 					emitidos.add(col);
 					numerosRecibo.add(recibo.numeroRecibo);
-					if(col.numeroColegiado != null) {
-						if(col.numeroColegiado.isEmpty()) {
+					if (col.numeroColegiado != null) {
+						if (col.numeroColegiado.isEmpty()) {
 							recibo.cantidad = 30.0;
 							cantidades.add(recibo.cantidad);
 						} else {
@@ -93,31 +91,31 @@ public class ReciboCRUD {
 			}
 			EmisionCuotas.emitirCuotas(emitidos, numerosRecibo, cantidades);
 			return true;
-			
-		} catch(SQLException e) {
+
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(pst);
 			Jdbc.close(c);
 		}
 	}
-	
+
 	private static int generateNumeroRecibo() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
 			st = c.createStatement();
 			rs = st.executeQuery(SQL_FIND_MAX_NUMERO_RECIBO);
-			
-			if(rs.next()) {
+
+			if (rs.next()) {
 				return rs.getInt(1) + 1;
 			} else {
 				return 1;
 			}
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, st, c);
@@ -127,22 +125,22 @@ public class ReciboCRUD {
 	public static void addRecibo(ReciboDto recibo) {
 		Connection c = null;
 		PreparedStatement pst = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
-			
+
 			pst = c.prepareStatement(SQL_INSERT_RECIBO);
 			int i = 1;
 			pst.setInt(i++, recibo.numeroRecibo);
 			pst.setString(i++, recibo.dniColegiado);
 			pst.setInt(i++, recibo.year);
-			
+			pst.setDouble(i++, recibo.cantidad);
+
 			pst.executeUpdate();
-			
-		}catch(SQLException e) {
+
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
-		}
-		finally {
+		} finally {
 			Jdbc.close(c);
 			Jdbc.close(pst);
 		}

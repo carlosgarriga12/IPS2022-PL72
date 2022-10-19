@@ -90,7 +90,9 @@ public class CursoCRUD {
 			pst = con.prepareStatement(SQL_ABRIR_CURSO);
 
 			pst.setInt(1, curso.plazasDisponibles);
-			pst.setInt(2, curso.codigoCurso);
+			pst.setString(2, curso.fechaApertura.toString());
+			pst.setString(3, curso.fechaCierre.toString());
+			pst.setInt(4, curso.codigoCurso);
 
 			pst.executeUpdate();
 

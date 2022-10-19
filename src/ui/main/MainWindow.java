@@ -195,7 +195,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnHomeAccionesColegiado;
 	private JPanel pnHomeAccionesSecretaria;
 	private DefaultButton btHomeAltaColegiado;
-	private DefaultButton btHomeVerCursos;
 	private DefaultButton btHomeInscripcionCurso;
 	private DefaultButton btHomePagarInscripcion;
 	private DefaultButton btHomeSecretariaAbrirInscripciones;
@@ -214,7 +213,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnPagarInscripcion;
 	private JPanel pnListadoInscripciones;
 	private JPanel pnConsultarTitulacionSolicitante;
-	private JPanel pnEmitirCuotasColegiados;
 	private JPanel pnCrearCurso;
 	private JPanel pnCrearCursoTitulo;
 	private JLabel lblCrearCurso;
@@ -309,7 +307,6 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnPagarInscripcionColegiado(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
 		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
-		mainPanel.add(getPnEmitirCuotasColegiados(), EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
 		mainPanel.add(getPnCrearCurso(), ADD_CURSO_PANEL_NAME);
 
 		// Centrar la ventana
@@ -712,12 +709,16 @@ public class MainWindow extends JFrame {
 		if (btAbrirCurso == null) {
 			btAbrirCurso = new DefaultButton("Abrir curso", "ventana", "Abrir curso", 'a', ButtonColor.NORMAL);
 			btAbrirCurso.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			
+			getBtCancelarAperturaCurso().setText("cancelar");
+			
 			btAbrirCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
 					String plazas = spNumeroPlazasCursoSeleccionado.getValue().toString();
 					LocalDate fechaApertura = DateUtils
 							.convertStringIntoLocalDate(fTxFechaInicioInscripcionesCursoSeleccionado.getText());
+
 					LocalDate fechaCierre = DateUtils
 							.convertStringIntoLocalDate(fTxFechaCierreInscripcionesCursoSeleccionado.getText());
 
@@ -725,14 +726,26 @@ public class MainWindow extends JFrame {
 
 						CursoDto selectedCourse = Curso.getSelectedCourse();
 
+						if (selectedCourse == null) {
+							throw new BusinessException("Por favor, seleccione un curso.");
+						}
 						int input = JOptionPane.showConfirmDialog(null,
 								"<html><p>Â¿Confirma que desea abrir las inscripciones para el curso <b>"
 										+ selectedCourse.titulo + "</b> ?</p></html>");
 
 						if (input == JOptionPane.OK_OPTION) {
 							// Si el curso estÃ¡ abierto, mostrar mensaje de error
-							InscripcionCursoFormativo.abrirCursoFormacion(selectedCourse, fechaApertura, fechaCierre,
-									plazas);
+
+							CursoDto newCurso = new CursoDto();
+							newCurso.codigoCurso = selectedCourse.codigoCurso;
+							newCurso.titulo = selectedCourse.titulo;
+							newCurso.fechaInicio = selectedCourse.fechaInicio;
+							newCurso.fechaApertura = fechaApertura;
+							newCurso.fechaCierre = fechaCierre;
+							newCurso.precio = selectedCourse.precio;
+							newCurso.plazasDisponibles = Integer.parseInt(plazas);
+
+							InscripcionCursoFormativo.abrirCursoFormacion(newCurso);
 
 							((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
 							((DefaultMessage) pnListCoursesSouthMessages)
@@ -741,6 +754,7 @@ public class MainWindow extends JFrame {
 							refreshScheduledCoursesList();
 
 							btAbrirCurso.setEnabled(false);
+							getBtCancelarAperturaCurso().setText("volver");
 						}
 
 					} catch (BusinessException | PersistenceException | SQLException e1) {
@@ -748,6 +762,7 @@ public class MainWindow extends JFrame {
 						((DefaultMessage) pnListCoursesSouthMessages)
 								.setMessage("<html>" + e1.getMessage() + "</html>");
 						btAbrirCurso.setEnabled(false);
+						getBtCancelarAperturaCurso().setText("cancelar");
 
 					}
 				}
@@ -894,8 +909,8 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					if (anadirColegiado()) {
 						mostrarEstadoPendiente();
-						mainCardLayout.show(mainPanel, LOGIN_COLEGIADO_PANEL);
 						reiniciarSolicitudRegistro();
+						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 					}
 				}
 			});
@@ -989,6 +1004,7 @@ public class MainWindow extends JFrame {
 		this.getTextFieldPoblacion().setText(null);
 		this.getTextFieldTelefono().setText(null);
 		this.getTextFieldTitulacion().setText(null);
+
 		this.getTextFieldNombre().grabFocus();
 	}
 
@@ -1621,13 +1637,17 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						ColegiadoDto c = InscripcionColegiado.InicioSesion(txCursoDNI.getText());
-						if (c == null) {
+
+						if (c == null || txCursoDNI.getText().isEmpty()) {
 							lbAlerta.setText(
 									"Para mostrar los Cursos es Necesario un Numero de Colegiado-Precolegiado correcto");
 							lbAlerta.setVisible(true);
+
 						} else {
 							colegiado = c;
+
 							List<CursoDto> cursosAbiertos = InscripcionCursoFormativo.getCursosAbiertos();
+
 							if (cursosAbiertos.isEmpty()) {
 								lbAlerta.setVisible(true);
 								lbAlerta.setText("Lo sentimos, No hay cursos Disponibles");
@@ -1882,7 +1902,6 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado.setLayout(new GridLayout(4, 1, 0, 10));
 
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
-			pnHomeAccionesColegiado.add(getBtHomeVerCursos());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
 			pnHomeAccionesColegiado.add(getBtHomePagarInscripcion());
 		}
@@ -1915,18 +1934,6 @@ public class MainWindow extends JFrame {
 			});
 		}
 		return btHomeAltaColegiado;
-	}
-
-	private DefaultButton getBtHomeVerCursos() {
-		if (btHomeVerCursos == null) {
-			btHomeVerCursos = new DefaultButton("Ver cursos", "ventana", "VerCursos", 'v', ButtonColor.NORMAL);
-			btHomeVerCursos.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, LISTADO_CURSOS_PANEL_NAME);
-				}
-			});
-		}
-		return btHomeVerCursos;
 	}
 
 	private DefaultButton getBtHomeInscripcionCurso() {
@@ -1972,6 +1979,12 @@ public class MainWindow extends JFrame {
 					"AbrirInscrionesCurso", 'b', ButtonColor.NORMAL);
 			btHomeSecretariaAbrirInscripciones.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					try {
+						refreshScheduledCoursesList();
+					} catch (BusinessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					mainCardLayout.show(mainPanel, APERTURA_INSCRIPCIONES_PANEL_NAME);
 				}
 			});
@@ -1985,6 +1998,12 @@ public class MainWindow extends JFrame {
 					"ventana", "ConsultarTitulacionSolicitante", 'c', ButtonColor.NORMAL);
 			btHomeSecretariaConsultarTitulacionSolicitante.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					try {
+						refrescarListaSolicitudesColegiado();
+					} catch (BusinessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					mainCardLayout.show(mainPanel, CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
 				}
 			});
@@ -1998,7 +2017,6 @@ public class MainWindow extends JFrame {
 					"EmitirCuotasColegiados", 't', ButtonColor.NORMAL);
 			btHomeSecretariaEmitirCuotas.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME);
 					if (ReciboCRUD.emitirCuotas()) {
 						JOptionPane.showMessageDialog(null, "Cuotas emitidads correctamente");
 						;
@@ -2481,14 +2499,6 @@ public class MainWindow extends JFrame {
 		return lbColegiadoSeleccionadoSolicitudRespuesta;
 	}
 
-	private JPanel getPnEmitirCuotasColegiados() {
-		if (pnEmitirCuotasColegiados == null) {
-			pnEmitirCuotasColegiados = new JPanel();
-			pnEmitirCuotasColegiados.setLayout(new BorderLayout(0, 0));
-		}
-		return pnEmitirCuotasColegiados;
-	}
-
 	private JPanel getPnCrearCursoCenterContainer() {
 		if (pnCrearCursoCenterContainer == null) {
 			pnCrearCursoCenterContainer = new JPanel();
@@ -2782,8 +2792,10 @@ public class MainWindow extends JFrame {
 							InscripcionColegiado.comprobarFecha(
 									InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(),
 											(int) comboBoxIdentificadorCursosAbiertos.getSelectedItem()));
+
 							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(),
 									(int) comboBoxIdentificadorCursosAbiertos.getSelectedItem(), "PAGADO", "TARJETA");
+
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
 											+ "El pago se ha inscrito con éxito",
@@ -2810,9 +2822,22 @@ public class MainWindow extends JFrame {
 	}
 
 	private boolean comprobarCampos() {
-		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9) {
+
+		try {
+			// TODO:
+			int numeroTarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
+
+		} catch (NumberFormatException nfe) {
+			JOptionPane.showMessageDialog(null, "El número de tarjeta no es válido. Por favor, revíselo.",
+					"Datos no válidos", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9
+				|| textFieldNumeroTarjetaColegiado.getText().isBlank()
+				|| textFieldNumeroTarjetaColegiado.getText().length() != 5) {
 			JOptionPane.showMessageDialog(null,
-					"Revise que no haya dejado ningún campo vacío y el formato del DNI es el correcto\n"
+					"Revise que no haya dejado ningún campo vacío y el formato del DNI y de la tarjeta de crédito son correctos\n"
 							+ "Sigue el ejemplo del campo correspondiente",
 					"Datos no válidos", JOptionPane.WARNING_MESSAGE);
 			return false;
@@ -2823,9 +2848,11 @@ public class MainWindow extends JFrame {
 	private boolean comprobarFechaCaducidad() {
 		Date fechaCaducidad = calendarioFechaCaducidad.getDate();
 		Date ahora = new Date();
+
 		if (fechaCaducidad.after(ahora)) {
 			return true;
 		}
+
 		JOptionPane.showMessageDialog(null, "La fecha de caducidad debe ser posterior a la actual",
 				"Fecha de caducidad incorrecta", JOptionPane.ERROR_MESSAGE);
 		this.calendarioFechaCaducidad.setDate(new Date());
@@ -2902,8 +2929,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnNumeroTarjetaDatosColegiado;
 	}
-	
-	
+
 	private JPanel getPnPagarInscripcionColegiado() {
 		if (pnPagarInscripcionColegiado == null) {
 			pnPagarInscripcionColegiado = new JPanel();
@@ -2914,7 +2940,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnPagarInscripcionColegiado;
 	}
-	
+
 	private JPanel getPnModosPagoInscripcionColegiado() {
 		if (pnModosPagoInscripcionColegiado == null) {
 			pnModosPagoInscripcionColegiado = new JPanel();
@@ -2923,7 +2949,7 @@ public class MainWindow extends JFrame {
 			pnModosPagoInscripcionColegiado.add(getBtnTransferenciaColegiado());
 			pnModosPagoInscripcionColegiado.setBorder(new TitledBorder(
 					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
-					"ELIGE UNA DE LAS DOS OPCIONES", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));		
+					"ELIGE UNA DE LAS DOS OPCIONES", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
 		}
 		return pnModosPagoInscripcionColegiado;
 	}
