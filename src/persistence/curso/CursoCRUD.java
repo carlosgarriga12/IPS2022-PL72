@@ -65,7 +65,8 @@ public class CursoCRUD {
 			pst.setString(i++, curso.fechaInicio.toString());
 			pst.setDouble(i++, curso.precio);
 			pst.setInt(i++, curso.codigoCurso);
-
+			pst.setString(i++, curso.estado);
+			
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e);

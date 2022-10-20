@@ -65,8 +65,22 @@ public class DtoAssembler {
 
 		newCursoDto.codigoCurso = rs.getInt("IdCurso");
 		newCursoDto.titulo = rs.getString("Titulo");
-		newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));
-		newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaImpartir"));
+		
+		
+		if(rs.getString("FechaApertura") != null){
+			newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));			
+		}
+		
+		if(rs.getString("FechaCierre") != null){
+			newCursoDto.fechaCierre = LocalDate.parse(rs.getString("FechaCierre"));			
+		}
+		
+		if(rs.getString("FechaImpartir") != null) {
+			newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaImpartir"));			
+		}
+		
+		
+		
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
 		newCursoDto.precio = rs.getDouble("Precio");
 

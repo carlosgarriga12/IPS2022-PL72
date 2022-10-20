@@ -18,9 +18,10 @@ public class ColegiadoCrud {
 
 	private static final String SQL_ANADIR_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_ADD");
 	private static final String ESTADO_PENDIENTE = "PENDIENTE"; // se le asigna como PENDIENTE de momento
-	
+
 	private static final String SQL_FIND_ALL_COLEGIADOS = Conf.getInstance().getProperty("TCOLEGIADO_ALL");
-	private static final String SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO = Conf.getInstance().getProperty("BUSCAR_COLEGIADO_NUM_COLEGIADO");
+	private static final String SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO = Conf.getInstance()
+			.getProperty("BUSCAR_COLEGIADO_NUM_COLEGIADO");
 	private static final String SQL_LISTAR_SOLICITUDES_ALTA_COLEGIADOS = Conf.getInstance()
 			.getProperty("TCOLEGIADO_FIND_ALL_CANDIDATES");
 
@@ -30,8 +31,9 @@ public class ColegiadoCrud {
 	private static final String SQL_ASIGNACION_NUMERO_COLEGIADO = Conf.getInstance()
 			.getProperty("TCOLEGIADO_ASIGNACION_NUMERO_COLEGIADO");
 
-	
-	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo)  {
+	private static final String SQL_NUMERO_MAXIMO_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_LASTNUMBER");
+
+	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
 		Connection c = null;
@@ -60,18 +62,16 @@ public class ColegiadoCrud {
 
 		return colegiado;
 	}
-	
-	public static ColegiadoDto findColegiadoDni(String Dni)  {
+
+	public static ColegiadoDto findColegiadoDni(String Dni) {
 		return findColegiadoGeneral(Dni, SQL_BUSCAR_COLEGIADO_DNI, "DNI");
 	}
-	
-	
+
 	public static ColegiadoDto findColegiadoNumColegiado(String Num) {
 		return findColegiadoGeneral(Num, SQL_BUSCAR_COLEGIADO_NUM_COLEGIADO, "NUMERO");
 	}
 
-	
-	public static ColegiadoDto addColegiado(ColegiadoDto colegiado)  {
+	public static ColegiadoDto addColegiado(ColegiadoDto colegiado) {
 		Connection con = null;
 		PreparedStatement pst = null;
 
@@ -101,18 +101,18 @@ public class ColegiadoCrud {
 		}
 		return colegiado;
 	}
-	
+
 	public static List<ColegiadoDto> findAllColegiados() {
 		Connection c = null;
 		Statement st = null;
 		ResultSet rs = null;
-		
+
 		try {
 			c = Jdbc.getConnection();
-		
+
 			st = c.createStatement();
 			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
-			
+
 			return DtoAssembler.toColegiadoList(rs);
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
@@ -120,7 +120,7 @@ public class ColegiadoCrud {
 			Jdbc.close(rs, st, c);
 		}
 	}
-	
+
 	/**
 	 * Obtiene la titulación del colegiado
 	 * 
@@ -178,7 +178,7 @@ public class ColegiadoCrud {
 		}
 
 	}
-	
+
 	/**
 	 * Listado de todas las solicitudes de alta de colegiados.
 	 * 
@@ -204,7 +204,31 @@ public class ColegiadoCrud {
 			Jdbc.close(rs, st, c);
 		}
 	}
-	
-	
-	
+
+	public static String getMaxNumber() {
+		String maxNumber = "";
+
+		Connection c = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+
+		try {
+			c = Jdbc.getConnection();
+
+			pst = c.prepareStatement(SQL_NUMERO_MAXIMO_COLEGIADO);
+
+			rs = pst.executeQuery();
+			rs.next();
+			
+			maxNumber = rs.getString("MAX_NUM");
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return maxNumber;
+	}
 }

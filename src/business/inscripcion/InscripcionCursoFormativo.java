@@ -10,7 +10,6 @@ import business.util.DateUtils;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
-import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionDto;
 
 /**
  * 
@@ -33,20 +32,42 @@ public class InscripcionCursoFormativo {
 	 */
 	public static void abrirCursoFormacion(final CursoDto curso) throws BusinessException, SQLException {
 
+		checkCamposAperturaCurso(curso);
+
+		curso.plazasDisponibles = curso.plazasDisponibles;
+
+		CursoCRUD.abrirCurso(curso);
+	}
+
+	/**
+	 * Comprueba si los valores del curso pasado son válidos.
+	 * 
+	 * @param curso
+	 * @throws BusinessException Si alguno de los atributos del curso indicado no es
+	 *                           valido.
+	 */
+	public static void checkCamposAperturaCurso(final CursoDto curso) throws BusinessException {
 		if (curso == null || Curso.getSelectedCourse() == null) {
 			throw new BusinessException("Por favor, seleccione un curso de la lista.");
 
 			// Fecha inscripciones anterior a fecha actual
 		} else if (DateUtils.checkDateIsBefore(curso.fechaApertura, LocalDate.now())
-				|| DateUtils.checkDateIsBefore(curso.fechaCierre, LocalDate.now())
-				|| DateUtils.checkDateIsAfter(curso.fechaApertura, curso.fechaInicio)) {
+				|| DateUtils.checkDateIsBefore(curso.fechaCierre, LocalDate.now())) {
 
 			throw new BusinessException(
 					"Por favor, corriga el periodo de inscripción. La fecha de inscripción ha de ser a partir del día de hoy");
 
 			// Si fecha cierre < fecha apertura
 			// ó fecha inicio < fecha apertura
-		} else if (DateUtils.checkDateIsBefore(curso.fechaCierre, curso.fechaApertura)
+		} else if (DateUtils.checkDateIsAfter(curso.fechaApertura, curso.fechaInicio)) {
+			throw new BusinessException(
+					"Por favor, corriga el periodo de inscripción. la fecha de apertura de la inscripcion no puede ser posterior a la de inicio del curso");
+		} else if (DateUtils.checkDateIsAfter(curso.fechaCierre, curso.fechaInicio)) {
+			throw new BusinessException(
+					"Por favor, corriga el periodo de inscripción. La fecha de de cierre de la inscripcion no puede ser posterior a la fecha de inicio del curso");
+		}
+
+		else if (DateUtils.checkDateIsBefore(curso.fechaCierre, curso.fechaApertura)
 				|| DateUtils.checkDateIsBefore(curso.fechaInicio, curso.fechaApertura)) {
 
 			throw new BusinessException(
@@ -68,23 +89,15 @@ public class InscripcionCursoFormativo {
 			throw new BusinessException("Por favor, introduzca un número válido para las plazas disponibles");
 
 		}
-
-		curso.plazasDisponibles = curso.plazasDisponibles;
-
-		CursoCRUD.abrirCurso(curso);
 	}
-	
-	public static List<CursoDto> getCursosAbiertos(){
+
+	public static List<CursoDto> getCursosAbiertos() {
 		return InscripcionCursoFormacionCRUD.listaCursosAbiertos();
-	
+
 	}
-	
+
 	public static boolean PlazasLibres(CursoDto curso) throws BusinessException {
 		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
 	}
 
-
-
-
-	
 }

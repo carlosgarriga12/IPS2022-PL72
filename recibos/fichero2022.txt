@@ -1,3 +1,0 @@
-Fichero de recibos 
-Numero de recibo	Fecha de emision	DNI				Numero cuenta	Cantidad
-5					2022-10-19			11223344T		23456			30.0

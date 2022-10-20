@@ -111,6 +111,10 @@ public class Colegiado {
 
 		Argument.longitudCinco(colegiado.numeroTarjeta);
 	}
+	
+	public static String getMaxNumberColegiado() {
+		return ColegiadoCrud.getMaxNumber();
+	}
 
 	private static void comprobarArgumentos(String dni) {
 		Argument.isNotEmpty(dni);

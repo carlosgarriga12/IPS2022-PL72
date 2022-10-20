@@ -25,9 +25,12 @@ public class GeneradorNumeroColegiado {
 		sB.append(currentYear);
 		sB.append("-");
 
-		int lastColegiadoNumber = Colegiado.findAllSolicitudesAltaColegiados().size() + 1;
+		int lastNumber = 0;
+
+		lastNumber = Integer.parseInt(Colegiado.getMaxNumberColegiado().split("-")[1]) + 1;
+
 		DecimalFormat df = new DecimalFormat(NUMBER_SIZE_DEFAULT);
-		String lastColegiadoNumberFormatted = df.format(lastColegiadoNumber);
+		String lastColegiadoNumberFormatted = df.format(lastNumber);
 
 		sB.append(lastColegiadoNumberFormatted);
 

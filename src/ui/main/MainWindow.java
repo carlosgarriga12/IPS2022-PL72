@@ -13,8 +13,6 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Date;
@@ -78,7 +76,7 @@ public class MainWindow extends JFrame {
 	// Nombres de los paneles contenidos en mainPanel
 	private static final String HOME_PANEL_NAME = "homePanel";
 	private static final String SOLICITUD_COLEGIADO_PANEL_NAME = "solicitudColegiadoPanel";
-	private static final String LOGIN_COLEGIADO_PANEL = "loginColegiadoPanel";
+	// private static final String LOGIN_COLEGIADO_PANEL = "loginColegiadoPanel";
 	private static final String APERTURA_INSCRIPCIONES_PANEL_NAME = "aperturaCursoPanel";
 	private static final String INSCRIPCION_CURSO_PANEL_NAME = "inscripicionCursoPanel";
 	private static final String ADD_CURSO_PANEL_NAME = "addCursoPanel";
@@ -86,7 +84,8 @@ public class MainWindow extends JFrame {
 	private static final String LISTADO_CURSOS_PANEL_NAME = "listadoCursosPanel";
 	private static final String LISTADO_INSCRIPCIONES_PANEL_NAME = "listadoInscripcionesPanel";
 	private static final String CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME = "consultarTitulacionSolicitantePanel";
-	private static final String EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME = "emitirCuotasColegiadosPanels";
+	// private static final String EMITIR_CUOTAS_COLEGIADOS_PANEL_NAME =
+	// "emitirCuotasColegiadosPanels";
 
 	private JPanel mainPanel;
 
@@ -282,6 +281,8 @@ public class MainWindow extends JFrame {
 	private JPanel pnPagarInscripcionColegiadoNorte;
 
 	private JPanel pnPagarInscripcionColegiado;
+
+	private JCalendar calendarioFechaAperturaInscripcionCurso;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -538,6 +539,9 @@ public class MainWindow extends JFrame {
 			pnCursoSeleccionadoFechaApertura.setLayout(new GridLayout(0, 2, 0, 0));
 			pnCursoSeleccionadoFechaApertura.add(getLbFechaAperturaAperturaCurso());
 			pnCursoSeleccionadoFechaApertura.add(getFTxFechaInicioInscripcionesCursoSeleccionado());
+			
+			// Calendario para seleccionar la fecha de apertura del curso seleccionado
+			// TODO: pnCursoSeleccionadoFechaApertura.add(getCalAbrirInscripcionFechaApertura());
 		}
 		return pnCursoSeleccionadoFechaApertura;
 	}
@@ -606,6 +610,17 @@ public class MainWindow extends JFrame {
 			fTxFechaInicioInscripcionesCursoSeleccionado.setOpaque(false);
 		}
 		return fTxFechaInicioInscripcionesCursoSeleccionado;
+	}
+
+	private JCalendar getCalAbrirInscripcionFechaApertura() {
+		if (calendarioFechaAperturaInscripcionCurso == null) {
+			calendarioFechaAperturaInscripcionCurso = new JCalendar();
+			calendarioFechaAperturaInscripcionCurso.getDayChooser().getDayPanel()
+					.setToolTipText("Seleccione la fecha de apertura para las inscripciones del curso seleccionado.");
+
+			calendarioFechaAperturaInscripcionCurso.setBorder(new LineBorder(Color.GRAY));
+		}
+		return calendarioFechaAperturaInscripcionCurso;
 	}
 
 	private JLabel getLbTituloCursoSeleccionado() {
@@ -709,9 +724,9 @@ public class MainWindow extends JFrame {
 		if (btAbrirCurso == null) {
 			btAbrirCurso = new DefaultButton("Abrir curso", "ventana", "Abrir curso", 'a', ButtonColor.NORMAL);
 			btAbrirCurso.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			
+
 			getBtCancelarAperturaCurso().setText("cancelar");
-			
+
 			btAbrirCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
@@ -1086,12 +1101,7 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTarjeta() {
 		if (textFieldTarjeta == null) {
 			textFieldTarjeta = new JTextField();
-			textFieldTarjeta.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldTarjeta.setText(null);
-				}
-			});
+
 			textFieldTarjeta.setToolTipText("Registre su nÃºmero de tarjeta");
 			textFieldTarjeta.setText("Ej: 76567 [5 nÃºmeros]");
 			textFieldTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1158,12 +1168,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldNombre() {
 		if (textFieldNombre == null) {
 			textFieldNombre = new JTextField();
-			textFieldNombre.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldNombre.setText(null);
-				}
-			});
 			textFieldNombre.setToolTipText("Inserte el nombre");
 			textFieldNombre.setText("Ej: Miguel");
 			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1186,12 +1190,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldApellidos() {
 		if (textFieldApellidos == null) {
 			textFieldApellidos = new JTextField();
-			textFieldApellidos.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldApellidos.setText(null);
-				}
-			});
 			textFieldApellidos.setToolTipText("Inserte los apellidos");
 			textFieldApellidos.setText("Ej: Gonzalez Navarro");
 			textFieldApellidos.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1216,12 +1214,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldDni() {
 		if (textFieldDni == null) {
 			textFieldDni = new JTextField();
-			textFieldDni.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldDni.setText(null);
-				}
-			});
 			textFieldDni.setBounds(146, 0, 146, 20);
 			textFieldDni.setToolTipText("Inserte el DNI");
 			textFieldDni.setText("Ej:71778880C");
@@ -1279,12 +1271,7 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldPoblacion() {
 		if (textFieldPoblacion == null) {
 			textFieldPoblacion = new JTextField();
-			textFieldPoblacion.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldPoblacion.setText(null);
-				}
-			});
+
 			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setText("Ej: Moreda");
 			textFieldPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1317,12 +1304,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTelefono() {
 		if (textFieldTelefono == null) {
 			textFieldTelefono = new JTextField();
-			textFieldTelefono.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldTelefono.setText(null);
-				}
-			});
 			textFieldTelefono.setToolTipText("Introduzca su teléfono");
 			textFieldTelefono.setText("Ej: 681676654 [9 números]");
 			textFieldTelefono.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1378,12 +1359,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldAno() {
 		if (textFieldAno == null) {
 			textFieldAno = new JTextField();
-			textFieldAno.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldAno.setText(null);
-				}
-			});
 			textFieldAno.setToolTipText("Escriba el ano");
 			textFieldAno.setText("Ej : 2022");
 			textFieldAno.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1406,12 +1381,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldCentroColegiado() {
 		if (textFieldCentro == null) {
 			textFieldCentro = new JTextField();
-			textFieldCentro.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldCentro.setText(null);
-				}
-			});
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
 			textFieldCentro.setText("Ej: Escuela de IngenierÃ­a");
 			textFieldCentro.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1453,12 +1422,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldTitulacion() {
 		if (textFieldTitulo == null) {
 			textFieldTitulo = new JTextField();
-			textFieldTitulo.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldTitulo.setText(null);
-				}
-			});
 			textFieldTitulo.setToolTipText("Teclee la titulación");
 			textFieldTitulo.setText("Ej: 0 (sin titulación)");
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -2436,12 +2399,12 @@ public class MainWindow extends JFrame {
 
 							String numeroColegiado = Colegiado.updateNumColegiado(colegiadoSeleccionadoDni);
 
+							// Actualizar la lista de solicitudes con los nuevos cambios
+							refrescarListaSolicitudesColegiado();
+
 							lbColegiadoSeleccionadoSolicitudRespuesta.setText(
 									"Se ha dado de alta en el COIIPA al solicitante con DNI " + colegiadoSeleccionadoDni
 											+ " con el número de colegiado " + numeroColegiado);
-
-							// Actualizar la lista de solicitudes con los nuevos cambios
-							refrescarListaSolicitudesColegiado();
 						}
 
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException | BusinessException nfe) {
@@ -2905,12 +2868,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldNumeroTarjetaColegiado() {
 		if (textFieldNumeroTarjetaColegiado == null) {
 			textFieldNumeroTarjetaColegiado = new JTextField();
-			textFieldNumeroTarjetaColegiado.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldNumeroTarjetaColegiado.setText(null);
-				}
-			});
 			textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
 			textFieldNumeroTarjetaColegiado.setToolTipText("Introduzca el número de su tarjeta bancaria");
 			textFieldNumeroTarjetaColegiado.setHorizontalAlignment(SwingConstants.CENTER);
@@ -3012,12 +2969,6 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldDNIColegiado() {
 		if (textFieldDNIColegiado == null) {
 			textFieldDNIColegiado = new JTextField();
-			textFieldDNIColegiado.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					textFieldDNIColegiado.setText(null);
-				}
-			});
 			textFieldDNIColegiado.setText("Ej: 71778880C");
 			textFieldDNIColegiado.setToolTipText("Introduce su DNI");
 			textFieldDNIColegiado.setHorizontalAlignment(SwingConstants.CENTER);
@@ -3033,6 +2984,7 @@ public class MainWindow extends JFrame {
 			lblRellenarDatosInscripcionCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lblRellenarDatosInscripcionCurso.setFont(new Font("Arial Black", Font.PLAIN, 14));
 		}
+
 		return lblRellenarDatosInscripcionCurso;
 	}
 
