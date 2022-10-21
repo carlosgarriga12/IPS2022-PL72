@@ -3,11 +3,14 @@ package ui.main;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
@@ -69,6 +72,13 @@ import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
+import java.awt.Insets;
+import javax.swing.BoxLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import net.miginfocom.swing.MigLayout;
 
 public class MainWindow extends JFrame {
 
@@ -265,7 +275,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnNumeroTarjetaDatosColegiado;
 	private JPanel pnNumeroFechaCaducidadDatosColegiado;
 	private JLabel lblNumeroTarjetaDatosColegiado;
-	private JTextField textFieldNumeroTarjetaColegiado;
 	private JLabel lblFechaCaducidadDatosColegiado;
 	private JCalendar calendarioFechaCaducidad;
 	private JPanel pnDatosInicialesPagarInscripcion;
@@ -284,10 +293,21 @@ public class MainWindow extends JFrame {
 	private JPanel pnPagarInscripcionColegiado;
 
 	private JCalendar calendarioFechaAperturaInscripcionCurso;
+	private JPanel pnNumeroTarjetaDatosColegiadoText;
+	private JTextField textFieldNumeroTarjetaColegiado;
+	private JPanel pnNumeroTarjetaValidarTarjeta;
+	private JPanel pnPagoTranferencia;
+	private JPanel pnDatosColPoblacionText;
+	private JPanel pnDatosColTelefonoText;
+	private JPanel pnDatosColTitulacionText;
+	private JPanel pnDatosColCentoText;
+	private JPanel pnDatosColAnnioText;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		this.setFont(LookAndFeel.PRIMARY_FONT);
 
 		// TODO: Revisar dimensiones ventana
 		setBounds(100, 100, 1126, 740);
@@ -540,9 +560,10 @@ public class MainWindow extends JFrame {
 			pnCursoSeleccionadoFechaApertura.setLayout(new GridLayout(0, 2, 0, 0));
 			pnCursoSeleccionadoFechaApertura.add(getLbFechaAperturaAperturaCurso());
 			pnCursoSeleccionadoFechaApertura.add(getFTxFechaInicioInscripcionesCursoSeleccionado());
-			
+
 			// Calendario para seleccionar la fecha de apertura del curso seleccionado
-			// TODO: pnCursoSeleccionadoFechaApertura.add(getCalAbrirInscripcionFechaApertura());
+			// TODO:
+			// pnCursoSeleccionadoFechaApertura.add(getCalAbrirInscripcionFechaApertura());
 		}
 		return pnCursoSeleccionadoFechaApertura;
 	}
@@ -573,7 +594,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbNumeroPlazasAperturaCurso() {
 		if (lbNumeroPlazasAperturaCurso == null) {
-			lbNumeroPlazasAperturaCurso = new JLabel("NÃºmero de plazas:");
+			lbNumeroPlazasAperturaCurso = new JLabel("Número de plazas:");
 			lbNumeroPlazasAperturaCurso.setDisplayedMnemonic('p');
 			lbNumeroPlazasAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbNumeroPlazasAperturaCurso.setLabelFor(getSpNumeroPlazasCursoSeleccionado());
@@ -593,7 +614,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbFechaCierreAperturaCurso() {
 		if (lbFechaCierreAperturaCurso == null) {
-			lbFechaCierreAperturaCurso = new JLabel("Fecha finalizaciÃ³n");
+			lbFechaCierreAperturaCurso = new JLabel("Fecha finalización");
 			lbFechaCierreAperturaCurso.setDisplayedMnemonic('z');
 			lbFechaCierreAperturaCurso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbFechaCierreAperturaCurso.setLabelFor(getFTxFechaCierreInscripcionesCursoSeleccionado());
@@ -802,8 +823,9 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton getBtRefreshOpenCoursesList() {
 		if (btRefreshOpenCoursesList == null) {
-			btRefreshOpenCoursesList = new DefaultButton("Actualizar lista", "small", "Actualizar lista", 'r',
+			btRefreshOpenCoursesList = new DefaultButton("Actualizar lista", "ventana", "Actualizar lista", 'r',
 					ButtonColor.NORMAL);
+			btRefreshOpenCoursesList.setPreferredSize(new Dimension(250, 80));
 			btRefreshOpenCoursesList.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -1035,8 +1057,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btnAtras.setBackground(Color.RED);
-			btnAtras.setMnemonic('R');
+
 			btnAtras.setToolTipText("Pulse para volver a la pantalla principal");
 		}
 		return btnAtras;
@@ -1090,9 +1111,9 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelNumeroTarjeta() {
 		if (lblNewLabelNumeroTarjeta == null) {
-			lblNewLabelNumeroTarjeta = new JLabel("NÃºmero de tarjeta:");
+			lblNewLabelNumeroTarjeta = new JLabel("NÚmero de tarjeta:");
 			lblNewLabelNumeroTarjeta.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelNumeroTarjeta.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelNumeroTarjeta.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelNumeroTarjeta.setDisplayedMnemonic('N');
 			lblNewLabelNumeroTarjeta.setLabelFor(getTextFieldTarjeta());
 		}
@@ -1159,7 +1180,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelN == null) {
 			lblNewLabelN = new JLabel("Nombre:");
 			lblNewLabelN.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelN.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelN.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelN.setDisplayedMnemonic('N');
 			lblNewLabelN.setLabelFor(getTextFieldNombre());
 		}
@@ -1173,7 +1194,7 @@ public class MainWindow extends JFrame {
 //			textFieldNombre.setText("Ej: Miguel");
 			textFieldNombre.setHorizontalAlignment(SwingConstants.LEFT);
 			textFieldNombre.setColumns(10);
-			
+
 			TextPlaceHolderCustom.setPlaceholder("Introduzca su nombre", textFieldNombre);
 		}
 		return textFieldNombre;
@@ -1183,7 +1204,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelA == null) {
 			lblNewLabelA = new JLabel("Apellidos:");
 			lblNewLabelA.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelA.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelA.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelA.setDisplayedMnemonic('A');
 			lblNewLabelA.setLabelFor(getTextFieldApellidos());
 		}
@@ -1207,7 +1228,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelD = new JLabel("DNI:");
 			lblNewLabelD.setBounds(0, 0, 146, 20);
 			lblNewLabelD.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelD.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelD.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelD.setDisplayedMnemonic('D');
 			lblNewLabelD.setLabelFor(getTextFieldDni());
 		}
@@ -1254,7 +1275,7 @@ public class MainWindow extends JFrame {
 			pnDatosPoblacionColegiado = new JPanel();
 			pnDatosPoblacionColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnDatosPoblacionColegiado.add(getLblNewLabelPob());
-			pnDatosPoblacionColegiado.add(getTextFieldPoblacion());
+			pnDatosPoblacionColegiado.add(getPnDatosColPoblacionText());
 		}
 		return pnDatosPoblacionColegiado;
 	}
@@ -1264,7 +1285,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelPob = new JLabel("Población:");
 			lblNewLabelPob.setToolTipText("Introduzca su poblaciÃ³n");
 			lblNewLabelPob.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelPob.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelPob.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelPob.setDisplayedMnemonic('P');
 			lblNewLabelPob.setLabelFor(getTextFieldPoblacion());
 		}
@@ -1274,6 +1295,9 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldPoblacion() {
 		if (textFieldPoblacion == null) {
 			textFieldPoblacion = new JTextField();
+			textFieldPoblacion.setMaximumSize(new Dimension(2147483647, 50));
+			textFieldPoblacion.setBounds(new Rectangle(0, 0, 0, 50));
+			textFieldPoblacion.setPreferredSize(new Dimension(7, 50));
 
 			textFieldPoblacion.setToolTipText("Introduzca su población");
 			textFieldPoblacion.setText("Ej: Moreda");
@@ -1288,7 +1312,7 @@ public class MainWindow extends JFrame {
 			pnDatosTelefonoColegiado = new JPanel();
 			pnDatosTelefonoColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnDatosTelefonoColegiado.add(getLblNewLabelTelefonoColegiado());
-			pnDatosTelefonoColegiado.add(getTextFieldTelefono());
+			pnDatosTelefonoColegiado.add(getPnDatosColTelefonoText());
 		}
 		return pnDatosTelefonoColegiado;
 	}
@@ -1297,7 +1321,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelTelefono == null) {
 			lblNewLabelTelefono = new JLabel("Teléfono de contacto:");
 			lblNewLabelTelefono.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelTelefono.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelTelefono.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelTelefono.setDisplayedMnemonic('T');
 			lblNewLabelTelefono.setLabelFor(getTextFieldTelefono());
 		}
@@ -1344,7 +1368,7 @@ public class MainWindow extends JFrame {
 			pnDatosCentroColegiado = new JPanel();
 			pnDatosCentroColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnDatosCentroColegiado.add(getLblNewLabelDatCentro());
-			pnDatosCentroColegiado.add(getTextFieldCentroColegiado());
+			pnDatosCentroColegiado.add(getPnDatosColCentoText());
 		}
 		return pnDatosCentroColegiado;
 	}
@@ -1354,7 +1378,7 @@ public class MainWindow extends JFrame {
 			pnDatosAnoColegiado = new JPanel();
 			pnDatosAnoColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnDatosAnoColegiado.add(getLblNewLabelDatAno());
-			pnDatosAnoColegiado.add(getTextFieldAno());
+			pnDatosAnoColegiado.add(getPnDatosColAnnioText());
 		}
 		return pnDatosAnoColegiado;
 	}
@@ -1374,7 +1398,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelDatAno == null) {
 			lblNewLabelDatAno = new JLabel("Ano:");
 			lblNewLabelDatAno.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelDatAno.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatAno.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelDatAno.setDisplayedMnemonic('O');
 			lblNewLabelDatAno.setLabelFor(getTextFieldAno());
 		}
@@ -1396,7 +1420,7 @@ public class MainWindow extends JFrame {
 		if (lblNewLabelDatCentro == null) {
 			lblNewLabelDatCentro = new JLabel("Centro:");
 			lblNewLabelDatCentro.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelDatCentro.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDatCentro.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelDatCentro.setDisplayedMnemonic('C');
 			lblNewLabelDatCentro.setLabelFor(getTextFieldCentroColegiado());
 		}
@@ -1417,7 +1441,7 @@ public class MainWindow extends JFrame {
 		if (pnDatosTituloColegiadoCheck == null) {
 			pnDatosTituloColegiadoCheck = new JPanel();
 			pnDatosTituloColegiadoCheck.setLayout(new GridLayout(0, 1, 0, 0));
-			pnDatosTituloColegiadoCheck.add(getTextFieldTitulacion());
+			pnDatosTituloColegiadoCheck.add(getPnDatosColTitulacionText());
 		}
 		return pnDatosTituloColegiadoCheck;
 	}
@@ -1437,7 +1461,7 @@ public class MainWindow extends JFrame {
 		if (lblTitulacinSegunSus == null) {
 			lblTitulacinSegunSus = new JLabel("Titulación segun sus estudios:");
 			lblTitulacinSegunSus.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTitulacinSegunSus.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblTitulacinSegunSus.setFont(LookAndFeel.PRIMARY_FONT);
 			lblTitulacinSegunSus.setDisplayedMnemonic('I');
 			lblTitulacinSegunSus.setLabelFor(getTextFieldTitulacion());
 		}
@@ -1456,7 +1480,7 @@ public class MainWindow extends JFrame {
 		if (pnInscripcion == null) {
 			pnInscripcion = new JPanel();
 			pnInscripcion.setVisible(false);
-			pnInscripcion.setFont(new Font("Arial", Font.BOLD, 14));
+			pnInscripcion.setFont(LookAndFeel.PRIMARY_FONT);
 			pnInscripcion.setLayout(null);
 			pnInscripcion.add(getSpCursos());
 			pnInscripcion.add(getLbInscripcionSeleccionarCursos());
@@ -1553,12 +1577,6 @@ public class MainWindow extends JFrame {
 				}
 			});
 
-			btnInscribete.setBorder(new LineBorder(Color.BLACK, 2));
-			btnInscribete.setMnemonic('i');
-			btnInscribete.setBackground(Color.GREEN);
-			btnInscribete.setFont(new Font("Arial", Font.BOLD, 16));
-			btnInscribete.setBounds(779, 558, 153, 61);
-
 		}
 		return btnInscribete;
 	}
@@ -1571,7 +1589,7 @@ public class MainWindow extends JFrame {
 			lbAlerta.setVisible(false);
 			lbAlerta.setBorder(new LineBorder(Color.BLACK));
 			lbAlerta.setForeground(Color.RED);
-			lbAlerta.setFont(new Font("Arial", Font.BOLD, 14));
+			lbAlerta.setFont(LookAndFeel.PRIMARY_FONT);
 
 			lbAlerta.setHorizontalAlignment(SwingConstants.CENTER);
 			lbAlerta.setBounds(209, 98, 678, 29);
@@ -1598,7 +1616,8 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtMostrarCursos() {
 		if (btMostrarCursos == null) {
-			btMostrarCursos = new JButton("Mostrar los Cursos Abiertos");
+			btMostrarCursos = new DefaultButton("Mostrar Cursos Abiertos", "ventana", "MostrarCursosAbiertos", 'm',
+					ButtonColor.NORMAL);
 			btMostrarCursos.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -1637,8 +1656,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btMostrarCursos.setFont(new Font("Arial", Font.BOLD, 14));
-			btMostrarCursos.setBounds(749, 39, 250, 42);
+			btMostrarCursos.setBounds(782, 21, 293, 66);
 
 		}
 		return btMostrarCursos;
@@ -1656,7 +1674,7 @@ public class MainWindow extends JFrame {
 			});
 			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
 
-			btnInscripcionToInicio.setBounds(779, 629, 280, 64);
+			btnInscripcionToInicio.setBounds(795, 604, 280, 64);
 
 		}
 		return btnInscripcionToInicio;
@@ -1774,9 +1792,23 @@ public class MainWindow extends JFrame {
 			pnCrearCursoButtons = new JPanel();
 			pnCrearCursoButtons.setOpaque(false);
 			pnCrearCursoButtons.setBorder(new EmptyBorder(20, 20, 20, 20));
-			pnCrearCursoButtons.setLayout(new GridLayout(0, 2, 10, 0));
-			pnCrearCursoButtons.add(getBtnCrearCursoCancelar());
-			pnCrearCursoButtons.add(getBtnCrearCursoCrear());
+			GridBagLayout gbl_pnCrearCursoButtons = new GridBagLayout();
+			gbl_pnCrearCursoButtons.columnWidths = new int[] { 262, 262 };
+			gbl_pnCrearCursoButtons.rowHeights = new int[] { 80, 0 };
+			gbl_pnCrearCursoButtons.columnWeights = new double[] { 0.0, 0.0 };
+			gbl_pnCrearCursoButtons.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+			pnCrearCursoButtons.setLayout(gbl_pnCrearCursoButtons);
+			GridBagConstraints gbc_btnCrearCursoCancelar = new GridBagConstraints();
+			gbc_btnCrearCursoCancelar.fill = GridBagConstraints.BOTH;
+			gbc_btnCrearCursoCancelar.insets = new Insets(0, 0, 0, 5);
+			gbc_btnCrearCursoCancelar.gridx = 0;
+			gbc_btnCrearCursoCancelar.gridy = 0;
+			pnCrearCursoButtons.add(getBtnCrearCursoCancelar(), gbc_btnCrearCursoCancelar);
+			GridBagConstraints gbc_btnCrearCursoCrear = new GridBagConstraints();
+			gbc_btnCrearCursoCrear.fill = GridBagConstraints.BOTH;
+			gbc_btnCrearCursoCrear.gridx = 1;
+			gbc_btnCrearCursoCrear.gridy = 0;
+			pnCrearCursoButtons.add(getBtnCrearCursoCrear(), gbc_btnCrearCursoCrear);
 		}
 		return pnCrearCursoButtons;
 	}
@@ -1790,7 +1822,6 @@ public class MainWindow extends JFrame {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 				}
 			});
-			btnCrearCursoCancelar.setBackground(Color.RED);
 		}
 		return btnCrearCursoCancelar;
 	}
@@ -2209,7 +2240,7 @@ public class MainWindow extends JFrame {
 			lbTotalIngresosText.setVisible(false);
 			lbTotalIngresosText.setBorder(new LineBorder(Color.BLACK, 2));
 			lbTotalIngresosText.setHorizontalAlignment(SwingConstants.CENTER);
-			lbTotalIngresosText.setFont(new Font("Arial", Font.BOLD, 14));
+			lbTotalIngresosText.setFont(LookAndFeel.PRIMARY_FONT);
 			lbTotalIngresosText.setBounds(885, 517, 142, 42);
 			pnListadoInscripciones.add(lbTotalIngresosText);
 
@@ -2222,12 +2253,12 @@ public class MainWindow extends JFrame {
 			pnListadoInscripciones.add(lbTotalIngresos);
 
 			JLabel lbListadoCursos = new JLabel("Listado Cursos de formación:");
-			lbListadoCursos.setFont(new Font("Arial", Font.BOLD, 14));
+			lbListadoCursos.setFont(LookAndFeel.PRIMARY_FONT);
 			lbListadoCursos.setBounds(67, 67, 481, 32);
 			pnListadoInscripciones.add(lbListadoCursos);
 
 			JLabel lbListadoInscripciones = new JLabel("Listado Inscripciones:");
-			lbListadoInscripciones.setFont(new Font("Arial", Font.BOLD, 14));
+			lbListadoInscripciones.setFont(LookAndFeel.PRIMARY_FONT);
 			lbListadoInscripciones.setBounds(547, 67, 481, 32);
 			pnListadoInscripciones.add(lbListadoInscripciones);
 			pnListadoInscripciones.add(getLbAlertaListadoInscripciones());
@@ -2281,8 +2312,8 @@ public class MainWindow extends JFrame {
 	private JPanel getPnListadoAltaSolicitudesColegiadoActualizarLista() {
 		if (pnListadoAltaSolicitudesColegiadoActualizarLista == null) {
 			pnListadoAltaSolicitudesColegiadoActualizarLista = new JPanel();
-			FlowLayout flowLayout = (FlowLayout) pnListadoAltaSolicitudesColegiadoActualizarLista.getLayout();
-			flowLayout.setAlignment(FlowLayout.LEFT);
+			pnListadoAltaSolicitudesColegiadoActualizarLista
+					.setLayout(new BoxLayout(pnListadoAltaSolicitudesColegiadoActualizarLista, BoxLayout.X_AXIS));
 			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getBtActualizarListaSolicitudesColegiado());
 		}
 		return pnListadoAltaSolicitudesColegiadoActualizarLista;
@@ -2290,8 +2321,9 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton getBtActualizarListaSolicitudesColegiado() {
 		if (btActualizarListaSolicitudesColegiado == null) {
-			btActualizarListaSolicitudesColegiado = new DefaultButton("Refrescar lista", "regular",
+			btActualizarListaSolicitudesColegiado = new DefaultButton("Refrescar lista", "ventana",
 					"RefrescarListaSolicitudesColegiado", 'r', ButtonColor.NORMAL);
+			btActualizarListaSolicitudesColegiado.setBounds(new Rectangle(0, 0, 250, 80));
 			btActualizarListaSolicitudesColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -2424,9 +2456,9 @@ public class MainWindow extends JFrame {
 	private JPanel getPnConsultarTitulacionSouthButtons() {
 		if (pnConsultarTitulacionSouthButtons == null) {
 			pnConsultarTitulacionSouthButtons = new JPanel();
-			FlowLayout flowLayout = (FlowLayout) pnConsultarTitulacionSouthButtons.getLayout();
-			flowLayout.setHgap(10);
-			flowLayout.setAlignment(FlowLayout.RIGHT);
+			pnConsultarTitulacionSouthButtons.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			pnConsultarTitulacionSouthButtons.setAlignmentX(Component.RIGHT_ALIGNMENT);
+			pnConsultarTitulacionSouthButtons.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 			pnConsultarTitulacionSouthButtons.add(getBtConsultarSolicitudColegiadoVolver());
 		}
 		return pnConsultarTitulacionSouthButtons;
@@ -2436,6 +2468,7 @@ public class MainWindow extends JFrame {
 		if (btConsultarSolicitudColegiadoVolver == null) {
 			btConsultarSolicitudColegiadoVolver = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
 					ButtonColor.NORMAL);
+
 			btConsultarSolicitudColegiadoVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -2450,6 +2483,7 @@ public class MainWindow extends JFrame {
 			pnConsultarColegiadoDatosColegiadoSeleccionado = new JPanel();
 			pnConsultarColegiadoDatosColegiadoSeleccionado.setBorder(new EmptyBorder(20, 0, 20, 0));
 			pnConsultarColegiadoDatosColegiadoSeleccionado.setBackground(LookAndFeel.TERTIARY_COLOR);
+			pnConsultarColegiadoDatosColegiadoSeleccionado.setLayout(new BorderLayout(0, 0));
 			pnConsultarColegiadoDatosColegiadoSeleccionado.add(getLbColegiadoSeleccionadoSolicitudRespuesta());
 		}
 		return pnConsultarColegiadoDatosColegiadoSeleccionado;
@@ -2459,6 +2493,8 @@ public class MainWindow extends JFrame {
 		if (lbColegiadoSeleccionadoSolicitudRespuesta == null) {
 			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel(
 					"Seleccione un colegiado de la lista y, si tiene titulación, se procederá a darle de alta en el COIIPA");
+			lbColegiadoSeleccionadoSolicitudRespuesta.setHorizontalAlignment(SwingConstants.CENTER);
+			lbColegiadoSeleccionadoSolicitudRespuesta.setAlignmentX(Component.CENTER_ALIGNMENT);
 			lbColegiadoSeleccionadoSolicitudRespuesta.setFont(LookAndFeel.HEADING_3_FONT);
 			lbColegiadoSeleccionadoSolicitudRespuesta.setForeground(LookAndFeel.SECONDARY_COLOR);
 		}
@@ -2526,6 +2562,7 @@ public class MainWindow extends JFrame {
 		if (txCrearCursoTituloCursoInput == null) {
 			txCrearCursoTituloCursoInput = new JTextField();
 			txCrearCursoTituloCursoInput.setColumns(10);
+			TextPlaceHolderCustom.setPlaceholder("Introduce el título", txCrearCursoTituloCursoInput);
 		}
 		return txCrearCursoTituloCursoInput;
 	}
@@ -2544,6 +2581,8 @@ public class MainWindow extends JFrame {
 		if (txCrearCursoFechaImparticionInput == null) {
 			txCrearCursoFechaImparticionInput = new JTextField();
 			txCrearCursoFechaImparticionInput.setColumns(10);
+			TextPlaceHolderCustom.setPlaceholder("Introduce la fecha de impartición",
+					txCrearCursoFechaImparticionInput);
 		}
 		return txCrearCursoFechaImparticionInput;
 	}
@@ -2562,6 +2601,7 @@ public class MainWindow extends JFrame {
 		if (txCrearCursoPrecioInscripcionInput == null) {
 			txCrearCursoPrecioInscripcionInput = new JTextField();
 			txCrearCursoPrecioInscripcionInput.setColumns(10);
+			TextPlaceHolderCustom.setPlaceholder("Introduce el precio", txCrearCursoPrecioInscripcionInput);
 		}
 		return txCrearCursoPrecioInscripcionInput;
 	}
@@ -2637,11 +2677,13 @@ public class MainWindow extends JFrame {
 	private JLabel getLbAlertaListadoInscripciones() {
 		if (lbAlertaListadoInscripciones == null) {
 			lbAlertaListadoInscripciones = new JLabel("Actualmente no hay inscritos en el curso seleccionado");
-			lbAlertaListadoInscripciones.setBorder(new LineBorder(Color.BLACK));
-			lbAlertaListadoInscripciones.setBackground(Color.RED);
+			lbAlertaListadoInscripciones.setForeground(new Color(255, 255, 255));
+			lbAlertaListadoInscripciones.setHorizontalAlignment(SwingConstants.CENTER);
+			lbAlertaListadoInscripciones.setBorder(null);
+			lbAlertaListadoInscripciones.setBackground(LookAndFeel.ERROR_COLOR);
 			lbAlertaListadoInscripciones.setOpaque(true);
 			lbAlertaListadoInscripciones.setVisible(false);
-			lbAlertaListadoInscripciones.setFont(new Font("Arial", Font.BOLD, 20));
+			lbAlertaListadoInscripciones.setFont(LookAndFeel.PRIMARY_FONT);
 			lbAlertaListadoInscripciones.setBounds(67, 533, 748, 68);
 		}
 		return lbAlertaListadoInscripciones;
@@ -2649,8 +2691,8 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnTransferenciaColegiado() {
 		if (btnTransferenciaColegiado == null) {
-			btnTransferenciaColegiado = new JButton("Transferencia bancaria");
-			btnTransferenciaColegiado.setBackground(new Color(152, 251, 152));
+			btnTransferenciaColegiado = new DefaultButton("Transferencia bancaria", "ventana", "RealizarTransferencia",
+					't', ButtonColor.NORMAL);
 			btnTransferenciaColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (comprobarCamposT() && comprobarColegiadoInscripcion()) {
@@ -2680,9 +2722,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btnTransferenciaColegiado.setMnemonic('T');
 			btnTransferenciaColegiado.setToolTipText("Pulsa para pagar por transferencia bancaria");
-			btnTransferenciaColegiado.setBorder(new LineBorder(Color.BLACK));
 		}
 		return btnTransferenciaColegiado;
 	}
@@ -2741,7 +2781,7 @@ public class MainWindow extends JFrame {
 			pnTarjetaDatosColegiado.setLayout(new GridLayout(0, 1, 0, 0));
 			pnTarjetaDatosColegiado.add(getPnNumeroTarjetaDatosColegiado());
 			pnTarjetaDatosColegiado.add(getPnNumeroFechaCaducidadDatosColegiado());
-			pnTarjetaDatosColegiado.add(getBtnTarjetaCreditoColegiado());
+			pnTarjetaDatosColegiado.add(getPnNumeroTarjetaValidarTarjeta());
 			pnTarjetaDatosColegiado.setBorder(new LineBorder(Color.BLACK));
 		}
 		return pnTarjetaDatosColegiado;
@@ -2749,8 +2789,12 @@ public class MainWindow extends JFrame {
 
 	private JButton getBtnTarjetaCreditoColegiado() {
 		if (btnTarjetaCreditoColegiado == null) {
-			btnTarjetaCreditoColegiado = new JButton("Validar tarjeta de crédito");
-			btnTarjetaCreditoColegiado.setBackground(new Color(255, 69, 0));
+			btnTarjetaCreditoColegiado = new DefaultButton("Validar tarjeta de crédito", "ventana", "ValidarTarjeta",
+					'v', ButtonColor.NORMAL);
+			btnTarjetaCreditoColegiado.setDefaultCapable(false);
+			btnTarjetaCreditoColegiado.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			btnTarjetaCreditoColegiado.setHorizontalTextPosition(SwingConstants.CENTER);
+
 			btnTarjetaCreditoColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (comprobarCampos() && comprobarColegiadoInscripcion() && comprobarFechaCaducidad()) {
@@ -2781,7 +2825,6 @@ public class MainWindow extends JFrame {
 				}
 			});
 			btnTarjetaCreditoColegiado.setToolTipText("Pulsa para pagar con tarjeta");
-			btnTarjetaCreditoColegiado.setMnemonic('V');
 
 		}
 		return btnTarjetaCreditoColegiado;
@@ -2851,7 +2894,7 @@ public class MainWindow extends JFrame {
 			lblFechaCaducidadDatosColegiado = new JLabel("Fecha de caducidad:");
 			lblFechaCaducidadDatosColegiado.setDisplayedMnemonic('F');
 			lblFechaCaducidadDatosColegiado.setLabelFor(getCalendarioFechaCaducidad());
-			lblFechaCaducidadDatosColegiado.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblFechaCaducidadDatosColegiado.setFont(LookAndFeel.PRIMARY_FONT);
 			lblFechaCaducidadDatosColegiado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lblFechaCaducidadDatosColegiado;
@@ -2860,23 +2903,11 @@ public class MainWindow extends JFrame {
 	private JLabel getLblNumeroTarjetaDatosColegiado() {
 		if (lblNumeroTarjetaDatosColegiado == null) {
 			lblNumeroTarjetaDatosColegiado = new JLabel("Número de tarjeta:");
-			lblNumeroTarjetaDatosColegiado.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNumeroTarjetaDatosColegiado.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNumeroTarjetaDatosColegiado.setDisplayedMnemonic('N');
-			lblNumeroTarjetaDatosColegiado.setLabelFor(getTextFieldNumeroTarjetaColegiado());
 			lblNumeroTarjetaDatosColegiado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lblNumeroTarjetaDatosColegiado;
-	}
-
-	private JTextField getTextFieldNumeroTarjetaColegiado() {
-		if (textFieldNumeroTarjetaColegiado == null) {
-			textFieldNumeroTarjetaColegiado = new JTextField();
-			textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
-			textFieldNumeroTarjetaColegiado.setToolTipText("Introduzca el número de su tarjeta bancaria");
-			textFieldNumeroTarjetaColegiado.setHorizontalAlignment(SwingConstants.CENTER);
-			textFieldNumeroTarjetaColegiado.setColumns(10);
-		}
-		return textFieldNumeroTarjetaColegiado;
 	}
 
 	private JPanel getPnNumeroTarjetaDatosColegiado() {
@@ -2884,8 +2915,8 @@ public class MainWindow extends JFrame {
 			pnNumeroTarjetaDatosColegiado = new JPanel();
 			pnNumeroTarjetaDatosColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnNumeroTarjetaDatosColegiado.add(getLblNumeroTarjetaDatosColegiado());
-			pnNumeroTarjetaDatosColegiado.add(getTextFieldNumeroTarjetaColegiado());
 			pnNumeroTarjetaDatosColegiado.setBorder(new LineBorder(Color.BLACK));
+			pnNumeroTarjetaDatosColegiado.add(getPnNumeroTarjetaDatosColegiadoText());
 		}
 		return pnNumeroTarjetaDatosColegiado;
 	}
@@ -2906,10 +2937,11 @@ public class MainWindow extends JFrame {
 			pnModosPagoInscripcionColegiado = new JPanel();
 			pnModosPagoInscripcionColegiado.setLayout(new GridLayout(0, 2, 0, 0));
 			pnModosPagoInscripcionColegiado.add(getPnTarjetaDatosColegiado());
-			pnModosPagoInscripcionColegiado.add(getBtnTransferenciaColegiado());
+			pnModosPagoInscripcionColegiado.add(getPnPagoTranferencia());
 			pnModosPagoInscripcionColegiado.setBorder(new TitledBorder(
 					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
 					"ELIGE UNA DE LAS DOS OPCIONES", TitledBorder.CENTER, TitledBorder.TOP, null, Color.GRAY));
+			pnModosPagoInscripcionColegiado.add(getPnPagoTranferencia());
 		}
 		return pnModosPagoInscripcionColegiado;
 	}
@@ -2963,7 +2995,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelDNIColegiado = new JLabel("DNI:");
 			lblNewLabelDNIColegiado.setLabelFor(getTextFieldDNIColegiado());
 			lblNewLabelDNIColegiado.setDisplayedMnemonic('D');
-			lblNewLabelDNIColegiado.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelDNIColegiado.setFont(LookAndFeel.PRIMARY_FONT);
 			lblNewLabelDNIColegiado.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lblNewLabelDNIColegiado;
@@ -2997,7 +3029,7 @@ public class MainWindow extends JFrame {
 					"No puede pagar un curso el cual no se ha preinscrito, y en el caso de que se haya preinscrito contará con dos días a partir de la fecha de preinscripcion");
 			lbInscripcionPagoAviso.setHorizontalAlignment(SwingConstants.CENTER);
 			lbInscripcionPagoAviso.setForeground(Color.RED);
-			lbInscripcionPagoAviso.setFont(new Font("Arial", Font.BOLD, 14));
+			lbInscripcionPagoAviso.setFont(LookAndFeel.PRIMARY_FONT);
 		}
 		return lbInscripcionPagoAviso;
 	}
@@ -3019,7 +3051,7 @@ public class MainWindow extends JFrame {
 			lblNewLabelIdentificadorCurso.setLabelFor(getComboBoxIdentificadorCursosAbiertos());
 			lblNewLabelIdentificadorCurso.setDisplayedMnemonic('I');
 			lblNewLabelIdentificadorCurso.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelIdentificadorCurso.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblNewLabelIdentificadorCurso.setFont(LookAndFeel.PRIMARY_FONT);
 		}
 		return lblNewLabelIdentificadorCurso;
 	}
@@ -3048,6 +3080,8 @@ public class MainWindow extends JFrame {
 	private JPanel getPnPagarInscripcionColegiadoSur() {
 		if (pnPagarInscripcionColegiadoSur == null) {
 			pnPagarInscripcionColegiadoSur = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnPagarInscripcionColegiadoSur.getLayout();
+			flowLayout.setAlignment(FlowLayout.RIGHT);
 			pnPagarInscripcionColegiadoSur.add(getBtnInicioInscripcion());
 		}
 		return pnPagarInscripcionColegiadoSur;
@@ -3067,7 +3101,6 @@ public class MainWindow extends JFrame {
 			});
 			btnInicioInscripcion.setToolTipText("Pulse para volver a la pantalla principal");
 			btnInicioInscripcion.setMnemonic('R');
-			btnInicioInscripcion.setBackground(Color.RED);
 		}
 		return btnInicioInscripcion;
 	}
@@ -3086,5 +3119,175 @@ public class MainWindow extends JFrame {
 
 		lbColegiadoSeleccionadoSolicitudRespuesta.setText(
 				"Seleccione un colegiado de la lista y, si tiene titulación, se procederá a darle de alta en el COIIPA");
+	}
+
+	private JPanel getPnNumeroTarjetaDatosColegiadoText() {
+		if (pnNumeroTarjetaDatosColegiadoText == null) {
+			pnNumeroTarjetaDatosColegiadoText = new JPanel();
+			GridBagLayout gbl_pnNumeroTarjetaDatosColegiadoText = new GridBagLayout();
+			gbl_pnNumeroTarjetaDatosColegiadoText.columnWidths = new int[] { 256 };
+			gbl_pnNumeroTarjetaDatosColegiadoText.rowHeights = new int[] { 50, 0, 100, 50 };
+			gbl_pnNumeroTarjetaDatosColegiadoText.columnWeights = new double[] { 1.0 };
+			gbl_pnNumeroTarjetaDatosColegiadoText.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			pnNumeroTarjetaDatosColegiadoText.setLayout(gbl_pnNumeroTarjetaDatosColegiadoText);
+			GridBagConstraints gbc_textFieldNumeroTarjetaColegiado = new GridBagConstraints();
+			gbc_textFieldNumeroTarjetaColegiado.gridheight = 2;
+			gbc_textFieldNumeroTarjetaColegiado.fill = GridBagConstraints.BOTH;
+			gbc_textFieldNumeroTarjetaColegiado.gridx = 0;
+			gbc_textFieldNumeroTarjetaColegiado.gridy = 1;
+			pnNumeroTarjetaDatosColegiadoText.add(getTextFieldNumeroTarjetaColegiado(),
+					gbc_textFieldNumeroTarjetaColegiado);
+		}
+		return pnNumeroTarjetaDatosColegiadoText;
+	}
+
+	private JTextField getTextFieldNumeroTarjetaColegiado() {
+		if (textFieldNumeroTarjetaColegiado == null) {
+			textFieldNumeroTarjetaColegiado = new JTextField();
+			textFieldNumeroTarjetaColegiado.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+			textFieldNumeroTarjetaColegiado.setAlignmentX(Component.LEFT_ALIGNMENT);
+			textFieldNumeroTarjetaColegiado.setToolTipText("Introduzca el número de su tarjeta bancaria");
+			textFieldNumeroTarjetaColegiado.setText("Ej: 76567 [5 numeros]");
+			textFieldNumeroTarjetaColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+			textFieldNumeroTarjetaColegiado.setColumns(10);
+		}
+		return textFieldNumeroTarjetaColegiado;
+	}
+
+	private JPanel getPnNumeroTarjetaValidarTarjeta() {
+		if (pnNumeroTarjetaValidarTarjeta == null) {
+			pnNumeroTarjetaValidarTarjeta = new JPanel();
+			pnNumeroTarjetaValidarTarjeta.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			pnNumeroTarjetaValidarTarjeta.setMaximumSize(new Dimension(500, 500));
+			GridBagLayout gbl_pnNumeroTarjetaValidarTarjeta = new GridBagLayout();
+			gbl_pnNumeroTarjetaValidarTarjeta.columnWidths = new int[]{542, 0};
+			gbl_pnNumeroTarjetaValidarTarjeta.rowHeights = new int[] {72, 0, 72};
+			gbl_pnNumeroTarjetaValidarTarjeta.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+			gbl_pnNumeroTarjetaValidarTarjeta.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			pnNumeroTarjetaValidarTarjeta.setLayout(gbl_pnNumeroTarjetaValidarTarjeta);
+			GridBagConstraints gbc_btnTarjetaCreditoColegiado = new GridBagConstraints();
+			gbc_btnTarjetaCreditoColegiado.fill = GridBagConstraints.BOTH;
+			gbc_btnTarjetaCreditoColegiado.gridx = 0;
+			gbc_btnTarjetaCreditoColegiado.gridy = 1;
+			pnNumeroTarjetaValidarTarjeta.add(getBtnTarjetaCreditoColegiado(), gbc_btnTarjetaCreditoColegiado);
+		}
+		return pnNumeroTarjetaValidarTarjeta;
+	}
+
+	private JPanel getPnPagoTranferencia() {
+		if (pnPagoTranferencia == null) {
+			pnPagoTranferencia = new JPanel();
+			pnPagoTranferencia.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+			pnPagoTranferencia.setBorder(new EmptyBorder(0, 100, 0, 100));
+			GridBagLayout gbl_pnPagoTranferencia = new GridBagLayout();
+			gbl_pnPagoTranferencia.columnWidths = new int[] {332};
+			gbl_pnPagoTranferencia.rowHeights = new int[]{62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+			gbl_pnPagoTranferencia.columnWeights = new double[]{1.0, 0.0};
+			gbl_pnPagoTranferencia.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+			pnPagoTranferencia.setLayout(gbl_pnPagoTranferencia);
+			GridBagConstraints gbc_btnTransferenciaColegiado = new GridBagConstraints();
+			gbc_btnTransferenciaColegiado.gridheight = 2;
+			gbc_btnTransferenciaColegiado.gridwidth = 2;
+			gbc_btnTransferenciaColegiado.anchor = GridBagConstraints.NORTHWEST;
+			gbc_btnTransferenciaColegiado.gridx = 0;
+			gbc_btnTransferenciaColegiado.gridy = 11;
+			pnPagoTranferencia.add(getBtnTransferenciaColegiado(), gbc_btnTransferenciaColegiado);
+		}
+		return pnPagoTranferencia;
+	}
+
+	private JPanel getPnDatosColPoblacionText() {
+		if (pnDatosColPoblacionText == null) {
+			pnDatosColPoblacionText = new JPanel();
+			GridBagLayout gbl_pnDatosColPoblacionText = new GridBagLayout();
+			gbl_pnDatosColPoblacionText.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosColPoblacionText.rowHeights = new int[] { 74, 0, 74, 74 };
+			gbl_pnDatosColPoblacionText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+			gbl_pnDatosColPoblacionText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+			pnDatosColPoblacionText.setLayout(gbl_pnDatosColPoblacionText);
+			GridBagConstraints gbc_textFieldPoblacion = new GridBagConstraints();
+			gbc_textFieldPoblacion.gridheight = 2;
+			gbc_textFieldPoblacion.fill = GridBagConstraints.BOTH;
+			gbc_textFieldPoblacion.gridx = 0;
+			gbc_textFieldPoblacion.gridy = 1;
+			pnDatosColPoblacionText.add(getTextFieldPoblacion(), gbc_textFieldPoblacion);
+		}
+		return pnDatosColPoblacionText;
+	}
+
+	private JPanel getPnDatosColTelefonoText() {
+		if (pnDatosColTelefonoText == null) {
+			pnDatosColTelefonoText = new JPanel();
+			GridBagLayout gbl_pnDatosColTelefonoText = new GridBagLayout();
+			gbl_pnDatosColTelefonoText.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosColTelefonoText.rowHeights = new int[] { 74, 0, 74, 74 };
+			gbl_pnDatosColTelefonoText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+			gbl_pnDatosColTelefonoText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+			pnDatosColTelefonoText.setLayout(gbl_pnDatosColTelefonoText);
+			GridBagConstraints gbc_textFieldTelefono = new GridBagConstraints();
+			gbc_textFieldTelefono.gridheight = 2;
+			gbc_textFieldTelefono.fill = GridBagConstraints.BOTH;
+			gbc_textFieldTelefono.gridx = 0;
+			gbc_textFieldTelefono.gridy = 1;
+			pnDatosColTelefonoText.add(getTextFieldTelefono(), gbc_textFieldTelefono);
+		}
+		return pnDatosColTelefonoText;
+	}
+
+	private JPanel getPnDatosColTitulacionText() {
+		if (pnDatosColTitulacionText == null) {
+			pnDatosColTitulacionText = new JPanel();
+			GridBagLayout gbl_pnDatosColTitulacionText = new GridBagLayout();
+			gbl_pnDatosColTitulacionText.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosColTitulacionText.rowHeights = new int[] { 49, 0, 49, 49 };
+			gbl_pnDatosColTitulacionText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+			gbl_pnDatosColTitulacionText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+			pnDatosColTitulacionText.setLayout(gbl_pnDatosColTitulacionText);
+			GridBagConstraints gbc_textFieldTitulo = new GridBagConstraints();
+			gbc_textFieldTitulo.gridheight = 2;
+			gbc_textFieldTitulo.fill = GridBagConstraints.BOTH;
+			gbc_textFieldTitulo.gridx = 0;
+			gbc_textFieldTitulo.gridy = 1;
+			pnDatosColTitulacionText.add(getTextFieldTitulacion(), gbc_textFieldTitulo);
+		}
+		return pnDatosColTitulacionText;
+	}
+
+	private JPanel getPnDatosColCentoText() {
+		if (pnDatosColCentoText == null) {
+			pnDatosColCentoText = new JPanel();
+			GridBagLayout gbl_pnDatosColCentoText = new GridBagLayout();
+			gbl_pnDatosColCentoText.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosColCentoText.rowHeights = new int[] { 49, 0, 49, 49 };
+			gbl_pnDatosColCentoText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+			gbl_pnDatosColCentoText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+			pnDatosColCentoText.setLayout(gbl_pnDatosColCentoText);
+			GridBagConstraints gbc_textFieldCentro = new GridBagConstraints();
+			gbc_textFieldCentro.gridheight = 2;
+			gbc_textFieldCentro.fill = GridBagConstraints.BOTH;
+			gbc_textFieldCentro.gridx = 0;
+			gbc_textFieldCentro.gridy = 1;
+			pnDatosColCentoText.add(getTextFieldCentroColegiado(), gbc_textFieldCentro);
+		}
+		return pnDatosColCentoText;
+	}
+
+	private JPanel getPnDatosColAnnioText() {
+		if (pnDatosColAnnioText == null) {
+			pnDatosColAnnioText = new JPanel();
+			GridBagLayout gbl_pnDatosColAnnioText = new GridBagLayout();
+			gbl_pnDatosColAnnioText.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosColAnnioText.rowHeights = new int[] { 49, 0, 49, 49 };
+			gbl_pnDatosColAnnioText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+			gbl_pnDatosColAnnioText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+			pnDatosColAnnioText.setLayout(gbl_pnDatosColAnnioText);
+			GridBagConstraints gbc_textFieldAno = new GridBagConstraints();
+			gbc_textFieldAno.gridheight = 2;
+			gbc_textFieldAno.fill = GridBagConstraints.BOTH;
+			gbc_textFieldAno.gridx = 0;
+			gbc_textFieldAno.gridy = 1;
+			pnDatosColAnnioText.add(getTextFieldAno(), gbc_textFieldAno);
+		}
+		return pnDatosColAnnioText;
 	}
 }

@@ -3,6 +3,8 @@ package ui.components;
 import java.awt.Color;
 import java.awt.Font;
 
+import javax.swing.UIManager;
+
 /**
  * 
  * @author Francisco Coya
@@ -12,12 +14,13 @@ import java.awt.Font;
 public class LookAndFeel {
 
 	// Typography styles
-	public static final String TYPOGRAPHY = "Arial";
+	public static final String TYPOGRAPHY = "Poppins";
 	public static final Font PRIMARY_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 14);
 	public static final Font HEADING_1_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 24);
 	public static final Font HEADING_2_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 18);
 	public static final Font HEADING_3_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 16);
 	public static final Font LABEL_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 14);
+	public static final Font REGULAR_BUTTON_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 12);
 
 	// Color palette
 	public static final Color PRIMARY_COLOR = new Color(193, 18, 21); // "#c1121f"

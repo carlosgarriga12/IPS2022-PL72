@@ -1,6 +1,8 @@
 package ui.components.buttons;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
@@ -28,16 +30,16 @@ public class DefaultButton extends JButton {
 	public static final Color DEFAULT_DISABLED_FOREGORUND = Color.DARK_GRAY;
 
 	// Boton small
-	private static final int SMALL_TYPE_WIDTH = 17;
-	private static final int SMALL_TYPE_HEIGHT = 5;
+	private static final int SMALL_TYPE_WIDTH = 20;
+	private static final int SMALL_TYPE_HEIGHT = 35;
 
 	// Boton small
-	private static final int REGULAR_TYPE_WIDTH = 35;
-	private static final int REGULAR_TYPE_HEIGHT = 10;
+	private static final int REGULAR_TYPE_WIDTH = 150;
+	private static final int REGULAR_TYPE_HEIGHT = 50;
 
 	// Boton small
-	private static final int VENTANA_TYPE_WIDTH = 70;
-	private static final int VENTANA_TYPE_HEIGHT = 20;
+	private static final int VENTANA_TYPE_WIDTH = 200;
+	private static final int VENTANA_TYPE_HEIGHT = 80;
 
 	private String[] sizes = new String[] { "small", "regular", "ventana" };
 
@@ -61,6 +63,8 @@ public class DefaultButton extends JButton {
 		this.setFont(LookAndFeel.PRIMARY_FONT);
 
 		this.setBorderPainted(false);
+//		this.setAlignmentX(CENTER);
+		this.setAlignmentY(CENTER);
 	}
 
 	/**
@@ -110,25 +114,26 @@ public class DefaultButton extends JButton {
 		// se asigna el boton tipo ventana.
 
 		if (!type.equalsIgnoreCase(sizes[0]) || type.equalsIgnoreCase(sizes[1]) || type.equalsIgnoreCase(sizes[2])) {
-			this.setBorder(
-					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));
-			
+			this.setPreferredSize(new Dimension(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
+			this.setBounds(new Rectangle(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
 		}
 
 		// Boton pequeño
 		if (type.equalsIgnoreCase(sizes[0])) {
-			this.setBorder(new EmptyBorder(SMALL_TYPE_HEIGHT, SMALL_TYPE_WIDTH, SMALL_TYPE_HEIGHT, SMALL_TYPE_WIDTH));
+			this.setPreferredSize(new Dimension(SMALL_TYPE_WIDTH, SMALL_TYPE_HEIGHT));
+			this.setBounds(new Rectangle(SMALL_TYPE_WIDTH, SMALL_TYPE_HEIGHT));
+			this.setFont(LookAndFeel.REGULAR_BUTTON_FONT);
 
 			// Boton regular
 		} else if (type.equalsIgnoreCase(sizes[1])) {
-			this.setBorder(
-					new EmptyBorder(REGULAR_TYPE_HEIGHT, REGULAR_TYPE_WIDTH, REGULAR_TYPE_HEIGHT, REGULAR_TYPE_WIDTH));
-					
+			this.setPreferredSize(new Dimension(REGULAR_TYPE_WIDTH, REGULAR_TYPE_HEIGHT));
+			this.setBounds(new Rectangle(REGULAR_TYPE_WIDTH, REGULAR_TYPE_HEIGHT));
+			this.setFont(LookAndFeel.REGULAR_BUTTON_FONT);
 
 			// Boton ventana
 		} else if (type.equalsIgnoreCase(sizes[1])) {
-			this.setBorder(
-					new EmptyBorder(VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT, VENTANA_TYPE_WIDTH));
+			this.setPreferredSize(new Dimension(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
+			this.setBounds(new Rectangle(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
 		}
 	}
 

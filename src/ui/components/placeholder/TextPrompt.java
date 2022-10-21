@@ -12,6 +12,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import ui.components.LookAndFeel;
+
 /**
  * The TextPrompt class will display a prompt over top of a text component when
  * the Document of the text field is empty. The Show property is used to
@@ -46,7 +48,8 @@ public class TextPrompt extends JLabel implements FocusListener, DocumentListene
 		document = component.getDocument();
 
 		setText(text);
-		setFont(component.getFont());
+		setFont(LookAndFeel.PRIMARY_FONT);
+//		setFont(component.getFont());
 		setForeground(component.getForeground());
 		setBorder(new EmptyBorder(component.getInsets()));
 		setHorizontalAlignment(JLabel.LEADING);
