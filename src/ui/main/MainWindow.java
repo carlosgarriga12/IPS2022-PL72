@@ -65,6 +65,7 @@ import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
 import ui.components.messages.DefaultMessage;
 import ui.components.messages.MessageType;
+import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
@@ -1169,9 +1170,11 @@ public class MainWindow extends JFrame {
 		if (textFieldNombre == null) {
 			textFieldNombre = new JTextField();
 			textFieldNombre.setToolTipText("Inserte el nombre");
-			textFieldNombre.setText("Ej: Miguel");
-			textFieldNombre.setHorizontalAlignment(SwingConstants.CENTER);
+//			textFieldNombre.setText("Ej: Miguel");
+			textFieldNombre.setHorizontalAlignment(SwingConstants.LEFT);
 			textFieldNombre.setColumns(10);
+			
+			TextPlaceHolderCustom.setPlaceholder("Introduzca su nombre", textFieldNombre);
 		}
 		return textFieldNombre;
 	}
