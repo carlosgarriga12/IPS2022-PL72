@@ -9,6 +9,7 @@ import business.colegiado.Colegiado;
 public class GeneradorNumeroColegiado {
 
 	private static final String NUMBER_SIZE_DEFAULT = "0000";
+	private static final String NUMBER_SIZE_DEFAULT_v1 = "00000";
 
 	/**
 	 * Genera un número de colegiado en formato aaaa_nnnn, siendo aaaa el año actual
@@ -31,7 +32,7 @@ public class GeneradorNumeroColegiado {
 			lastNumber = Integer.parseInt(Colegiado.getMaxNumberColegiado().split("-")[1]) + 1;
 		}
 
-		DecimalFormat df = new DecimalFormat(NUMBER_SIZE_DEFAULT);
+		DecimalFormat df = new DecimalFormat(lastNumber < 10000 ? NUMBER_SIZE_DEFAULT : NUMBER_SIZE_DEFAULT_v1);
 		String lastColegiadoNumberFormatted = df.format(lastNumber);
 
 		sB.append(lastColegiadoNumberFormatted);

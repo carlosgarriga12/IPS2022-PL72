@@ -38,7 +38,7 @@ public class DefaultButton extends JButton {
 	private static final int REGULAR_TYPE_HEIGHT = 50;
 
 	// Boton small
-	private static final int VENTANA_TYPE_WIDTH = 200;
+	private static final int VENTANA_TYPE_WIDTH = 250;
 	private static final int VENTANA_TYPE_HEIGHT = 80;
 
 	private String[] sizes = new String[] { "small", "regular", "ventana" };

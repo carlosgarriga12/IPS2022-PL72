@@ -12,9 +12,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -57,7 +57,6 @@ import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
-import business.util.GeneradorNumeroColegiado;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
@@ -73,13 +72,6 @@ import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
 import ui.util.TimeFormatter;
-import java.awt.Insets;
-import javax.swing.BoxLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import net.miginfocom.swing.MigLayout;
 
 public class MainWindow extends JFrame {
 
@@ -292,7 +284,6 @@ public class MainWindow extends JFrame {
 
 	private JPanel pnPagarInscripcionColegiado;
 
-	private JCalendar calendarioFechaAperturaInscripcionCurso;
 	private JPanel pnNumeroTarjetaDatosColegiadoText;
 	private JTextField textFieldNumeroTarjetaColegiado;
 	private JPanel pnNumeroTarjetaValidarTarjeta;
@@ -304,6 +295,7 @@ public class MainWindow extends JFrame {
 	private JPanel pnDatosColAnnioText;
 	private JLabel lbNumeroSolicitudesColegiado;
 	private JPanel pnNumeroSolicitudesColegiado;
+	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -626,17 +618,6 @@ public class MainWindow extends JFrame {
 			fTxFechaInicioInscripcionesCursoSeleccionado.setOpaque(false);
 		}
 		return fTxFechaInicioInscripcionesCursoSeleccionado;
-	}
-
-	private JCalendar getCalAbrirInscripcionFechaApertura() {
-		if (calendarioFechaAperturaInscripcionCurso == null) {
-			calendarioFechaAperturaInscripcionCurso = new JCalendar();
-			calendarioFechaAperturaInscripcionCurso.getDayChooser().getDayPanel()
-					.setToolTipText("Seleccione la fecha de apertura para las inscripciones del curso seleccionado.");
-
-			calendarioFechaAperturaInscripcionCurso.setBorder(new LineBorder(Color.GRAY));
-		}
-		return calendarioFechaAperturaInscripcionCurso;
 	}
 
 	private JLabel getLbTituloCursoSeleccionado() {
@@ -2296,9 +2277,8 @@ public class MainWindow extends JFrame {
 	private JPanel getPnListadoAltaSolicitudesColegiadoActualizarLista() {
 		if (pnListadoAltaSolicitudesColegiadoActualizarLista == null) {
 			pnListadoAltaSolicitudesColegiadoActualizarLista = new JPanel();
-			pnListadoAltaSolicitudesColegiadoActualizarLista
-					.setLayout(new BoxLayout(pnListadoAltaSolicitudesColegiadoActualizarLista, BoxLayout.X_AXIS));
-			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getBtActualizarListaSolicitudesColegiado());
+			pnListadoAltaSolicitudesColegiadoActualizarLista.setLayout(new GridLayout(0, 2, 0, 0));
+			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getPnListadoAltaSolicitanteRefrescarListaBotonContainer());
 			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getPnNumeroSolicitudesColegiado());
 		}
 		return pnListadoAltaSolicitudesColegiadoActualizarLista;
@@ -2374,7 +2354,8 @@ public class MainWindow extends JFrame {
 				TableModel allSolicitudesColegiado = new ColegiadoModel(Colegiado.findAllSolicitudesAltaColegiados())
 						.getColegiadoModel(false);
 
-				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
+				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);			
+				
 
 			} catch (BusinessException e) {
 				e.printStackTrace();
@@ -2405,11 +2386,6 @@ public class MainWindow extends JFrame {
 								JOptionPane.showMessageDialog(null, resp,
 										"Secretaría: Respuesta recibida del ministerio",
 										JOptionPane.INFORMATION_MESSAGE);
-
-								// force timeout to expire
-								lbColegiadoSeleccionadoSolicitudRespuesta.setText(resp);
-
-								// Actualizar la lista de solicitudes con los nuevos cambios
 
 							} else {
 								lbColegiadoSeleccionadoSolicitudRespuesta
@@ -2818,7 +2794,7 @@ public class MainWindow extends JFrame {
 	private boolean comprobarCampos() {
 
 		try {
-			int numeroTarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
+			//int numeroTarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
 
 		} catch (NumberFormatException nfe) {
 			JOptionPane.showMessageDialog(null, "El número de tarjeta no es válido. Por favor, revíselo.",
@@ -3260,9 +3236,9 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLbNumeroSolicitudesColegiado() {
 		if (lbNumeroSolicitudesColegiado == null) {
-			lbNumeroSolicitudesColegiado = new JLabel("");
-			lbNumeroSolicitudesColegiado.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbNumeroSolicitudesColegiado = new JLabel("No hay ninguna solicitud");
 			lbNumeroSolicitudesColegiado.setHorizontalAlignment(SwingConstants.CENTER);
+			lbNumeroSolicitudesColegiado.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		}
 		return lbNumeroSolicitudesColegiado;
 	}
@@ -3274,8 +3250,16 @@ public class MainWindow extends JFrame {
 			pnNumeroSolicitudesColegiado.setAlignmentX(Component.RIGHT_ALIGNMENT);
 			pnNumeroSolicitudesColegiado.setOpaque(false);
 			pnNumeroSolicitudesColegiado.setLayout(new BorderLayout(0, 0));
-			pnNumeroSolicitudesColegiado.add(getLbNumeroSolicitudesColegiado(), BorderLayout.EAST);
+			pnNumeroSolicitudesColegiado.add(getLbNumeroSolicitudesColegiado());
 		}
 		return pnNumeroSolicitudesColegiado;
+	}
+	private JPanel getPnListadoAltaSolicitanteRefrescarListaBotonContainer() {
+		if (pnListadoAltaSolicitanteRefrescarListaBotonContainer == null) {
+			pnListadoAltaSolicitanteRefrescarListaBotonContainer = new JPanel();
+			pnListadoAltaSolicitanteRefrescarListaBotonContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtActualizarListaSolicitudesColegiado());
+		}
+		return pnListadoAltaSolicitanteRefrescarListaBotonContainer;
 	}
 }

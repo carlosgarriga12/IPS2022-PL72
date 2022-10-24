@@ -84,14 +84,17 @@ public class Colegiado {
 	 */
 	public static String simularConsultaMinisterio(String dniSolicitante) throws BusinessException {
 		// String titulacion = findTitulacionColegiadoByDni(dniSolicitante);
+		String res = "";
 
 		int resp = MathUtils.generateRandomNumber(0, 2);
+		res += getMensajeRespuestaMinisterioTitulacion(resp);
 
 		if (resp == 1) {
-			updateNumColegiado(dniSolicitante);
+			String num = updateNumColegiado(dniSolicitante);
+			res += "\n El número de colegiado asignado es: " + num;
 		}
 
-		return getMensajeRespuestaMinisterioTitulacion(resp);
+		return res;
 	}
 
 	/**
