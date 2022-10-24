@@ -192,7 +192,6 @@ public class MainWindow extends JFrame {
 	private JPanel pnDatosTituloColegiadoCheck;
 	private JTextField textFieldTitulo;
 	private JLabel lblTitulacinSegunSus;
-	private JLabel lblNewLabelTitulacionColegiado;
 	private JTextField txCursoDNI;
 
 	private JPanel pnHomeNorth;
@@ -984,9 +983,9 @@ public class MainWindow extends JFrame {
 		dto.poblacion = getTextFieldPoblacion().getText();
 		dto.centro = getTextFieldCentroColegiado().getText();
 		dto.numeroCuenta = getTextFieldNumeroCuenta().getText();
+		dto.titulacion = getTextFieldTitulacion().getText();
 		try {
 			dto.telefono = Integer.parseInt(getTextFieldTelefono().getText());
-			dto.titulacion = Integer.parseInt(getTextFieldTitulacion().getText());
 			dto.annio = Integer.parseInt(getTextFieldAno().getText());
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
@@ -1422,7 +1421,6 @@ public class MainWindow extends JFrame {
 			pnDatosTituloColegiadoLabel = new JPanel();
 			pnDatosTituloColegiadoLabel.setLayout(new GridLayout(0, 1, 0, 0));
 			pnDatosTituloColegiadoLabel.add(getLblTitulacinSegunSus());
-			pnDatosTituloColegiadoLabel.add(getLabelTitulacionColegiado());
 		}
 		return pnDatosTituloColegiadoLabel;
 	}
@@ -1440,7 +1438,7 @@ public class MainWindow extends JFrame {
 		if (textFieldTitulo == null) {
 			textFieldTitulo = new JTextField();
 			textFieldTitulo.setToolTipText("Teclee la titulación");
-			TextPlaceHolderCustom.setPlaceholder("0 (sin titulación)", textFieldTitulo);
+			TextPlaceHolderCustom.setPlaceholder("Licenciado en Informática", textFieldTitulo);
 			textFieldTitulo.setHorizontalAlignment(SwingConstants.LEFT);
 			textFieldTitulo.setColumns(10);
 		}
@@ -1456,15 +1454,6 @@ public class MainWindow extends JFrame {
 			lblTitulacinSegunSus.setLabelFor(getTextFieldTitulacion());
 		}
 		return lblTitulacinSegunSus;
-	}
-
-	private JLabel getLabelTitulacionColegiado() {
-		if (lblNewLabelTitulacionColegiado == null) {
-			lblNewLabelTitulacionColegiado = new JLabel("[0, 1(ingeniero informático), 2(Otros)]");
-			lblNewLabelTitulacionColegiado.setHorizontalAlignment(SwingConstants.CENTER);
-			lblNewLabelTitulacionColegiado.setFont(LookAndFeel.PRIMARY_FONT);
-		}
-		return lblNewLabelTitulacionColegiado;
 	}
 
 	private JPanel getPnInscripcion() {
@@ -2400,39 +2389,40 @@ public class MainWindow extends JFrame {
 						if (selectedRow == -1) {
 							selectedRow = 0;
 						}
-
+						
+						// TODO: arreglar Francisco
 						// Titulacion del colegiado seleccionado
 						String colegiadoSeleccionadoDni = tbListadoSolicitudesColegiado.getValueAt(selectedRow, 0)
 								.toString();
 
-						int titulacionColegiadoSeleccionado = Colegiado
-								.findTitulacionColegiadoByDni(colegiadoSeleccionadoDni);
+//						int titulacionColegiadoSeleccionado = Colegiado
+//								.findTitulacionColegiadoByDni(colegiadoSeleccionadoDni);
 
 						String simulacionNumeroColegiado = GeneradorNumeroColegiado.generateNumber();
 
 						// Si el solicitante tiene la titulacion = 1, se procede a darle de alta en el
 						// COIIPA con el numero {@link #simulacionNumeroColegiado}
-						String isColegiadoMsg = titulacionColegiadoSeleccionado == 1
-								? " posee titulación y se dará de alta en el COIIPA con el número: "
-										+ simulacionNumeroColegiado
-								: " no tiene titulación";
+//						String isColegiadoMsg = titulacionColegiadoSeleccionado == 1
+//								? " posee titulación y se dará de alta en el COIIPA con el número: "
+//										+ simulacionNumeroColegiado
+//								: " no tiene titulación";
 
-						lbColegiadoSeleccionadoSolicitudRespuesta
-								.setText("El solicitante de ingreso seleccionado " + isColegiadoMsg);
+//						lbColegiadoSeleccionadoSolicitudRespuesta
+//								.setText("El solicitante de ingreso seleccionado " + isColegiadoMsg);
 
 						// Si el solicitante está graduado, se procederá a su alta automática en el
 						// COIIPA.
-						if (titulacionColegiadoSeleccionado == 1) {
-
-							String numeroColegiado = Colegiado.updateNumColegiado(colegiadoSeleccionadoDni);
-
-							// Actualizar la lista de solicitudes con los nuevos cambios
-							refrescarListaSolicitudesColegiado();
-
-							lbColegiadoSeleccionadoSolicitudRespuesta.setText(
-									"Se ha dado de alta en el COIIPA al solicitante con DNI " + colegiadoSeleccionadoDni
-											+ " con el número de colegiado " + numeroColegiado);
-						}
+//						if (titulacionColegiadoSeleccionado == 1) {
+//
+//							String numeroColegiado = Colegiado.updateNumColegiado(colegiadoSeleccionadoDni);
+//
+//							// Actualizar la lista de solicitudes con los nuevos cambios
+//							refrescarListaSolicitudesColegiado();
+//
+//							lbColegiadoSeleccionadoSolicitudRespuesta.setText(
+//									"Se ha dado de alta en el COIIPA al solicitante con DNI " + colegiadoSeleccionadoDni
+//											+ " con el número de colegiado " + numeroColegiado);
+//						}
 
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException | BusinessException nfe) {
 						// TODO: MOSTRAR MENSAJE DE ERROR
@@ -2732,7 +2722,7 @@ public class MainWindow extends JFrame {
 		try {
 			if (Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText()) == null) {
 				JOptionPane.showMessageDialog(null,
-						"Lo sentimos, no puede hacerse cargo de pagar un curso, no es usted ni colegiado ni precolegiado, formalice su solicitud primero\n"
+						"Lo sentimos, no puede hacerse cargo de pagar un curso, no está registrado en el COIIPA, formalice su solicitud primero\n"
 								+ "Inténtelo de nuevo la próxima vez",
 						"Dni inválido", JOptionPane.WARNING_MESSAGE);
 				reiniciarInscripcionColegiadoPagar();

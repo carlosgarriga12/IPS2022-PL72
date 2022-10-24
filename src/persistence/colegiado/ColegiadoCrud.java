@@ -85,7 +85,7 @@ public class ColegiadoCrud {
 			pst.setString(3, colegiado.apellidos);
 			pst.setString(4, colegiado.poblacion);
 			pst.setInt(5, colegiado.telefono);
-			pst.setInt(6, colegiado.titulacion);
+			pst.setString(6, colegiado.titulacion);
 			pst.setString(7, colegiado.centro);
 			pst.setInt(8, colegiado.annio);
 			pst.setString(9, colegiado.numeroCuenta);
@@ -127,8 +127,8 @@ public class ColegiadoCrud {
 	 * @param dniToSearch Dni del colegiado a buscar.
 	 * @return
 	 */
-	public static int findTitulacionColegiadoByDni(final String dniToSearch) {
-		int titulacion = -1;
+	public static String findTitulacionColegiadoByDni(final String dniToSearch) {
+		String titulacion = null;
 
 		Connection c = null;
 		PreparedStatement pst = null;
@@ -144,7 +144,7 @@ public class ColegiadoCrud {
 			rs = pst.executeQuery();
 			rs.next();
 
-			titulacion = rs.getInt("titulacion");
+			titulacion = rs.getString("titulacion");
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);

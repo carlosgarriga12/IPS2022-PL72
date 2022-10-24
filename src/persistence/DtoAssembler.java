@@ -39,7 +39,7 @@ public class DtoAssembler {
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
 		c.poblacion = rs.getString("poblacion");
-		c.titulacion = rs.getInt("titulacion");
+		c.titulacion = rs.getString("titulacion");
 		c.centro = rs.getString("centro");
 		c.annio = rs.getInt("ano");
 		c.numeroCuenta = rs.getString("numeroCuenta");

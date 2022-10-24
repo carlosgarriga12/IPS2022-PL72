@@ -49,7 +49,7 @@ public class Colegiado {
 		return ColegiadoCrud.findAllSolicitudesAltaColegiados();
 	}
 
-	public static int findTitulacionColegiadoByDni(String dni) throws BusinessException {
+	public static String findTitulacionColegiadoByDni(String dni) throws BusinessException {
 		Argument.isNotNull(dni);
 		Argument.isNotEmpty(dni);
 
@@ -97,7 +97,8 @@ public class Colegiado {
 		Argument.isNotNull(colegiado.centro);
 		Argument.isNotEmpty(colegiado.centro);
 
-		Argument.is012(colegiado.titulacion);
+		Argument.isNotNull(colegiado.titulacion);
+		Argument.isNotEmpty(colegiado.titulacion);
 
 		Argument.isPositive(colegiado.annio);
 
