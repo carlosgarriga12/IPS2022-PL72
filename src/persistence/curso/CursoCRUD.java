@@ -26,7 +26,7 @@ public class CursoCRUD {
 	private static final String SQL_LISTA_INSCRIPCIONES = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
 	private static final String SQL_LIST_ALL_OPENED_COURSES = Conf.getInstance()
 			.getProperty("TCURSO_LIST_OPENED_COURSES");
-
+	
 	public static int generarCodigoCurso() {
 		Connection c = null;
 		Statement st = null;
@@ -239,5 +239,4 @@ public class CursoCRUD {
 
 		return res;
 	}
-
 }

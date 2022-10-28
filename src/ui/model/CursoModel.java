@@ -33,10 +33,10 @@ public class CursoModel {
 		this.cursos = cursos;
 	}
 
-	public TableModel getCursoModel(final boolean showAllFields) throws BusinessException {
-
+	public TableModel getCursoModel(final int showAllFields) throws BusinessException {
+		// 0 -> todos
+		// 1 -> todos menos id
 		// Listado de cursos actualmente planificados
-
 		DefaultTableModel model = new DefaultTableModel();
 
 		if (cursos.size() == 0) {
@@ -44,15 +44,30 @@ public class CursoModel {
 			model.addRow(new Object[] { "NO HAY CURSOS PLANIFICADOS ACTUALMENTE" });
 
 		} else {
+			if (showAllFields==1) {
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
+				model.addColumn(HEADER_COLUMN4);
+		
 
-			model.addColumn(HEADER_COLUMN6);
-			model.addColumn(HEADER_COLUMN1);
-			model.addColumn(HEADER_COLUMN2);
-			model.addColumn(HEADER_COLUMN3);
-			model.addColumn(HEADER_COLUMN4);
-	
+				model.addColumn(HEADER_COLUMN7);
+				model.addColumn(HEADER_COLUMN8);
+				model.addColumn(HEADER_COLUMN9);
 
-			if (showAllFields) {
+				for (CursoDto c : cursos) {
+						model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,
+								c.fechaApertura, c.fechaCierre, c.estado });
+					
+				}	
+
+			} else {
+				model.addColumn(HEADER_COLUMN6);
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
+				model.addColumn(HEADER_COLUMN4);
+		
 				model.addColumn(HEADER_COLUMN7);
 				model.addColumn(HEADER_COLUMN8);
 				model.addColumn(HEADER_COLUMN9);
@@ -67,14 +82,12 @@ public class CursoModel {
 					}
 					
 				}
-
-			} else {
+				
 				for (CursoDto c : cursos) {
 					model.addRow(
 							new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio });
 				}
 			}
-
 		}
 
 		return model;
