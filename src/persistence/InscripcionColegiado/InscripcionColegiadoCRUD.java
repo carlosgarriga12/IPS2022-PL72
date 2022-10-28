@@ -24,6 +24,7 @@ public class InscripcionColegiadoCRUD {
 	private static final String SQL_LISTA_INSCRIPCIONES_COLEGIADO = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES_COLEGIADO");
 	private static final String SQL_INSCRIPCION_FIND_FECHA = Conf.getInstance().getProperty("TINSCRIPCION_FIND_FECHA");
 	private static final String SQL_INSCRIPCION_PAGAR = Conf.getInstance().getProperty("TINSCRIPCION_PAGAR");
+	private static final String SQL_INSCRIPCION_TRANSFERENCIA_BANCO = Conf.getInstance().getProperty("TINSCRIPCION_FIND_DATOS_TRANSFERENCIA");
 
 	
 	public static void InscribirColegiado(CursoDto curso, ColegiadoDto colegiado) throws PersistenceException {
@@ -150,4 +151,32 @@ public class InscripcionColegiadoCRUD {
 			Jdbc.close(stmt);
 		}
 	}
+
+
+	public static List<String[]> findInscripcionesPorCursoId(int cursoSeleccionado) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<String[]> res = new ArrayList<>();
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_TRANSFERENCIA_BANCO);
+			stmt.setInt(1, cursoSeleccionado);
+			
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				res.add(DtoAssembler.resultsetToIncripcionTransferencia(rs));
+			}
+			
+			return res;
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	
 }

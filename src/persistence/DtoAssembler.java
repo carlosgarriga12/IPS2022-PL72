@@ -14,6 +14,8 @@ import persistence.curso.CursoDto;
 
 public class DtoAssembler {
 
+	private static final int SIZE = 6; // número de datos relevantes de la inscrición por transferencia
+
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
 		List<ColegiadoDto> colegiados = new ArrayList<>();
 
@@ -126,6 +128,14 @@ public class DtoAssembler {
 
 		return new Colegiado_Inscripcion(c, I);
 
+	}
+
+	public static String[] resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
+		String[] s = new String[SIZE];
+		for (int i=0; i < SIZE; i++) {
+			s[i] = rs.getString(i+1);
+		}
+		return s;
 	}
 
 

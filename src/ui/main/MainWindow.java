@@ -72,6 +72,7 @@ import ui.components.messages.MessageType;
 import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
+import ui.model.InscripcionColegiadoModel;
 import ui.util.TimeFormatter;
 import java.awt.Insets;
 import javax.swing.BoxLayout;
@@ -320,16 +321,21 @@ public class MainWindow extends JFrame {
 	private JPanel panelMuestraCursosNorte;
 	private JPanel paneMuestraCursosCentro;
 	private JPanel panelMuestraCursosSur;
-	private JLabel lblNewLabel;
-	private JButton btnNewButton;
+	private JLabel lblSeleccionaCursoTransf;
+	private JButton btnMovimientosBancarios;
 	private JPanel panelMuestraTransferenciasNorte;
 	private JPanel panelMuestraTransferenciasCentro;
 	private JPanel panelMuestraTransferenciasSur;
-	private JLabel lblNewLabel_1;
-	private JButton btnNewButton_1;
+	private JLabel lblRegistrosBancarios;
+	private JButton btnProcesarPagos;
 	private JScrollPane scrollPaneCursos;
-	private JTable tableCursos;
 	private JTable tbCourses;
+	private JScrollPane scrollPaneTransferencias;
+	private JTable tbTransferencias;
+	
+	// CURSO SOBRE EL QUE QUEREMOS MIRAR LAS CUENTAS DEL BANCO
+	private CursoDto cursoSeleccionado;
+
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -3335,7 +3341,18 @@ public class MainWindow extends JFrame {
 			btHomeSecretariaTransferencias.setMnemonic('T');
 			btHomeSecretariaTransferencias.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_TRANSFERENCIAS);
+					try {
+						if (Curso.listarTodosLosCursos().isEmpty()) {
+							JOptionPane.showMessageDialog(null, "Lo sentimos, no hay ningún curso disponible","No existen cursos", JOptionPane.WARNING_MESSAGE);
+						} else {
+							panelMuestraTransferencias.setVisible(false);
+							btnMovimientosBancarios.setEnabled(true);
+							btnProcesarPagos.setEnabled(false);
+							mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_TRANSFERENCIAS);
+						}
+					} catch (BusinessException e1) {
+						e1.printStackTrace();
+					}
 				}
 			});
 			btHomeSecretariaTransferencias.setText("Tramitar transferencias");
@@ -3393,7 +3410,7 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelMuestraCursosNorte() {
 		if (panelMuestraCursosNorte == null) {
 			panelMuestraCursosNorte = new JPanel();
-			panelMuestraCursosNorte.add(getLblNewLabel());
+			panelMuestraCursosNorte.add(getLblSeleccionaCursoTransf());
 		}
 		return panelMuestraCursosNorte;
 	}
@@ -3408,60 +3425,80 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelMuestraCursosSur() {
 		if (panelMuestraCursosSur == null) {
 			panelMuestraCursosSur = new JPanel();
-			panelMuestraCursosSur.add(getBtnNewButton());
+			panelMuestraCursosSur.add(getBtnMovimientosBancarios());
 		}
 		return panelMuestraCursosSur;
 	}
-	private JLabel getLblNewLabel() {
-		if (lblNewLabel == null) {
-			lblNewLabel = new JLabel("Seleccione el curso sobre el que desea registrar su actividad bancaria");
+	private JLabel getLblSeleccionaCursoTransf() {
+		if (lblSeleccionaCursoTransf == null) {
+			lblSeleccionaCursoTransf = new JLabel("Seleccione el curso sobre el que desea registrar su actividad bancaria");
 		}
-		return lblNewLabel;
+		return lblSeleccionaCursoTransf;
 	}
-	private JButton getBtnNewButton() {
-		if (btnNewButton == null) {
-			btnNewButton = new JButton("Solicitar movimientos bancarios del curso");
-			btnNewButton.addActionListener(new ActionListener() {
+	private JButton getBtnMovimientosBancarios() {
+		if (btnMovimientosBancarios == null) {
+			btnMovimientosBancarios = new JButton("Solicitar movimientos bancarios del curso");
+			btnMovimientosBancarios.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					panelMuestraTransferencias.setVisible(true);
+					if (cursoSeleccionado==null) {
+						JOptionPane.showMessageDialog(null,
+								"Por favor, revise que haya seleccionado un curso para ver el estado de la cuenta bancaria",
+								"Seleccione el curso", JOptionPane.WARNING_MESSAGE);
+					} else {
+						try {
+							InscripcionColegiado.emitirFicheroTransferenciaPorCurso(cursoSeleccionado.codigoCurso);
+						} catch (BusinessException e1) {
+							e1.printStackTrace();
+						}
+						btnMovimientosBancarios.setEnabled(false);
+						panelMuestraTransferencias.setVisible(true);
+						panelMuestraTransferencias.setVisible(true);
+						btnProcesarPagos.setEnabled(true);
+						JOptionPane.showMessageDialog(null,
+								"Se acaba de generar un fichero con los datos bancarios de cada inscripción del curso seleccionado\n"
+								+ "Puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
+								+ "Contiene los datos más recientes sobre las transferencias de los clientes en la cuenta bancaria del COIIPA",
+								"Consulta los datos bancarios", JOptionPane.INFORMATION_MESSAGE);
+					}
 				}
 			});
-			btnNewButton.setMnemonic('S');
+			btnMovimientosBancarios.setMnemonic('S');
 		}
-		return btnNewButton;
+		return btnMovimientosBancarios;
 	}
 	private JPanel getPanelMuestraTransferenciasNorte() {
 		if (panelMuestraTransferenciasNorte == null) {
 			panelMuestraTransferenciasNorte = new JPanel();
-			panelMuestraTransferenciasNorte.add(getLblNewLabel_1());
+			panelMuestraTransferenciasNorte.add(getLblRegistrosBancarios());
 		}
 		return panelMuestraTransferenciasNorte;
 	}
 	private JPanel getPanelMuestraTransferenciasCentro() {
 		if (panelMuestraTransferenciasCentro == null) {
 			panelMuestraTransferenciasCentro = new JPanel();
+			panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
 		}
 		return panelMuestraTransferenciasCentro;
 	}
 	private JPanel getPanelMuestraTransferenciasSur() {
 		if (panelMuestraTransferenciasSur == null) {
 			panelMuestraTransferenciasSur = new JPanel();
-			panelMuestraTransferenciasSur.add(getBtnNewButton_1());
+			panelMuestraTransferenciasSur.add(getBtnProcesarPagos());
 		}
 		return panelMuestraTransferenciasSur;
 	}
-	private JLabel getLblNewLabel_1() {
-		if (lblNewLabel_1 == null) {
-			lblNewLabel_1 = new JLabel("Registros bancarios de los pagos por transferencia del curso");
+	private JLabel getLblRegistrosBancarios() {
+		if (lblRegistrosBancarios == null) {
+			lblRegistrosBancarios = new JLabel("Registros bancarios de los pagos por transferencia del curso");
 		}
-		return lblNewLabel_1;
+		return lblRegistrosBancarios;
 	}
-	private JButton getBtnNewButton_1() {
-		if (btnNewButton_1 == null) {
-			btnNewButton_1 = new JButton("Procesar pagos");
-			btnNewButton_1.setMnemonic('P');
+	private JButton getBtnProcesarPagos() {
+		if (btnProcesarPagos == null) {
+			btnProcesarPagos = new JButton("Procesar pagos");
+			btnProcesarPagos.setMnemonic('P');
 		}
-		return btnNewButton_1;
+		return btnProcesarPagos;
 	}
 	private JScrollPane getScrollPaneCursos() {
 		if (scrollPaneCursos == null) {
@@ -3469,6 +3506,8 @@ public class MainWindow extends JFrame {
 		}
 		return scrollPaneCursos;
 	}
+	
+
 	private JTable getTableCursos() {
 		if (tbCourses == null) {
 			tbCourses = new JTable();
@@ -3490,7 +3529,7 @@ public class MainWindow extends JFrame {
 			tbCourses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new CursoModel(Curso.listarCursosPlanificados()).getCursoModel(ALL_MINUS_ID);
+				TableModel tableModel = new CursoModel(Curso.listarTodosLosCursos()).getCursoModel(ALL_MINUS_ID);
 
 				tbCourses.setModel(tableModel);
 			} catch (BusinessException e) {
@@ -3499,12 +3538,13 @@ public class MainWindow extends JFrame {
 			}
 
 			tbCourses.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
 				public void valueChanged(ListSelectionEvent event) {
 
 					if (event.getValueIsAdjusting())
 						return;
 
-					CursoDto cursoSeleccionado = new CursoDto();
+					cursoSeleccionado = new CursoDto();
 
 					try {
 
@@ -3532,7 +3572,8 @@ public class MainWindow extends JFrame {
 								.parse(tbCourses.getValueAt(selectedRow, 5).toString());
 
 						cursoSeleccionado.estado = tbCourses.getValueAt(selectedRow, 6).toString();
-						System.out.println(cursoSeleccionado.estado);
+						
+						cursoSeleccionado.codigoCurso = Integer.parseInt(tbCourses.getValueAt(selectedRow, 7).toString());
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
 					}
 
@@ -3542,5 +3583,82 @@ public class MainWindow extends JFrame {
 			});	
 		}
 		return tbCourses;
+	}
+	private JScrollPane getScrollPaneTransferencias() {
+		if (scrollPaneTransferencias == null) {
+			scrollPaneTransferencias = new JScrollPane(getTableTransferencias());
+		}
+		return scrollPaneTransferencias;
+	}
+
+	private JTable getTableTransferencias() {
+		if (tbTransferencias == null) {
+			tbTransferencias = new JTable();
+			tbTransferencias.setIntercellSpacing(new Dimension(0, 0));
+			tbTransferencias.setShowGrid(false);
+			tbTransferencias.setRowMargin(0);
+			tbTransferencias.setRequestFocusEnabled(false);
+			tbTransferencias.setFocusable(false);
+			tbTransferencias.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbTransferencias.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbTransferencias.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbTransferencias.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbTransferencias.setShowVerticalLines(false);
+			tbTransferencias.setOpaque(false);
+
+			tbTransferencias.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbTransferencias.setGridColor(new Color(255, 255, 255));
+
+			tbTransferencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			try {
+				if (cursoSeleccionado!=null) {
+					TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.leerFicheroTransferenciasPorCurso(cursoSeleccionado.codigoCurso)).getCursoModel();
+
+					tbTransferencias.setModel(tableModel);
+				}
+			} catch (BusinessException e) {
+				showMessage(e, MessageType.ERROR);
+				e.printStackTrace();
+			}
+
+			tbTransferencias.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+
+				public void valueChanged(ListSelectionEvent event) {
+
+					if (event.getValueIsAdjusting())
+						return;
+
+					String[] transferencia = new String[6];
+
+					try {
+
+						int selectedRow = tbTransferencias.getSelectedRow();
+
+						if (selectedRow == -1) {
+							selectedRow = 0;
+						}
+
+						transferencia[0] = tbTransferencias.getValueAt(selectedRow, 0).toString();
+
+						transferencia[1] = tbTransferencias.getValueAt(selectedRow, 1).toString();
+						
+						transferencia[2] = tbTransferencias.getValueAt(selectedRow, 2).toString();
+						
+						transferencia[3] = tbTransferencias.getValueAt(selectedRow, 3).toString();
+						
+						transferencia[4] = tbTransferencias.getValueAt(selectedRow, 4).toString();
+						
+						transferencia[5] = tbTransferencias.getValueAt(selectedRow, 5).toString();
+						
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
+					}
+
+				}
+
+			});	
+		}
+		return tbTransferencias;
 	}
 }

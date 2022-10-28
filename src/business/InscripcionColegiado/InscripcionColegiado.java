@@ -1,17 +1,26 @@
 package business.InscripcionColegiado;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
 import business.BusinessException;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
+import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
+import ui.util.Ficheros;
 
 public class InscripcionColegiado {
 	
@@ -65,6 +74,21 @@ public class InscripcionColegiado {
 	    	throw new BusinessException("No puede inscribirse a un curso en el que han pasado más de dos días desde la fecha de pre-inscripcion (ni antes)");
 	    }
 	}
+
+	public static void emitirFicheroTransferenciaPorCurso(int cursoSeleccionado) throws BusinessException {
+		List<String[]> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(cursoSeleccionado);
+		try {
+			Ficheros.escribirFichero(lista, cursoSeleccionado);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static List<List<String>> leerFicheroTransferenciasPorCurso(int cursoSeleccionado) {
+		return Ficheros.leerFichero(cursoSeleccionado);
+	}
+	
+	
 		
 }
 

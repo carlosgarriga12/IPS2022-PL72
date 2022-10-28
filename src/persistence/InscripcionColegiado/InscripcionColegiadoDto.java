@@ -12,5 +12,9 @@ public class InscripcionColegiadoDto {
 	public double cantidadPagar;
 	public String estado; // PAGADO (tarjeta) o PENDIENTE (transferencia)
 	public String formaDePago; // TARJETA O TRANSFERENCIA 
-
+	public String codigoTransferencia;
+	public LocalDate fechaTransferencia;
+	public double cantidadAbonadaTransferencia;
+	public LocalDate fechaPreinscripcion;
+	public String incidencias;
 }

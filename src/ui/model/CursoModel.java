@@ -57,7 +57,7 @@ public class CursoModel {
 
 				for (CursoDto c : cursos) {
 						model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,
-								c.fechaApertura, c.fechaCierre, c.estado });
+								c.fechaApertura, c.fechaCierre, c.estado, c.codigoCurso });
 					
 				}	
 
