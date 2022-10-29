@@ -26,7 +26,8 @@ public class Ficheros {
 	
 	public static List<InscripcionColegiadoTransferenciaBancoDto> leerFichero(int id){
         List<InscripcionColegiadoTransferenciaBancoDto> records = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File(id + "_banco.csv"));) {
+        try (Scanner scanner = new Scanner(new File("files_transferencias/" + id + "_banco.csv"));) {
+    		scanner.nextLine();
         	while (scanner.hasNextLine()) {
                 records.add(getRecordFromLine(scanner.nextLine()));
             }

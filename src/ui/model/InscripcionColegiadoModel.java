@@ -9,7 +9,7 @@ import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 
 public class InscripcionColegiadoModel {
-	
+		
 	public static final String HEADER_COLUMN1 = "DNI";
 	public static final String HEADER_COLUMN2 = "NOMBRE";
 	public static final String HEADER_COLUMN3 = "APELLIDOS";
@@ -25,8 +25,14 @@ public class InscripcionColegiadoModel {
 
 	public TableModel getCursoModel() throws BusinessException {
 		// Listado de las incripciones
-		DefaultTableModel model = new DefaultTableModel();
+		DefaultTableModel model = new DefaultTableModel() { 
+			private static final long serialVersionUID = 1L;
 
+			@Override public boolean isCellEditable(int row, int column) { 
+				return false; 
+			} 
+		};
+		
 		if (inscripciones.size() == 0) {
 			model.addColumn("");
 			model.addRow(new Object[] { "NO HAY INSCRIPCIONES REALIZADAS POR TRANSFERENCIA PENDIENTES" });

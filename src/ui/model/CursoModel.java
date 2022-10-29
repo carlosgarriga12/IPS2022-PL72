@@ -37,7 +37,13 @@ public class CursoModel {
 		// 0 -> todos
 		// 1 -> todos menos id
 		// Listado de cursos actualmente planificados
-		DefaultTableModel model = new DefaultTableModel();
+		DefaultTableModel model = new DefaultTableModel() { 
+			private static final long serialVersionUID = 1L;
+
+			@Override public boolean isCellEditable(int row, int column) { 
+				return false; 
+			} 
+		};
 
 		if (cursos.size() == 0) {
 			model.addColumn("");

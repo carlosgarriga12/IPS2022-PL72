@@ -1913,7 +1913,6 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesColegiado.setOpaque(false);
 			pnHomeAccionesColegiado.setLayout(new GridLayout(4, 1, 0, 10));
-
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
 			pnHomeAccionesColegiado.add(getBtHomePagarInscripcion());
@@ -3358,7 +3357,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btHomeSecretariaTransferencias.setText("Tramitar transferencias");
+			btHomeSecretariaTransferencias.setText("Registrar transferencias");
 		}
 		return btHomeSecretariaTransferencias;
 	}
@@ -3397,6 +3396,7 @@ public class MainWindow extends JFrame {
 			panelMuestraCursos.add(getPanelMuestraCursosNorte(), BorderLayout.NORTH);
 			panelMuestraCursos.add(getPaneMuestraCursosCentro(), BorderLayout.CENTER);
 			panelMuestraCursos.add(getPanelMuestraCursosSur(), BorderLayout.SOUTH);
+			panelMuestraCursos.setBorder(new LineBorder(Color.BLACK));
 		}
 		return panelMuestraCursos;
 	}
@@ -3407,6 +3407,7 @@ public class MainWindow extends JFrame {
 			panelMuestraTransferencias.add(getPanelMuestraTransferenciasNorte(), BorderLayout.NORTH);
 			panelMuestraTransferencias.add(getPanelMuestraTransferenciasCentro(), BorderLayout.CENTER);
 			panelMuestraTransferencias.add(getPanelMuestraTransferenciasSur(), BorderLayout.SOUTH);
+			panelMuestraTransferencias.setBorder(new LineBorder(Color.BLACK));
 		}
 		return panelMuestraTransferencias;
 	}
@@ -3435,12 +3436,15 @@ public class MainWindow extends JFrame {
 	private JLabel getLblSeleccionaCursoTransf() {
 		if (lblSeleccionaCursoTransf == null) {
 			lblSeleccionaCursoTransf = new JLabel("Seleccione el curso sobre el que desea registrar su actividad bancaria");
+			lblSeleccionaCursoTransf.setFont(LookAndFeel.HEADING_2_FONT);
 		}
 		return lblSeleccionaCursoTransf;
 	}
 	private JButton getBtnMovimientosBancarios() {
 		if (btnMovimientosBancarios == null) {
-			btnMovimientosBancarios = new JButton("Solicitar movimientos bancarios del curso");
+			btnMovimientosBancarios = new DefaultButton("Solicitar movimientos bancarios del curso", "ventana", "ValidarTransferencia",
+					'S', ButtonColor.NORMAL);
+			btnMovimientosBancarios.setText("Registrar");
 			btnMovimientosBancarios.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (cursoSeleccionado==null) {
@@ -3449,6 +3453,7 @@ public class MainWindow extends JFrame {
 								"Seleccione el curso", JOptionPane.WARNING_MESSAGE);
 					} else {
 						try {
+							InscripcionColegiado.pagarBancoTransferencia("71778880C", cursoSeleccionado.codigoCurso, cursoSeleccionado.precio);
 							InscripcionColegiado.emitirFicheroTransferenciaPorCurso(cursoSeleccionado.codigoCurso);
 						} catch (BusinessException e1) {
 							e1.printStackTrace();
@@ -3458,8 +3463,7 @@ public class MainWindow extends JFrame {
 						panelMuestraTransferencias.setVisible(true);
 						btnProcesarPagos.setEnabled(true);
 						tbCourses.setEnabled(false);
-						tbTransferencias.setEnabled(true);
-						InscripcionColegiado.pagarBancoTransferencia("71778880C", cursoSeleccionado.codigoCurso, cursoSeleccionado.precio);
+						panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
 						JOptionPane.showMessageDialog(null,
 								"Se acaba de generar un fichero con los datos bancarios de cada inscripción del curso seleccionado\n"
 								+ "Se mostrarán en la siguiente tabla, aunque también puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
@@ -3468,7 +3472,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btnMovimientosBancarios.setMnemonic('S');
+			btnMovimientosBancarios.setMnemonic('R');
 		}
 		return btnMovimientosBancarios;
 	}
@@ -3483,7 +3487,6 @@ public class MainWindow extends JFrame {
 		if (panelMuestraTransferenciasCentro == null) {
 			panelMuestraTransferenciasCentro = new JPanel();
 			panelMuestraTransferenciasCentro.setLayout(new GridLayout(0, 1, 0, 0));
-			panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
 		}
 		return panelMuestraTransferenciasCentro;
 	}
@@ -3497,12 +3500,14 @@ public class MainWindow extends JFrame {
 	private JLabel getLblRegistrosBancarios() {
 		if (lblRegistrosBancarios == null) {
 			lblRegistrosBancarios = new JLabel("Registros bancarios de los pagos por transferencia del curso");
+			lblRegistrosBancarios.setFont(LookAndFeel.HEADING_2_FONT);
 		}
 		return lblRegistrosBancarios;
 	}
 	private JButton getBtnProcesarPagos() {
 		if (btnProcesarPagos == null) {
-			btnProcesarPagos = new JButton("Procesar pagos");
+			btnProcesarPagos = new DefaultButton("Procesar", "ventana", "ValidarTransferencia",
+					'P', ButtonColor.NORMAL);
 			btnProcesarPagos.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					tbTransferencias.setEnabled(false);
@@ -3625,11 +3630,9 @@ public class MainWindow extends JFrame {
 			tbTransferencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				if (cursoSeleccionado!=null) {
-					TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.leerFicheroTransferenciasPorCurso(cursoSeleccionado.codigoCurso)).getCursoModel();
+				TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.leerFicheroTransferenciasPorCurso(cursoSeleccionado.codigoCurso)).getCursoModel();
 
-					tbTransferencias.setModel(tableModel);
-				}
+				tbTransferencias.setModel(tableModel);
 			} catch (BusinessException e) {
 				showMessage(e, MessageType.ERROR);
 				e.printStackTrace();
