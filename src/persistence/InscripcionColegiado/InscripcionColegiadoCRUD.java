@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import org.sqlite.core.SafeStmtPtr;
 
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -15,6 +18,7 @@ import persistence.curso.CursoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
+import ui.util.Ficheros;
 
 
 
@@ -25,6 +29,7 @@ public class InscripcionColegiadoCRUD {
 	private static final String SQL_INSCRIPCION_FIND_FECHA = Conf.getInstance().getProperty("TINSCRIPCION_FIND_FECHA");
 	private static final String SQL_INSCRIPCION_PAGAR = Conf.getInstance().getProperty("TINSCRIPCION_PAGAR");
 	private static final String SQL_INSCRIPCION_TRANSFERENCIA_BANCO = Conf.getInstance().getProperty("TINSCRIPCION_FIND_DATOS_TRANSFERENCIA");
+	private static final String SQL_INSCRIPCION_BANCO_TRANSFERENCIA = Conf.getInstance().getProperty("TINSCRIPCION_BANCO_PAGAR");
 
 	
 	public static void InscribirColegiado(CursoDto curso, ColegiadoDto colegiado) throws PersistenceException {
@@ -153,10 +158,10 @@ public class InscripcionColegiadoCRUD {
 	}
 
 
-	public static List<String[]> findInscripcionesPorCursoId(int cursoSeleccionado) {
+	public static List<InscripcionColegiadoTransferenciaBancoDto> findInscripcionesPorCursoId(int cursoSeleccionado) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		List<String[]> res = new ArrayList<>();
+		List<InscripcionColegiadoTransferenciaBancoDto> res = new ArrayList<>();
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_TRANSFERENCIA_BANCO);
@@ -168,6 +173,27 @@ public class InscripcionColegiadoCRUD {
 			}
 			
 			return res;
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static void pagarBanco(String dni, int curso, double precio) {
+		PreparedStatement stmt = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_BANCO_TRANSFERENCIA);
+			stmt.setString(1, LocalDate.now().toString());
+			stmt.setString(2, Ficheros.generarCodigoTransferencia(12));
+			stmt.setDouble(3, precio);
+			stmt.setInt(4, curso);
+			stmt.setString(5, dni);
+			stmt.executeUpdate();
 		}
 		catch(SQLException e){
 			throw new PersistenceException(e);

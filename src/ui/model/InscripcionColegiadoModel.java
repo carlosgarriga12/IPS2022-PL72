@@ -6,19 +6,20 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import business.BusinessException;
+import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 
 public class InscripcionColegiadoModel {
 	
-	public static final String HEADER_COLUMN5 = "FECHA TRANSFERENCIA";
 	public static final String HEADER_COLUMN1 = "DNI";
 	public static final String HEADER_COLUMN2 = "NOMBRE";
 	public static final String HEADER_COLUMN3 = "APELLIDOS";
 	public static final String HEADER_COLUMN4 = "CANTIDAD ABONADA";
+	public static final String HEADER_COLUMN5 = "FECHA TRANSFERENCIA";
 	public static final String HEADER_COLUMN6 = "CODIGO TRANSFERENCIA";
 
-	private List<List<String>> inscripciones;
+	private List<InscripcionColegiadoTransferenciaBancoDto> inscripciones;
 
-	public InscripcionColegiadoModel(List<List<String>> inscripciones) {
+	public InscripcionColegiadoModel(List<InscripcionColegiadoTransferenciaBancoDto> inscripciones) {
 		this.inscripciones = inscripciones;
 	}
 
@@ -39,8 +40,8 @@ public class InscripcionColegiadoModel {
 			model.addColumn(HEADER_COLUMN6);
 
 
-			for (List<String> c : inscripciones) {
-					model.addRow(new Object[] { c.get(0), c.get(1), c.get(2), c.get(3), c.get(4), c.get(5) });
+			for (InscripcionColegiadoTransferenciaBancoDto c : inscripciones) {
+					model.addRow(new Object[] { c.dni, c.nombre, c.apellidos, c.cantidad, c.fecha, c.codigo });
 			}		
 
 		}

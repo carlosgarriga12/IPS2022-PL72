@@ -8,13 +8,13 @@ import java.util.List;
 
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 
 public class DtoAssembler {
 
-	private static final int SIZE = 6; // número de datos relevantes de la inscrición por transferencia
 
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
 		List<ColegiadoDto> colegiados = new ArrayList<>();
@@ -130,12 +130,16 @@ public class DtoAssembler {
 
 	}
 
-	public static String[] resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
-		String[] s = new String[SIZE];
-		for (int i=0; i < SIZE; i++) {
-			s[i] = rs.getString(i+1);
-		}
-		return s;
+	public static InscripcionColegiadoTransferenciaBancoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
+		InscripcionColegiadoTransferenciaBancoDto d = new InscripcionColegiadoTransferenciaBancoDto();
+		int i = 1;
+		d.dni = rs.getString(i++);
+		d.nombre = rs.getString(i++);
+		d.apellidos = rs.getString(i++);
+		d.cantidad = rs.getDouble(i++);
+		d.fecha = rs.getString(i++);
+		d.codigo = rs.getString(i++);
+		return d;
 	}
 
 

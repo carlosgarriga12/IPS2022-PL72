@@ -17,6 +17,7 @@ import business.BusinessException;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
@@ -76,7 +77,7 @@ public class InscripcionColegiado {
 	}
 
 	public static void emitirFicheroTransferenciaPorCurso(int cursoSeleccionado) throws BusinessException {
-		List<String[]> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(cursoSeleccionado);
+		List<InscripcionColegiadoTransferenciaBancoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(cursoSeleccionado);
 		try {
 			Ficheros.escribirFichero(lista, cursoSeleccionado);
 		} catch (IOException e) {
@@ -84,8 +85,12 @@ public class InscripcionColegiado {
 		}
 	}
 	
-	public static List<List<String>> leerFicheroTransferenciasPorCurso(int cursoSeleccionado) {
+	public static List<InscripcionColegiadoTransferenciaBancoDto> leerFicheroTransferenciasPorCurso(int cursoSeleccionado) {
 		return Ficheros.leerFichero(cursoSeleccionado);
+	}
+	
+	public static void pagarBancoTransferencia(String dni, int curso, double precio) {
+		InscripcionColegiadoCRUD.pagarBanco(dni, curso, precio);
 	}
 	
 	

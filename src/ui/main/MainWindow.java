@@ -2727,7 +2727,9 @@ public class MainWindow extends JFrame {
 									"Ha seleccionado usted la opción de pagar por transferencia bancaria\n"
 											+ "La inscripción al curso "
 											+ (int) comboBoxIdentificadorCursosAbiertos.getSelectedItem()
-											+ " se ha tramitado correctamente, queda en estado pendiente",
+											+ " se ha tramitado correctamente, queda en estado pendiente\n"
+											+ "Tendrá que realizar la transferencia a través del banco en la fecha establecida\n"
+											+ "En otro caso, su solicitud quedará cancelada (tiene 48 horas desde este momento para pagar)",
 									"Pago pendiente", JOptionPane.INFORMATION_MESSAGE);
 							reiniciarInscripcionColegiadoPagar();
 							mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -3349,6 +3351,7 @@ public class MainWindow extends JFrame {
 							btnMovimientosBancarios.setEnabled(true);
 							btnProcesarPagos.setEnabled(false);
 							mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_TRANSFERENCIAS);
+							tbCourses.setEnabled(true);
 						}
 					} catch (BusinessException e1) {
 						e1.printStackTrace();
@@ -3454,9 +3457,12 @@ public class MainWindow extends JFrame {
 						panelMuestraTransferencias.setVisible(true);
 						panelMuestraTransferencias.setVisible(true);
 						btnProcesarPagos.setEnabled(true);
+						tbCourses.setEnabled(false);
+						tbTransferencias.setEnabled(true);
+						InscripcionColegiado.pagarBancoTransferencia("71778880C", cursoSeleccionado.codigoCurso, cursoSeleccionado.precio);
 						JOptionPane.showMessageDialog(null,
 								"Se acaba de generar un fichero con los datos bancarios de cada inscripción del curso seleccionado\n"
-								+ "Puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
+								+ "Se mostrarán en la siguiente tabla, aunque también puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
 								+ "Contiene los datos más recientes sobre las transferencias de los clientes en la cuenta bancaria del COIIPA",
 								"Consulta los datos bancarios", JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -3476,6 +3482,7 @@ public class MainWindow extends JFrame {
 	private JPanel getPanelMuestraTransferenciasCentro() {
 		if (panelMuestraTransferenciasCentro == null) {
 			panelMuestraTransferenciasCentro = new JPanel();
+			panelMuestraTransferenciasCentro.setLayout(new GridLayout(0, 1, 0, 0));
 			panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
 		}
 		return panelMuestraTransferenciasCentro;
@@ -3496,6 +3503,12 @@ public class MainWindow extends JFrame {
 	private JButton getBtnProcesarPagos() {
 		if (btnProcesarPagos == null) {
 			btnProcesarPagos = new JButton("Procesar pagos");
+			btnProcesarPagos.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					tbTransferencias.setEnabled(false);
+					btnProcesarPagos.setEnabled(false);
+				}
+			});
 			btnProcesarPagos.setMnemonic('P');
 		}
 		return btnProcesarPagos;

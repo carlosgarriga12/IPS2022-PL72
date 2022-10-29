@@ -6,28 +6,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+
+import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 
 public class Ficheros {
 	
-	public static void escribirFichero(List<String[]> datosTransferencia, int cursoSeleccionado) throws IOException {
+	public static void escribirFichero(List<InscripcionColegiadoTransferenciaBancoDto> datosTransferencia, int cursoSeleccionado) throws IOException {
 		FileWriter file = new FileWriter(new File("files_transferencias/" + cursoSeleccionado + "_banco.csv"));
-		StringBuilder sb = new StringBuilder();
-        sb.append("DNI;Nombre;Apellidos;Cantidad abonada;Fecha de transferencia;Código de transferencia\n");
+		String sb = "";
+        sb = "DNI;Nombre;Apellidos;Cantidad abonada;Fecha de transferencia;Código de transferencia\n";
         for (int i=0; i < datosTransferencia.size(); i++) {
-        	for (int j=0; j < datosTransferencia.get(i).length; j++)
-        		if (! (j==datosTransferencia.get(i).length-1))
-        			sb.append(datosTransferencia.get(i) + ";");
-        		else {
-        			sb.append(datosTransferencia.get(i) + "\n");
-        		}
+        	sb += datosTransferencia.get(i).toString();
         }
-        file.write(sb.toString());
+        file.write(sb);
         file.close();		
 	}
 	
-	public static List<List<String>> leerFichero(int id){
-        List<List<String>> records = new ArrayList<>();
+	public static List<InscripcionColegiadoTransferenciaBancoDto> leerFichero(int id){
+        List<InscripcionColegiadoTransferenciaBancoDto> records = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(id + "_banco.csv"));) {
         	while (scanner.hasNextLine()) {
                 records.add(getRecordFromLine(scanner.nextLine()));
@@ -38,15 +36,34 @@ public class Ficheros {
         return records;
     }
 	
-    private static List<String> getRecordFromLine(String line) {
-        List<String> values = new ArrayList<String>();
+    private static InscripcionColegiadoTransferenciaBancoDto getRecordFromLine(String line) {
+    	line = line.substring(0, line.length()-1);
+    	InscripcionColegiadoTransferenciaBancoDto values = new InscripcionColegiadoTransferenciaBancoDto();
         try (Scanner rowScanner = new Scanner(line)) {
             rowScanner.useDelimiter(";");
             while (rowScanner.hasNext()) {
-                values.add(rowScanner.next());
+                values.dni = rowScanner.next();
+                values.nombre = rowScanner.next();
+                values.apellidos = rowScanner.next();
+                values.cantidad = Double.parseDouble(rowScanner.next());
+                values.fecha = rowScanner.next();
+                values.codigo = rowScanner.next();
             }
         }
         return values;
+    }
+    
+    public static String generarCodigoTransferencia(int longitud) {
+        // El banco de caracteres
+        String banco = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        // La cadena en donde iremos agregando un carácter aleatorio
+        String cadena = "";
+        for (int x = 0; x < longitud; x++) {
+            int indiceAleatorio = new Random().nextInt(0, banco.length() - 1);
+            char caracterAleatorio = banco.charAt(indiceAleatorio);
+            cadena += caracterAleatorio;
+        }
+        return cadena;
     }
     
 

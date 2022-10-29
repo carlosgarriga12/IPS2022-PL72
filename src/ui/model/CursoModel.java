@@ -54,6 +54,8 @@ public class CursoModel {
 				model.addColumn(HEADER_COLUMN7);
 				model.addColumn(HEADER_COLUMN8);
 				model.addColumn(HEADER_COLUMN9);
+				
+				model.addColumn(HEADER_COLUMN6);
 
 				for (CursoDto c : cursos) {
 						model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,

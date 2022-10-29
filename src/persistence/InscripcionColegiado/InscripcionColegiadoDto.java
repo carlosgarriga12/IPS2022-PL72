@@ -18,3 +18,7 @@ public class InscripcionColegiadoDto {
 	public LocalDate fechaPreinscripcion;
 	public String incidencias;
 }
+
+
+
+
