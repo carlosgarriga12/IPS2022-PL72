@@ -51,16 +51,17 @@ public class Curso {
 		Argument.isNotNull(courseToCheck);
 		return CursoCRUD.isCursoAbierto(courseToCheck);
 	}
-	
+
 	// TODO: Duplicado - eliminar
-	public static List<CursoDto> listaCursosAbiertosYCerrados(){
+	public static List<CursoDto> listaCursosAbiertosYCerrados() {
 		return CursoCRUD.listaCursos();
 	}
-	
+
 	public static void add(CursoDto curso) {
 		CursoCRUD.add(curso);
 	}
-	public static List<CursoDto> listarCursosAbiertos() throws BusinessException  {
+
+	public static List<CursoDto> listarCursosAbiertos() throws BusinessException {
 		return CursoCRUD.listarCursosActualmenteAbiertos();
 	}
 }
