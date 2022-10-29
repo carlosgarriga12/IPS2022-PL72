@@ -4,13 +4,13 @@ public class InscripcionColegiadoTransferenciaBancoDto {
 	public String dni;
 	public String nombre;
 	public String apellidos;
-	public double cantidad;
-	public String fecha;
-	public String codigo;
+	public double cantidadPagada;
+	public String fechaTransferencia;
+	public String codigoTransferencia;
 	
 	@Override
 	public String toString() {
-		return dni + ";"+ nombre + ";" +  apellidos + ";" + cantidad + ";" + fecha + ";" + codigo + "\n";
+		return dni + ";"+ nombre + ";" +  apellidos + ";" + cantidadPagada + ";" + fechaTransferencia + ";" + codigoTransferencia + "\n";
 	}
 	
 	

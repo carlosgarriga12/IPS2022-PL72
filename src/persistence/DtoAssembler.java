@@ -136,9 +136,9 @@ public class DtoAssembler {
 		d.dni = rs.getString(i++);
 		d.nombre = rs.getString(i++);
 		d.apellidos = rs.getString(i++);
-		d.cantidad = rs.getDouble(i++);
-		d.fecha = rs.getString(i++);
-		d.codigo = rs.getString(i++);
+		d.cantidadPagada = rs.getDouble(i++);
+		d.fechaTransferencia = rs.getString(i++);
+		d.codigoTransferencia = rs.getString(i++);
 		return d;
 	}
 

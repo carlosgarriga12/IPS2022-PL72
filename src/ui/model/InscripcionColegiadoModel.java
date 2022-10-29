@@ -7,6 +7,7 @@ import javax.swing.table.TableModel;
 
 import business.BusinessException;
 import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
+import persistence.curso.CursoDto;
 
 public class InscripcionColegiadoModel {
 		
@@ -47,7 +48,11 @@ public class InscripcionColegiadoModel {
 
 
 			for (InscripcionColegiadoTransferenciaBancoDto c : inscripciones) {
-					model.addRow(new Object[] { c.dni, c.nombre, c.apellidos, c.cantidad, c.fecha, c.codigo });
+				if(c.fechaTransferencia == null){
+					model.addRow(new Object[] { c.dni, c.nombre, c.apellidos, 0 , "-", "-" });
+				}else {
+					model.addRow(new Object[] { c.dni, c.nombre, c.apellidos, c.cantidadPagada, c.fechaTransferencia, c.codigoTransferencia });
+				}
 			}		
 
 		}

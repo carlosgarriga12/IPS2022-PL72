@@ -46,9 +46,9 @@ public class Ficheros {
                 values.dni = rowScanner.next();
                 values.nombre = rowScanner.next();
                 values.apellidos = rowScanner.next();
-                values.cantidad = Double.parseDouble(rowScanner.next());
-                values.fecha = rowScanner.next();
-                values.codigo = rowScanner.next();
+                values.cantidadPagada = Double.parseDouble(rowScanner.next());
+                values.fechaTransferencia = rowScanner.next();
+                values.codigoTransferencia = rowScanner.next();
             }
         }
         return values;

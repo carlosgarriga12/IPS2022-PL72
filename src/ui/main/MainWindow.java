@@ -3453,7 +3453,6 @@ public class MainWindow extends JFrame {
 								"Seleccione el curso", JOptionPane.WARNING_MESSAGE);
 					} else {
 						try {
-							InscripcionColegiado.pagarBancoTransferencia("71778880C", cursoSeleccionado.codigoCurso, cursoSeleccionado.precio);
 							InscripcionColegiado.emitirFicheroTransferenciaPorCurso(cursoSeleccionado.codigoCurso);
 						} catch (BusinessException e1) {
 							e1.printStackTrace();
