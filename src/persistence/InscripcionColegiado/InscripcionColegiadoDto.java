@@ -9,7 +9,7 @@ public class InscripcionColegiadoDto {
 	public ColegiadoDto colegiado;
 	public CursoDto curso;
 	public LocalDate fechaSolicitud;
-	public double cantidadPagar;
+	public double cantidadPagada;
 	public String estado; // PAGADO (tarjeta) o PENDIENTE (transferencia)
 	public String formaDePago; // TARJETA O TRANSFERENCIA 
 	public String codigoTransferencia;
@@ -17,6 +17,17 @@ public class InscripcionColegiadoDto {
 	public double cantidadAbonadaTransferencia;
 	public LocalDate fechaPreinscripcion;
 	public String incidencias;
+	public double precio;
+	
+	@Override
+	public String toString() {
+		if (fechaTransferencia==null) {
+			return colegiado.DNI + ";"+ colegiado.nombre + ";" +  colegiado.apellidos + ";" + cantidadPagada + ";" + "NO REALIZADA"
+					+ ";" + "NO REALIZADA"  + "\n";
+		} return colegiado.DNI + ";"+ colegiado.nombre + ";" +  colegiado.apellidos + ";" + fechaTransferencia.toString()
+				+ ";" + codigoTransferencia  + "\n";
+		
+	}
 }
 
 

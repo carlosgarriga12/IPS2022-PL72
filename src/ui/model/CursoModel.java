@@ -54,8 +54,6 @@ public class CursoModel {
 				model.addColumn(HEADER_COLUMN1);
 				model.addColumn(HEADER_COLUMN2);
 				model.addColumn(HEADER_COLUMN3);
-				model.addColumn(HEADER_COLUMN4);
-		
 
 				model.addColumn(HEADER_COLUMN7);
 				model.addColumn(HEADER_COLUMN8);
@@ -64,9 +62,8 @@ public class CursoModel {
 				model.addColumn(HEADER_COLUMN6);
 
 				for (CursoDto c : cursos) {
-						model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,
+						model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles,
 								c.fechaApertura, c.fechaCierre, c.estado, c.codigoCurso });
-					
 				}	
 
 			} else {

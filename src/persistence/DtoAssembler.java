@@ -8,7 +8,6 @@ import java.util.List;
 
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
-import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -84,7 +83,6 @@ public class DtoAssembler {
 		
 		
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
-		newCursoDto.precio = rs.getDouble("Precio");
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
 
@@ -122,7 +120,7 @@ public class DtoAssembler {
 
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
-		I.cantidadPagar = rs.getDouble("CantidadPagar");
+		I.cantidadPagada = rs.getDouble("CantidadPagar");
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
 
@@ -130,15 +128,27 @@ public class DtoAssembler {
 
 	}
 
-	public static InscripcionColegiadoTransferenciaBancoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
-		InscripcionColegiadoTransferenciaBancoDto d = new InscripcionColegiadoTransferenciaBancoDto();
+	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;
-		d.dni = rs.getString(i++);
-		d.nombre = rs.getString(i++);
-		d.apellidos = rs.getString(i++);
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString(i++);
+		d.colegiado.nombre = rs.getString(i++);
+		d.colegiado.apellidos = rs.getString(i++);
 		d.cantidadPagada = rs.getDouble(i++);
-		d.fechaTransferencia = rs.getString(i++);
-		d.codigoTransferencia = rs.getString(i++);
+		String fechaTransferencia = rs.getString("fechaTransferencia");
+		String fechaPreinscripcion = rs.getString("fechaPreinscripcion");
+		if (fechaTransferencia==null) {
+			d.fechaTransferencia = null;
+			d.fechaPreinscripcion = null;
+		} else {
+			d.fechaTransferencia = LocalDate.parse(fechaTransferencia);
+			d.fechaPreinscripcion = LocalDate.parse(fechaPreinscripcion);
+		}
+		d.codigoTransferencia = rs.getString("codigoTransferencia");
+		d.precio = rs.getDouble("cantidadPagar");
+		d.estado = rs.getString("estado");
+		d.incidencias = rs.getString("incidencias");
 		return d;
 	}
 

@@ -23,7 +23,7 @@ public class Colegiado_Inscripcion {
 	
 	public double cantidadPagada() {
 		if(I.estado.equals("PAGADO")) {
-			return I.cantidadPagar;
+			return I.cantidadPagada;
 		}
 		else {
 			return 0;

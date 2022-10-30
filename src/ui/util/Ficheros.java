@@ -4,16 +4,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
+import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.colegiado.ColegiadoDto;
 
 public class Ficheros {
 	
-	public static void escribirFichero(List<InscripcionColegiadoTransferenciaBancoDto> datosTransferencia, int cursoSeleccionado) throws IOException {
+	public static void escribirFichero(List<InscripcionColegiadoDto> datosTransferencia, int cursoSeleccionado) throws IOException {
 		FileWriter file = new FileWriter(new File("files_transferencias/" + cursoSeleccionado + "_banco.csv"));
 		String sb = "";
         sb = "DNI;Nombre;Apellidos;Cantidad abonada;Fecha de transferencia;Código de transferencia\n";
@@ -24,8 +26,8 @@ public class Ficheros {
         file.close();		
 	}
 	
-	public static List<InscripcionColegiadoTransferenciaBancoDto> leerFichero(int id){
-        List<InscripcionColegiadoTransferenciaBancoDto> records = new ArrayList<>();
+	public static List<InscripcionColegiadoDto> leerFichero(int id){
+        List<InscripcionColegiadoDto> records = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File("files_transferencias/" + id + "_banco.csv"));) {
     		scanner.nextLine();
         	while (scanner.hasNextLine()) {
@@ -37,18 +39,26 @@ public class Ficheros {
         return records;
     }
 	
-    private static InscripcionColegiadoTransferenciaBancoDto getRecordFromLine(String line) {
+    private static InscripcionColegiadoDto getRecordFromLine(String line) {
     	line = line.substring(0, line.length()-1);
-    	InscripcionColegiadoTransferenciaBancoDto values = new InscripcionColegiadoTransferenciaBancoDto();
+    	InscripcionColegiadoDto values = new InscripcionColegiadoDto();
         try (Scanner rowScanner = new Scanner(line)) {
             rowScanner.useDelimiter(";");
             while (rowScanner.hasNext()) {
-                values.dni = rowScanner.next();
-                values.nombre = rowScanner.next();
-                values.apellidos = rowScanner.next();
+            	values.colegiado = new ColegiadoDto();
+                values.colegiado.DNI = rowScanner.next();
+                values.colegiado.nombre = rowScanner.next();
+                values.colegiado.apellidos = rowScanner.next();
                 values.cantidadPagada = Double.parseDouble(rowScanner.next());
-                values.fechaTransferencia = rowScanner.next();
-                values.codigoTransferencia = rowScanner.next();
+                String fecha = rowScanner.next();
+                String codigo = rowScanner.next();
+                if (fecha.equals("NO REALIZADA")) {
+                	values.fechaTransferencia = null;
+                	values.codigoTransferencia = null;
+                } else {
+                	values.fechaTransferencia = LocalDate.parse(fecha);
+                	values.codigoTransferencia = codigo;
+                }
             }
         }
         return values;

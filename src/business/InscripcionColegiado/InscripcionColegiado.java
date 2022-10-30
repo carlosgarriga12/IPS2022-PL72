@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,7 +18,6 @@ import business.BusinessException;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
-import persistence.InscripcionColegiado.InscripcionColegiadoTransferenciaBancoDto;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
@@ -77,7 +77,7 @@ public class InscripcionColegiado {
 	}
 
 	public static void emitirFicheroTransferenciaPorCurso(int cursoSeleccionado) throws BusinessException {
-		List<InscripcionColegiadoTransferenciaBancoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(cursoSeleccionado);
+		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(cursoSeleccionado);
 		try {
 			Ficheros.escribirFichero(lista, cursoSeleccionado);
 		} catch (IOException e) {
@@ -85,12 +85,54 @@ public class InscripcionColegiado {
 		}
 	}
 	
-	public static List<InscripcionColegiadoTransferenciaBancoDto> leerFicheroTransferenciasPorCurso(int cursoSeleccionado) {
+	public static List<InscripcionColegiadoDto> leerFicheroTransferenciasPorCurso(int cursoSeleccionado) {
 		return Ficheros.leerFichero(cursoSeleccionado);
 	}
 	
 	public static void pagarBancoTransferencia(String dni, int curso, double precio) {
 		InscripcionColegiadoCRUD.pagarBanco(dni, curso, precio);
+	}
+	
+	public static List<InscripcionColegiadoDto> obtenerTransferenciasProcesadas(int curso) {
+		return InscripcionColegiadoCRUD.findInscripcionesPorCursoIdProcesadas(curso);
+	}
+
+	public static void procesarTransferencias(int codigoCurso) {
+		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(codigoCurso);
+		int i=0;
+		while (i < lista.size()) {
+			InscripcionColegiadoDto elemento = lista.get(i);
+			if (elemento.fechaTransferencia==null) {
+				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota", codigoCurso, elemento.colegiado.DNI);
+				i++;
+				break;
+			}
+			LocalDate fechaPreinscripcion = elemento.fechaPreinscripcion;
+			LocalDate fechaTransferencia = elemento.fechaTransferencia;
+			if (Period.between(fechaPreinscripcion, fechaTransferencia).getDays() > 2) {
+				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota en el perido establecido de 48 horas desde la preinscripción"
+						+ "\nSe procederá a devolverle el importe que ha pagado por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+				i++;
+				break;
+			} else {
+				if (elemento.cantidadPagada < elemento.precio) {
+					InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota en el perido establecido de 48 horas desde la preinscripción"
+							+ "\nSe procederá a devolverle el importe que ha pagado por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+					i++;
+					break;
+				} else if (elemento.cantidadPagada==elemento.precio) {
+					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "Su inscripción se ha INSCRITO en plazo de manera correcta",
+							codigoCurso, elemento.colegiado.DNI);
+					i++;
+					break;
+				} else {
+					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "Su inscripción se ha INSCRITO en plazo de manera correcta"
+							+ "\nSe procederá a devolverle el importe que ha pagado de más por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+					i++;
+					break;
+				}
+			}
+		}
 	}
 	
 	
