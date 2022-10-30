@@ -195,7 +195,7 @@ public class InscripcionColegiadoCRUD {
 			
 			rs = stmt.executeQuery();
 			while (rs.next()) {
-				res.add(DtoAssembler.resultsetToIncripcionTransferencia(rs));
+				res.add(DtoAssembler.resultsetToIncripcionTransferenciaProcesar(rs));
 			}
 			
 			return res;
@@ -230,15 +230,16 @@ public class InscripcionColegiadoCRUD {
 	}
 
 
-	public static void procesarTransferencia(String estado, String incidencias, int codigoCurso, String dni) {
+	public static void procesarTransferencia(String estado, String incidencias, int codigoCurso, String dni, String devolver) {
 		PreparedStatement stmt = null;
 		try {
 			Connection cn = Jdbc.getConnection();
 			stmt = cn.prepareStatement(SQL_INSCRIPCION_BANCO_PROCESAR_TRANSFERENCIA);
 			stmt.setString(1, estado);
 			stmt.setString(2, incidencias);
-			stmt.setInt(3, codigoCurso);
-			stmt.setString(4, dni);
+			stmt.setString(3, devolver);
+			stmt.setInt(4, codigoCurso);
+			stmt.setString(5, dni);
 			stmt.executeUpdate();
 		}
 		catch(SQLException e){

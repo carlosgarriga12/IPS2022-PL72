@@ -21,6 +21,7 @@ public class InscripcionColegiadoModel {
 	public static final String HEADER_COLUMN7 = "ESTADO INSCRIPCION";
 	public static final String HEADER_COLUMN8 = "CUOTA CURSO";
 	public static final String HEADER_COLUMN9 = "INCIDENCIAS";
+	private static final Object HEADER_COLUMN10 = "DEVOLVER";
 
 	private List<InscripcionColegiadoDto> inscripciones;
 
@@ -41,7 +42,7 @@ public class InscripcionColegiadoModel {
 		if (estado==TRANSFERENCIAS_RECIBIDAS) {
 			if (inscripciones.size() == 0) {
 				model.addColumn("");
-				model.addRow(new Object[] { "NO HAY INSCRIPCIONES REALIZADAS POR TRANSFERENCIA PENDIENTES" });
+				model.addRow(new Object[] { "NO HAY INSCRIPCIONES REALIZADAS POR TRANSFERENCIA PENDIENTES POR REVISAR" });
 
 			} else {
 				model.addColumn(HEADER_COLUMN1);
@@ -64,7 +65,7 @@ public class InscripcionColegiadoModel {
 		} else {
 			if (inscripciones.size() == 0) {
 				model.addColumn("");
-				model.addRow(new Object[] { "NO HAY INSCRIPCIONES QUE SE TENGAN QUE PROCESAR" });
+				model.addRow(new Object[] { "NO HAY INSCRIPCIONES PROCESADAS EN ESTE CURSO" });
 
 			} else {
 				
@@ -75,10 +76,11 @@ public class InscripcionColegiadoModel {
 				model.addColumn(HEADER_COLUMN4);
 				model.addColumn(HEADER_COLUMN8);
 				model.addColumn(HEADER_COLUMN9);
+				model.addColumn(HEADER_COLUMN10);
 
 
 				for (InscripcionColegiadoDto c : inscripciones) {
-					model.addRow(new Object[] { c.colegiado.DNI, c.colegiado.nombre, c.colegiado.apellidos, c.estado , c.cantidadPagada, c.precio, c.incidencias });
+					model.addRow(new Object[] { c.colegiado.DNI, c.colegiado.nombre, c.colegiado.apellidos, c.estado , c.cantidadPagada, c.precio, c.incidencias, c.devolver });
 				}		
 				
 

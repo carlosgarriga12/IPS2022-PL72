@@ -313,11 +313,9 @@ public class MainWindow extends JFrame {
 	private JPanel pnDatosColAnnioText;
 	private JPanel pnTransferencias;
 	private JPanel pnTransferenciasCentro;
-	private JPanel pnTransferenciasSur;
 	private JPanel pnTransferenciasNorte;
 	private JLabel lblObtenerListaDeMov;
 	private DefaultButton btHomeSecretariaTransferencias;
-	private JButton btnInicioTransferencias;
 	private JPanel panelListaMovimientos;
 	private JPanel panelMuestraCursos;
 	private JPanel panelMuestraTransferencias;
@@ -3315,7 +3313,6 @@ public class MainWindow extends JFrame {
 			pnTransferencias = new JPanel();
 			pnTransferencias.setLayout(new BorderLayout(0, 0));
 			pnTransferencias.add(getPnTransferenciasCentro());
-			pnTransferencias.add(getPnTransferenciasSur(), BorderLayout.SOUTH);
 			pnTransferencias.add(getPnTransferenciasNorte(), BorderLayout.NORTH);
 			panelMuestraTransferencias.setVisible(false);
 		}
@@ -3328,13 +3325,6 @@ public class MainWindow extends JFrame {
 			pnTransferenciasCentro.add(getPanelListaMovimientos());
 		}
 		return pnTransferenciasCentro;
-	}
-	private JPanel getPnTransferenciasSur() {
-		if (pnTransferenciasSur == null) {
-			pnTransferenciasSur = new JPanel();
-			pnTransferenciasSur.add(getBtnInicioTransferencias());
-		}
-		return pnTransferenciasSur;
 	}
 	private JPanel getPnTransferenciasNorte() {
 		if (pnTransferenciasNorte == null) {
@@ -3375,24 +3365,6 @@ public class MainWindow extends JFrame {
 			btHomeSecretariaTransferencias.setText("Registrar transferencias");
 		}
 		return btHomeSecretariaTransferencias;
-	}
-	
-	private JButton getBtnInicioTransferencias() {
-		if (btnInicioTransferencias == null) {
-			btnInicioTransferencias = new DefaultButton("Vovler a Inicio", "ventana", "VolverAInicio", 'v',
-					ButtonColor.CANCEL);
-			btnInicioTransferencias.setText("Atras");
-			btnInicioTransferencias.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (confirmarVolverPrinicipio()) {
-						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
-					}
-				}
-			});
-			btnInicioTransferencias.setToolTipText("Pulse para volver a la pantalla principal");
-			btnInicioTransferencias.setMnemonic('A');
-		}
-		return btnInicioTransferencias;
 	}
 	private JPanel getPanelListaMovimientos() {
 		if (panelListaMovimientos == null) {
@@ -3469,6 +3441,7 @@ public class MainWindow extends JFrame {
 								"Seleccione el curso", JOptionPane.WARNING_MESSAGE);
 					} else {
 						try {
+							// InscripcionColegiado.pagarBancoTransferencia(cursoSeleccionado.codigoCurso);
 							InscripcionColegiado.emitirFicheroTransferenciaPorCurso(cursoSeleccionado.codigoCurso);
 						} catch (BusinessException e1) {
 							e1.printStackTrace();
@@ -3529,8 +3502,10 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					tbTransferencias.setEnabled(false);
 					btnProcesarPagos.setEnabled(false);
-					pnTransferenciasProcesadasCentro.add(getScrollPaneProcesar());
 					InscripcionColegiado.procesarTransferencias(cursoSeleccionado.codigoCurso);
+					pnTransferenciasProcesadasCentro.add(getScrollPaneProcesar());
+					pnTransferencias.setVisible(false);
+					pnTransferenciasProcesadas.setVisible(true);
 				}
 			});
 			btnProcesarPagos.setMnemonic('P');
@@ -3741,9 +3716,16 @@ public class MainWindow extends JFrame {
 		if (btnProcesarTransferencias == null) {
 			btnProcesarTransferencias = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
 					ButtonColor.CANCEL);
-			btnProcesarTransferencias.setText("Atras");
+			btnProcesarTransferencias.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (confirmarVolverPrinicipio()) {
+						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					}
+				}
+			});
+			btnProcesarTransferencias.setText("Salir");
 			btnProcesarTransferencias.setToolTipText("Pulse para volver a la pantalla principal");
-			btnProcesarTransferencias.setMnemonic('A');
+			btnProcesarTransferencias.setMnemonic('S');
 		}
 		return btnProcesarTransferencias;
 	}
@@ -3817,6 +3799,8 @@ public class MainWindow extends JFrame {
 								.parseDouble(tbProcesarTransferencias.getValueAt(selectedRow, 5).toString());
 						
 						transferencia.incidencias = tbProcesarTransferencias.getValueAt(selectedRow, 6).toString();
+						
+						transferencia.devolver = tbProcesarTransferencias.getValueAt(selectedRow, 7).toString(); 
 						
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
 					}

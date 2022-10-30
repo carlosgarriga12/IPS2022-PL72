@@ -89,8 +89,11 @@ public class InscripcionColegiado {
 		return Ficheros.leerFichero(cursoSeleccionado);
 	}
 	
-	public static void pagarBancoTransferencia(String dni, int curso, double precio) {
-		InscripcionColegiadoCRUD.pagarBanco(dni, curso, precio);
+	public static void pagarBancoTransferencia(int curso) {
+		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(curso);
+		for (int i=0; i < lista.size(); i++) {
+			InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, lista.get(i).precio);
+		}		
 	}
 	
 	public static List<InscripcionColegiadoDto> obtenerTransferenciasProcesadas(int curso) {
@@ -103,31 +106,29 @@ public class InscripcionColegiado {
 		while (i < lista.size()) {
 			InscripcionColegiadoDto elemento = lista.get(i);
 			if (elemento.fechaTransferencia==null) {
-				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota", codigoCurso, elemento.colegiado.DNI);
+				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA NO PAGADA", codigoCurso, elemento.colegiado.DNI, "NADA");
 				i++;
 				break;
 			}
 			LocalDate fechaPreinscripcion = elemento.fechaPreinscripcion;
 			LocalDate fechaTransferencia = elemento.fechaTransferencia;
-			if (Period.between(fechaPreinscripcion, fechaTransferencia).getDays() > 2) {
-				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota en el perido establecido de 48 horas desde la preinscripción"
-						+ "\nSe procederá a devolverle el importe que ha pagado por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+			if (Period.between(fechaPreinscripcion, fechaTransferencia).getDays() > 2 || fechaTransferencia.isBefore(fechaPreinscripcion)) {
+				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "PLAZO INVÁLIDO",
+						 codigoCurso, elemento.colegiado.DNI, elemento.cantidadPagada + "€");
 				i++;
 				break;
 			} else {
 				if (elemento.cantidadPagada < elemento.precio) {
-					InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "Su inscripción se ha CANCELADO, debido a que no ha pagado la cuota en el perido establecido de 48 horas desde la preinscripción"
-							+ "\nSe procederá a devolverle el importe que ha pagado por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+					InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA INFERIOR", codigoCurso, elemento.colegiado.DNI, elemento.cantidadPagada + "€" );
 					i++;
 					break;
 				} else if (elemento.cantidadPagada==elemento.precio) {
-					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "Su inscripción se ha INSCRITO en plazo de manera correcta",
-							codigoCurso, elemento.colegiado.DNI);
+					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA",
+							codigoCurso, elemento.colegiado.DNI, "NADA");
 					i++;
 					break;
 				} else {
-					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "Su inscripción se ha INSCRITO en plazo de manera correcta"
-							+ "\nSe procederá a devolverle el importe que ha pagado de más por cuenta bancaria", codigoCurso, elemento.colegiado.DNI);
+					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA", codigoCurso, elemento.colegiado.DNI, (elemento.cantidadPagada-elemento.precio) + "€");
 					i++;
 					break;
 				}

@@ -14,17 +14,17 @@ public class InscripcionColegiadoDto {
 	public String formaDePago; // TARJETA O TRANSFERENCIA 
 	public String codigoTransferencia;
 	public LocalDate fechaTransferencia;
-	public double cantidadAbonadaTransferencia;
 	public LocalDate fechaPreinscripcion;
 	public String incidencias;
 	public double precio;
+	public String devolver;
 	
 	@Override
 	public String toString() {
 		if (fechaTransferencia==null) {
 			return colegiado.DNI + ";"+ colegiado.nombre + ";" +  colegiado.apellidos + ";" + cantidadPagada + ";" + "NO REALIZADA"
 					+ ";" + "NO REALIZADA"  + "\n";
-		} return colegiado.DNI + ";"+ colegiado.nombre + ";" +  colegiado.apellidos + ";" + fechaTransferencia.toString()
+		} return colegiado.DNI + ";"+ colegiado.nombre + ";" +  colegiado.apellidos + ";" + cantidadPagada + ";" + fechaTransferencia.toString()
 				+ ";" + codigoTransferencia  + "\n";
 		
 	}

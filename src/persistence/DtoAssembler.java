@@ -136,8 +136,9 @@ public class DtoAssembler {
 		d.colegiado.nombre = rs.getString(i++);
 		d.colegiado.apellidos = rs.getString(i++);
 		d.cantidadPagada = rs.getDouble(i++);
-		String fechaTransferencia = rs.getString("fechaTransferencia");
-		String fechaPreinscripcion = rs.getString("fechaPreinscripcion");
+		String fechaTransferencia = rs.getString(i++);
+		d.codigoTransferencia = rs.getString(i++);
+		String fechaPreinscripcion = rs.getString(i++);
 		if (fechaTransferencia==null) {
 			d.fechaTransferencia = null;
 			d.fechaPreinscripcion = null;
@@ -145,10 +146,24 @@ public class DtoAssembler {
 			d.fechaTransferencia = LocalDate.parse(fechaTransferencia);
 			d.fechaPreinscripcion = LocalDate.parse(fechaPreinscripcion);
 		}
-		d.codigoTransferencia = rs.getString("codigoTransferencia");
-		d.precio = rs.getDouble("cantidadPagar");
-		d.estado = rs.getString("estado");
-		d.incidencias = rs.getString("incidencias");
+		d.precio = rs.getDouble(i++);
+		d.estado = rs.getString(i++);
+		d.incidencias = rs.getString(i++);
+		return d;
+	}
+	
+	public static InscripcionColegiadoDto resultsetToIncripcionTransferenciaProcesar(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+		int i = 1;
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString(i++);
+		d.colegiado.nombre = rs.getString(i++);
+		d.colegiado.apellidos = rs.getString(i++);
+		d.cantidadPagada = rs.getDouble(i++);
+		d.precio = rs.getDouble(i++);
+		d.estado = rs.getString(i++);
+		d.incidencias = rs.getString(i++);
+		d.devolver = rs.getString(i++);
 		return d;
 	}
 
