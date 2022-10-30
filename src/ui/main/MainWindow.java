@@ -3356,6 +3356,8 @@ public class MainWindow extends JFrame {
 							btnProcesarPagos.setEnabled(false);
 							mainCardLayout.show(mainPanel, INSCRIPCION_CURSO_TRANSFERENCIAS);
 							tbCourses.setEnabled(true);
+							tbCourses.clearSelection();
+							tbCourses.removeAll();
 						}
 					} catch (BusinessException e1) {
 						e1.printStackTrace();
@@ -3622,7 +3624,7 @@ public class MainWindow extends JFrame {
 			tbTransferencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.leerFicheroTransferenciasPorCurso(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
+				TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
 
 				tbTransferencias.setModel(tableModel);
 			} catch (BusinessException e) {

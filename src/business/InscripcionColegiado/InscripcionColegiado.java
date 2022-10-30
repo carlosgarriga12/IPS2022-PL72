@@ -1,16 +1,10 @@
 package business.InscripcionColegiado;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
@@ -98,6 +92,10 @@ public class InscripcionColegiado {
 	
 	public static List<InscripcionColegiadoDto> obtenerTransferenciasProcesadas(int curso) {
 		return InscripcionColegiadoCRUD.findInscripcionesPorCursoIdProcesadas(curso);
+	}
+	
+	public static List<InscripcionColegiadoDto> obtenerTransferencias(int curso) {
+		return InscripcionColegiadoCRUD.findInscripcionesPorCursoId(curso);
 	}
 
 	public static void procesarTransferencias(int codigoCurso) {
