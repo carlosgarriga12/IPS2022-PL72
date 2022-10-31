@@ -5,14 +5,15 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import business.BusinessException;
 import persistence.colegiado.ColegiadoDto;
 
-public class ColegiadoModel {
+public class ColegiadoModel extends DefaultTableModel {
+
+	private static final long serialVersionUID = -8972242062999724063L;
 
 	public static final String HEADER_COLUMN1 = "DNI";
 	public static final String HEADER_COLUMN2 = "NOMBRE";
@@ -42,15 +43,16 @@ public class ColegiadoModel {
 //			model.addColumn(HEADER_COLUMN4);
 //			model.addColumn(HEADER_COLUMN5);
 //			model.addColumn(HEADER_COLUMN6);
-			
-			model.setColumnIdentifiers(new Object[] {HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3, HEADER_COLUMN4, HEADER_COLUMN5, HEADER_COLUMN6});
+
+			model.setColumnIdentifiers(new Object[] { HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3, HEADER_COLUMN4,
+					HEADER_COLUMN5, HEADER_COLUMN6 });
 
 			for (ColegiadoDto c : colegiados) {
 				model.addRow(new Object[] { createCustomCell(c.DNI), createCustomCell(c.nombre),
 						createCustomCell(c.apellidos), createCustomCell(c.telefono), createCustomCell(c.fechaSolicitud),
-						createCustomCell(c.titulacion) });
+						c.titulacion == null ? "Sin titulación" : createCustomCell(c.titulacion) });
 			}
-			
+
 		}
 
 		return model;
@@ -74,8 +76,9 @@ public class ColegiadoModel {
 
 	}
 
+	@Override
 	public boolean isCellEditable(int i, int i1) {
-		return false; // To change body of generated methods, choose Tools | Templates.
+		return false;
 	}
 
 }

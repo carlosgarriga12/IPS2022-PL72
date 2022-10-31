@@ -4,6 +4,7 @@ import java.util.List;
 
 import business.BusinessException;
 import business.util.Argument;
+import business.util.CSVProcessor;
 import business.util.GeneradorNumeroColegiado;
 import business.util.MathUtils;
 import persistence.colegiado.ColegiadoCrud;
@@ -80,6 +81,8 @@ public class Colegiado {
 	 * @param dniSolicitante
 	 * @return
 	 * @since HU.18155
+	 * @deprecated La funcion que reemplaza a esta funcion es
+	 *             {@link #enviarLoteSolicitudesColegiacion}
 	 * @throws BusinessException
 	 */
 	public static String simularConsultaMinisterio(String dniSolicitante) throws BusinessException {
@@ -95,6 +98,35 @@ public class Colegiado {
 		}
 
 		return res;
+	}
+
+	/**
+	 * Realiza en el envío de un lote de solicitudes de colegiación.
+	 * 
+	 * En primer lugar, se obtiene el listado de solicitudes de colegiación hasta la
+	 * fecha. El envío se realiza únicamente de TODAS las solicitudes, no se permite
+	 * envío parcial de solicitudes.
+	 * 
+	 * Al ejecutar el envío, se genera un fichero en formato .CSV con los datos de
+	 * cada solicitud. El fichero se persiste de forma local en un directorio
+	 * denominado lotesColegiacion.
+	 * 
+	 * @see business.util.CSVProcessor#generarLoteSolicitudesColegiacion(List)
+	 * @since HU. 19061
+	 * @throws BusinessException Si la lista de solicitudes no es válida o se
+	 *                           produce un error al listarla.
+	 *
+	 */
+	public static String enviarLoteSolicitudesColegiacion() throws BusinessException {
+
+		List<ColegiadoDto> solicitudesColegiacion = findAllSolicitudesAltaColegiados();
+
+		if (solicitudesColegiacion.size() == 0) {
+			throw new BusinessException("En este momento no hay solicitudes de colegiación para enviar.");
+		}
+
+		return CSVProcessor.generarLoteSolicitudesColegiacion(solicitudesColegiacion);
+
 	}
 
 	/**

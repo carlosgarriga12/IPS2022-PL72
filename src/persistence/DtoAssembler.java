@@ -39,8 +39,7 @@ public class DtoAssembler {
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
 		c.poblacion = rs.getString("poblacion");
-		c.titulacion = rs.getString("titulacion") == null || rs.getString("titulacion") == "" ? "Sin titulación"
-				: rs.getString("titulacion");
+		c.titulacion = rs.getString("titulacion");
 		c.telefono = rs.getInt("telefono");
 		c.centro = rs.getString("centro");
 		c.annio = rs.getInt("ano");
@@ -81,7 +80,9 @@ public class DtoAssembler {
 		}
 
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
-		newCursoDto.precio = rs.getDouble("Precio");
+		
+		// TODO: Cantidad a pagar colegiado
+		//newCursoDto.precio = rs.getDouble("Precio");
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
 
@@ -98,7 +99,8 @@ public class DtoAssembler {
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		c.plazasDisponibles = rs.getInt("PLAZAS");
-		c.precio = rs.getDouble("PRECIO");
+		// TODO: Cantidad  pagar del colegiado
+		// c.precio = rs.getDouble("PRECIO");
 		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
 

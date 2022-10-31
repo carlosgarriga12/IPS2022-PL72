@@ -56,6 +56,7 @@ import business.InscripcionColegiado.InscripcionColegiado;
 import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
+import business.util.CSVProcessor;
 import business.util.DateUtils;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
@@ -296,6 +297,7 @@ public class MainWindow extends JFrame {
 	private JLabel lbNumeroSolicitudesColegiado;
 	private JPanel pnNumeroSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
+	private DefaultButton btVerFicheroLoteSolicitudesColegiadosEnviado;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -2278,7 +2280,8 @@ public class MainWindow extends JFrame {
 		if (pnListadoAltaSolicitudesColegiadoActualizarLista == null) {
 			pnListadoAltaSolicitudesColegiadoActualizarLista = new JPanel();
 			pnListadoAltaSolicitudesColegiadoActualizarLista.setLayout(new GridLayout(0, 2, 0, 0));
-			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getPnListadoAltaSolicitanteRefrescarListaBotonContainer());
+			pnListadoAltaSolicitudesColegiadoActualizarLista
+					.add(getPnListadoAltaSolicitanteRefrescarListaBotonContainer());
 			pnListadoAltaSolicitudesColegiadoActualizarLista.add(getPnNumeroSolicitudesColegiado());
 		}
 		return pnListadoAltaSolicitudesColegiadoActualizarLista;
@@ -2286,15 +2289,32 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton getBtActualizarListaSolicitudesColegiado() {
 		if (btActualizarListaSolicitudesColegiado == null) {
-			btActualizarListaSolicitudesColegiado = new DefaultButton("Refrescar lista", "ventana",
-					"RefrescarListaSolicitudesColegiado", 'r', ButtonColor.NORMAL);
+			btActualizarListaSolicitudesColegiado = new DefaultButton("Enviar lote", "ventana",
+					"EnviarLoteSolicitudesColegiado", 'e', ButtonColor.NORMAL);
 			btActualizarListaSolicitudesColegiado.setBounds(new Rectangle(0, 0, 250, 80));
 			btActualizarListaSolicitudesColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						refrescarListaSolicitudesColegiado();
+						/*
+						 * Al hacer click en el botón "Enviar Lote, se procederá al envío de todas las
+						 * solicitudes de alta de colegiado hasta la fecha"
+						 */
+						String nombreLote = Colegiado.enviarLoteSolicitudesColegiacion();
+
+						// Si se envió el lote de forma satisfactoria, mostrar mensaje informativo
+						String mensajeInformativoLote = "Se ha enviado el lote " + nombreLote
+								+ " \ndentro en la carpeta lotesSolicitudes";
+
+						pnConsultarColegiadoDatosColegiadoSeleccionado.setVisible(true);
+						lbColegiadoSeleccionadoSolicitudRespuesta.setText(mensajeInformativoLote);
+
+						JOptionPane.showMessageDialog(null, mensajeInformativoLote,
+								"Información | Envío lote solicitudes colegiación", JOptionPane.INFORMATION_MESSAGE);
+
+						// TODO: btActualizarListaSolicitudesColegiado.setEnabled(false);
+
 					} catch (BusinessException e1) {
-						// TODO: MOSTRAR MENSAJE DE ERROR
+
 						e1.printStackTrace();
 					}
 				}
@@ -2334,6 +2354,7 @@ public class MainWindow extends JFrame {
 	private JTable getTbListadoSolicitudesColegiado() {
 		if (tbListadoSolicitudesColegiado == null) {
 			tbListadoSolicitudesColegiado = new JTable();
+			tbListadoSolicitudesColegiado.setRowSelectionAllowed(false);
 
 			tbListadoSolicitudesColegiado.setIntercellSpacing(new Dimension(0, 0));
 			tbListadoSolicitudesColegiado.setShowGrid(false);
@@ -2354,58 +2375,11 @@ public class MainWindow extends JFrame {
 				TableModel allSolicitudesColegiado = new ColegiadoModel(Colegiado.findAllSolicitudesAltaColegiados())
 						.getColegiadoModel(false);
 
-				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);			
-				
+				tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
 
 			} catch (BusinessException e) {
 				e.printStackTrace();
 			}
-
-			tbListadoSolicitudesColegiado.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent event) {
-
-					if (event.getValueIsAdjusting())
-						return;
-
-					try {
-						try {
-
-							int selectedRow = tbListadoSolicitudesColegiado.getSelectedRow();
-
-							// Si se selecciona una fila
-							if (selectedRow > -1) {
-								String colegiadoSeleccionadoDni = tbListadoSolicitudesColegiado
-										.getValueAt(selectedRow, 0).toString();
-
-								lbColegiadoSeleccionadoSolicitudRespuesta.setText("Consultando al ministerio....");
-
-								String resp = Colegiado.simularConsultaMinisterio(colegiadoSeleccionadoDni);
-
-								lbColegiadoSeleccionadoSolicitudRespuesta.setText("Procesando...");
-
-								JOptionPane.showMessageDialog(null, resp,
-										"Secretaría: Respuesta recibida del ministerio",
-										JOptionPane.INFORMATION_MESSAGE);
-
-							} else {
-								lbColegiadoSeleccionadoSolicitudRespuesta
-										.setText("Por favor, seleccione una solicitud de la tabla.");
-							}
-
-						} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-
-							// TODO: MOSTRAR MENSAJE DE ERROR
-							lbColegiadoSeleccionadoSolicitudRespuesta.setText("Se ha producido un error");
-
-						} finally {
-							refrescarListaSolicitudesColegiado();
-						}
-					} catch (BusinessException e) {
-						e.printStackTrace();
-					}
-				}
-
-			});
 
 		}
 		return tbListadoSolicitudesColegiado;
@@ -2443,14 +2417,15 @@ public class MainWindow extends JFrame {
 			pnConsultarColegiadoDatosColegiadoSeleccionado.setBackground(LookAndFeel.TERTIARY_COLOR);
 			pnConsultarColegiadoDatosColegiadoSeleccionado.setLayout(new BorderLayout(0, 0));
 			pnConsultarColegiadoDatosColegiadoSeleccionado.add(getLbColegiadoSeleccionadoSolicitudRespuesta());
+
+			pnConsultarColegiadoDatosColegiadoSeleccionado.setVisible(false);
 		}
 		return pnConsultarColegiadoDatosColegiadoSeleccionado;
 	}
 
 	private JLabel getLbColegiadoSeleccionadoSolicitudRespuesta() {
 		if (lbColegiadoSeleccionadoSolicitudRespuesta == null) {
-			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel(
-					"Seleccione un colegiado de la lista y, si tiene titulación, se procederá a darle de alta en el COIIPA");
+			lbColegiadoSeleccionadoSolicitudRespuesta = new JLabel("Mensaje del lote");
 			lbColegiadoSeleccionadoSolicitudRespuesta.setHorizontalAlignment(SwingConstants.CENTER);
 			lbColegiadoSeleccionadoSolicitudRespuesta.setAlignmentX(Component.CENTER_ALIGNMENT);
 			lbColegiadoSeleccionadoSolicitudRespuesta.setFont(LookAndFeel.HEADING_3_FONT);
@@ -2794,7 +2769,8 @@ public class MainWindow extends JFrame {
 	private boolean comprobarCampos() {
 
 		try {
-			//int numeroTarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
+			// int numeroTarjeta =
+			// Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
 
 		} catch (NumberFormatException nfe) {
 			JOptionPane.showMessageDialog(null, "El número de tarjeta no es válido. Por favor, revíselo.",
@@ -3254,12 +3230,26 @@ public class MainWindow extends JFrame {
 		}
 		return pnNumeroSolicitudesColegiado;
 	}
+
 	private JPanel getPnListadoAltaSolicitanteRefrescarListaBotonContainer() {
 		if (pnListadoAltaSolicitanteRefrescarListaBotonContainer == null) {
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer = new JPanel();
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtActualizarListaSolicitudesColegiado());
+			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtVerFicheroLoteSolicitudesColegiadosEnviado());
 		}
 		return pnListadoAltaSolicitanteRefrescarListaBotonContainer;
+	}
+	private DefaultButton getBtVerFicheroLoteSolicitudesColegiadosEnviado() {
+		if (btVerFicheroLoteSolicitudesColegiadosEnviado == null) {
+			btVerFicheroLoteSolicitudesColegiadosEnviado = new DefaultButton("Ver fichero Lote", "ventana", "VerFicheroLoteSolicitudesColegiacionEnviado", 'v', ButtonColor.INFO);
+			btVerFicheroLoteSolicitudesColegiadosEnviado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					CSVProcessor.verLoteGenerado();
+				}
+			});
+			btVerFicheroLoteSolicitudesColegiadosEnviado.setBounds(new Rectangle(0, 0, 250, 80));
+		}
+		return btVerFicheroLoteSolicitudesColegiadosEnviado;
 	}
 }
