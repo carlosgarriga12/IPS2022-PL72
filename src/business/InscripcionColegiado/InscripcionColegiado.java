@@ -98,6 +98,10 @@ public class InscripcionColegiado {
 		return InscripcionColegiadoCRUD.findInscripcionesPorCursoId(curso);
 	}
 
+	/**
+	 * @since hu 19059
+	 * @param codigoCurso
+	 */
 	public static void procesarTransferencias(int codigoCurso) {
 		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(codigoCurso);
 		int i=0;

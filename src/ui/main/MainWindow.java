@@ -341,10 +341,14 @@ public class MainWindow extends JFrame {
 	private JButton btnProcesarTransferencias;
 	private JScrollPane scrollPaneProcesar;
 	private JTable tbProcesarTransferencias;
-	
+	private TableModel tableModelC;
+	private TableModel tableModel;
+	private TableModel tableModelP;
+
 	// CURSO SOBRE EL QUE QUEREMOS MIRAR LAS CUENTAS DEL BANCO
 	private CursoDto cursoSeleccionado;
-	
+
+
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -3358,6 +3362,13 @@ public class MainWindow extends JFrame {
 							tbCourses.setEnabled(true);
 							tbCourses.clearSelection();
 							tbCourses.removeAll();
+							try {
+								tableModelC = new CursoModel(Curso.listarTodosLosCursos()).getCursoModel(ALL_MINUS_ID);
+							} catch (BusinessException e1) {
+								e1.printStackTrace();
+							}
+							tbCourses.setModel(tableModelC);
+							tbCourses.repaint();
 						}
 					} catch (BusinessException e1) {
 						e1.printStackTrace();
@@ -3459,6 +3470,18 @@ public class MainWindow extends JFrame {
 								+ "Se mostrarán en la siguiente tabla, aunque también puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
 								+ "Contiene los datos más recientes sobre las transferencias de los clientes en la cuenta bancaria del COIIPA",
 								"Consulta los datos bancarios", JOptionPane.INFORMATION_MESSAGE);
+						if (tbTransferencias!=null) {
+							try {
+								tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
+							} catch (BusinessException e1) {
+								e1.printStackTrace();
+							}
+							tbTransferencias.setModel(tableModel);
+							tbTransferencias.repaint();
+						}
+						
+						
+					
 					}
 				}
 			});
@@ -3508,6 +3531,14 @@ public class MainWindow extends JFrame {
 					pnTransferenciasProcesadasCentro.add(getScrollPaneProcesar());
 					pnTransferencias.setVisible(false);
 					pnTransferenciasProcesadas.setVisible(true);
+					try {
+						tableModelP = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferenciasProcesadas(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_PROCESADAS);
+					} catch (BusinessException e1) {
+						e1.printStackTrace();
+					}
+					tbProcesarTransferencias.setModel(tableModelP);
+					tbProcesarTransferencias.repaint();
+
 				}
 			});
 			btnProcesarPagos.setMnemonic('P');
@@ -3542,9 +3573,9 @@ public class MainWindow extends JFrame {
 			tbCourses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new CursoModel(Curso.listarTodosLosCursos()).getCursoModel(ALL_MINUS_ID);
-
-				tbCourses.setModel(tableModel);
+				tableModelC = new CursoModel(Curso.listarTodosLosCursos()).getCursoModel(ALL_MINUS_ID);
+				
+				tbCourses.setModel(tableModelC);
 			} catch (BusinessException e) {
 				showMessage(e, MessageType.ERROR);
 				e.printStackTrace();
@@ -3624,7 +3655,7 @@ public class MainWindow extends JFrame {
 			tbTransferencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
+				tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
 
 				tbTransferencias.setModel(tableModel);
 			} catch (BusinessException e) {
@@ -3760,9 +3791,9 @@ public class MainWindow extends JFrame {
 			tbProcesarTransferencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferenciasProcesadas(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_PROCESADAS);
+				tableModelP = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferenciasProcesadas(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_PROCESADAS);
 
-				tbProcesarTransferencias.setModel(tableModel);
+				tbProcesarTransferencias.setModel(tableModelP);
 			} catch (BusinessException e) {
 				showMessage(e, MessageType.ERROR);
 				e.printStackTrace();
