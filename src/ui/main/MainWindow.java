@@ -58,6 +58,7 @@ import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.CSVProcessor;
 import business.util.DateUtils;
+import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
@@ -969,7 +970,7 @@ public class MainWindow extends JFrame {
 		dto.poblacion = getTextFieldPoblacion().getText();
 		dto.centro = getTextFieldCentroColegiado().getText();
 		dto.numeroCuenta = getTextFieldNumeroCuenta().getText();
-		dto.titulacion = getTextFieldTitulacion().getText();
+		dto.titulacion = DtoAssembler.parseTitulacionesColegiado(getTextFieldTitulacion().getText());
 		try {
 			dto.telefono = Integer.parseInt(getTextFieldTelefono().getText());
 			dto.annio = Integer.parseInt(getTextFieldAno().getText());

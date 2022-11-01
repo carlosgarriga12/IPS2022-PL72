@@ -1,6 +1,7 @@
 package persistence.colegiado;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class ColegiadoDto {
 	public String DNI; // 55555555H
@@ -8,7 +9,7 @@ public class ColegiadoDto {
 	public String apellidos; // Fern�ndez
 	public String poblacion; // Oviedo
 	public int telefono; // 666666666
-	public String titulacion; // Licenciado en Informática
+	public List<String> titulacion; // Licenciado en Informática
 	public String centro; // Campus de los catalanes
 	public int annio; // 2022
 	public String numeroCuenta; // ES6612344321

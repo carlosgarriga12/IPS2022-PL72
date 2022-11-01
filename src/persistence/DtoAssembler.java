@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
@@ -32,6 +34,13 @@ public class DtoAssembler {
 		return inscripciones;
 	}
 
+	/**
+	 * 
+	 * @see #parseTitulacionesColegiado(String)
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
 	public static ColegiadoDto resultSetToColegiadoDto(ResultSet rs) throws SQLException {
 		ColegiadoDto c = new ColegiadoDto();
 
@@ -39,7 +48,7 @@ public class DtoAssembler {
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
 		c.poblacion = rs.getString("poblacion");
-		c.titulacion = rs.getString("titulacion");
+		c.titulacion = parseTitulacionesColegiado(rs.getString("titulacion"));
 		c.telefono = rs.getInt("telefono");
 		c.centro = rs.getString("centro");
 		c.annio = rs.getInt("ano");
@@ -49,6 +58,43 @@ public class DtoAssembler {
 
 		return c;
 
+	}
+
+	/**
+	 * Devuelve un listado de titulaciones a partir de la cadena indicada. El
+	 * formato de la cadena entrante es el siguiente:
+	 * titulacion1,titulacion2,titulacion3 Puede ser que haya algún espacio en
+	 * blanco, a tener en cuenta.
+	 * 
+	 * @since HU. 19061
+	 * @param titulaciones Listado de titulaciones en formato cadena separador por
+	 *                     comas.
+	 * 
+	 * @return Listado de titulaciones.
+	 */
+	public static List<String> parseTitulacionesColegiado(String titulaciones) {
+		if (titulaciones.isBlank()) {
+			return new ArrayList<>();
+		}
+
+		return Arrays.asList(titulaciones.trim().split(",")).stream().map(t -> t.trim().strip())
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Devuelve la lista de colegiados en forma de cadena separados por coma.
+	 * 
+	 * <code>
+	 * Ejemplo: List(c1, c2, c3, c4)
+	 * Salida: "c1,c2,c3,c4"
+	 * </code>
+	 * 
+	 * @param titulaciones Lista de titulaciones de un colegiado.
+	 * 
+	 * @return Cadena con las titulaciones separadas por coma.
+	 */
+	public static String listaColegiadosToString(List<String> titulaciones) {
+		return String.join(",", titulaciones);
 	}
 
 	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {
@@ -80,9 +126,9 @@ public class DtoAssembler {
 		}
 
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
-		
+
 		// TODO: Cantidad a pagar colegiado
-		//newCursoDto.precio = rs.getDouble("Precio");
+		// newCursoDto.precio = rs.getDouble("Precio");
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
 
@@ -99,7 +145,7 @@ public class DtoAssembler {
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		c.plazasDisponibles = rs.getInt("PLAZAS");
-		// TODO: Cantidad  pagar del colegiado
+		// TODO: Cantidad pagar del colegiado
 		// c.precio = rs.getDouble("PRECIO");
 		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));

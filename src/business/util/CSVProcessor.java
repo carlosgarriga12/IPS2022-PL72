@@ -1,6 +1,5 @@
 package business.util;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -76,9 +75,18 @@ public class CSVProcessor {
 					"Titulación/es");
 			pW.write(cabecera + CSV_LINE_END);
 
+			// Datos de los colegiados
 			for (ColegiadoDto col : solicitudesOrdenadas) {
+
+				// Listado de titulaciones de un colegiado.
+				String titulacionesColegiado = col.titulacion.stream().map(t -> String.valueOf(t))
+						.collect(Collectors.joining(" / "));
+
+//				String fila = String.join(CSV_SEPARATOR, col.DNI, col.nombre + " " + col.apellidos,
+//						col.fechaSolicitud.toString(), col.titulacion);
+				
 				String fila = String.join(CSV_SEPARATOR, col.DNI, col.nombre + " " + col.apellidos,
-						col.fechaSolicitud.toString(), col.titulacion);
+						col.fechaSolicitud.toString(), titulacionesColegiado);
 
 				pW.write(fila + CSV_LINE_END);
 			}
@@ -95,8 +103,8 @@ public class CSVProcessor {
 
 		return outputFilename;
 	}
-	
+
 	public static void verLoteGenerado() {
-		
+
 	}
 }

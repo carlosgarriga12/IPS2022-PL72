@@ -205,8 +205,7 @@ public class Colegiado {
 		Argument.isNotNull(colegiado.centro);
 		Argument.isNotEmpty(colegiado.centro);
 
-		Argument.isNotNull(colegiado.titulacion);
-		Argument.isNotEmpty(colegiado.titulacion);
+		// Nota: La titulacion no se valida ya que puede no tener titulación.
 
 		Argument.isPositive(colegiado.annio);
 
