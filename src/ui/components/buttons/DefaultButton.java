@@ -160,7 +160,8 @@ public class DefaultButton extends JButton {
 		} else if (seletedType == ButtonColor.INFO) {
 			this.setBackground(LookAndFeel.TERTIARY_COLOR);
 			this.setForeground(LookAndFeel.SECONDARY_COLOR);
-			this.setBorder(new LineBorder(LookAndFeel.TERTIARY_COLOR_DARK, 2));
+			this.setBorderPainted(true);
+			this.setBorder(new LineBorder(LookAndFeel.TERTIARY_COLOR_DARK, 2, true));
 		}
 	}
 

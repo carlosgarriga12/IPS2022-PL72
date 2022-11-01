@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
@@ -56,7 +57,6 @@ import business.InscripcionColegiado.InscripcionColegiado;
 import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
-import business.util.CSVProcessor;
 import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -298,7 +298,7 @@ public class MainWindow extends JFrame {
 	private JLabel lbNumeroSolicitudesColegiado;
 	private JPanel pnNumeroSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
-	private DefaultButton btVerFicheroLoteSolicitudesColegiadosEnviado;
+	private DefaultButton btRecepcionarLoteSolicitudesPendientesColegiado;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -2292,6 +2292,8 @@ public class MainWindow extends JFrame {
 		if (btActualizarListaSolicitudesColegiado == null) {
 			btActualizarListaSolicitudesColegiado = new DefaultButton("Enviar lote", "ventana",
 					"EnviarLoteSolicitudesColegiado", 'e', ButtonColor.NORMAL);
+			btActualizarListaSolicitudesColegiado.setToolTipText(
+					"Haz click aquí para enviar el lote con todas las solicitudes de colegiación pendientes");
 			btActualizarListaSolicitudesColegiado.setBounds(new Rectangle(0, 0, 250, 80));
 			btActualizarListaSolicitudesColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -2312,7 +2314,7 @@ public class MainWindow extends JFrame {
 						JOptionPane.showMessageDialog(null, mensajeInformativoLote,
 								"Información | Envío lote solicitudes colegiación", JOptionPane.INFORMATION_MESSAGE);
 
-						// TODO: btActualizarListaSolicitudesColegiado.setEnabled(false);
+						btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
 
 					} catch (BusinessException e1) {
 
@@ -2405,6 +2407,7 @@ public class MainWindow extends JFrame {
 			btConsultarSolicitudColegiadoVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					resetearAjustesVentanaSolicitudesColegidado();
 				}
 			});
 		}
@@ -3237,20 +3240,63 @@ public class MainWindow extends JFrame {
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer = new JPanel();
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtActualizarListaSolicitudesColegiado());
-			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtVerFicheroLoteSolicitudesColegiadosEnviado());
+			pnListadoAltaSolicitanteRefrescarListaBotonContainer
+					.add(getBtRecepcionarLoteSolicitudesPendientesColegiado());
 		}
 		return pnListadoAltaSolicitanteRefrescarListaBotonContainer;
 	}
-	private DefaultButton getBtVerFicheroLoteSolicitudesColegiadosEnviado() {
-		if (btVerFicheroLoteSolicitudesColegiadosEnviado == null) {
-			btVerFicheroLoteSolicitudesColegiadosEnviado = new DefaultButton("Ver fichero Lote", "ventana", "VerFicheroLoteSolicitudesColegiacionEnviado", 'v', ButtonColor.INFO);
-			btVerFicheroLoteSolicitudesColegiadosEnviado.addActionListener(new ActionListener() {
+
+	private DefaultButton getBtRecepcionarLoteSolicitudesPendientesColegiado() {
+		if (btRecepcionarLoteSolicitudesPendientesColegiado == null) {
+			btRecepcionarLoteSolicitudesPendientesColegiado = new DefaultButton("Recepcionar lote", "ventana",
+					"VerFicheroLoteSolicitudesColegiacionEnviado", 'v', ButtonColor.INFO);
+			btRecepcionarLoteSolicitudesPendientesColegiado
+					.setToolTipText("Haz click aquí para recepcionar el lote de solicitudes de colegiación");
+			btRecepcionarLoteSolicitudesPendientesColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					CSVProcessor.verLoteGenerado();
+					try {
+						List<ColegiadoDto> colegiadosAdmitidos = Colegiado.recepcionarLoteSolicitudesColegiacion()
+								.stream().sorted((c1, c2) -> c1.fechaSolicitud.compareTo(c2.fechaSolicitud))
+								.collect(Collectors.toList());
+
+						lbConsultarTitulacionTitle.setText("Listado de nuevos colegiados del COIIPA.");
+						lbNumeroSolicitudesColegiado
+								.setText("Mostrando " + String.valueOf(colegiadosAdmitidos.size()) + " resultados");
+
+						TableModel solicitudesColegiadoAdmitidasModel = new ColegiadoModel(colegiadosAdmitidos)
+								.getColegiadoModel(false);
+
+						tbListadoSolicitudesColegiado.setModel(solicitudesColegiadoAdmitidasModel);
+						tbListadoSolicitudesColegiado.repaint();
+
+						btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(false);
+
+						JOptionPane.showMessageDialog(null,
+								"Se ha recepcionado el lote correctamente. La tabla se ha actualizado con los nuevos Colegiados del COIIPA.",
+								"Información: Recepción de lote de solicitudes de colegiados",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (BusinessException be) {
+
+						lbColegiadoSeleccionadoSolicitudRespuesta.setText(be.getMessage());
+						be.printStackTrace();
+					}
 				}
 			});
-			btVerFicheroLoteSolicitudesColegiadosEnviado.setBounds(new Rectangle(0, 0, 250, 80));
+			btRecepcionarLoteSolicitudesPendientesColegiado.setBounds(new Rectangle(0, 0, 250, 80));
 		}
-		return btVerFicheroLoteSolicitudesColegiadosEnviado;
+		return btRecepcionarLoteSolicitudesPendientesColegiado;
+	}
+
+	private void resetearAjustesVentanaSolicitudesColegidado() {
+		lbColegiadoSeleccionadoSolicitudRespuesta.setText("");
+		lbColegiadoSeleccionadoSolicitudRespuesta.setVisible(false);
+
+		btActualizarListaSolicitudesColegiado.setEnabled(true);
+		btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
+
+		lbConsultarTitulacionTitle.setText("Consultar titulación de un solicitante de Ingreso");
+
+		lbNumeroSolicitudesColegiado.setText("No hay ninguna solicitud");
 	}
 }

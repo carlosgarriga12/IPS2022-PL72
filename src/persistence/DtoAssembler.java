@@ -73,7 +73,7 @@ public class DtoAssembler {
 	 * @return Listado de titulaciones.
 	 */
 	public static List<String> parseTitulacionesColegiado(String titulaciones) {
-		if (titulaciones.isBlank()) {
+		if (titulaciones == null || titulaciones.isEmpty()) {
 			return new ArrayList<>();
 		}
 
@@ -93,8 +93,15 @@ public class DtoAssembler {
 	 * 
 	 * @return Cadena con las titulaciones separadas por coma.
 	 */
-	public static String listaColegiadosToString(List<String> titulaciones) {
-		return String.join(",", titulaciones);
+	public static String listaTitulacionesColegiadoToString(List<String> titulaciones) {
+		return String.join(",", titulaciones).replace("[", "").replace("]", "");
+	}
+	
+	public static String listaTitulacionesColegiadoToStringForTable(List<String> titulaciones) {
+		return "<html>"
+				.concat(String.join("<br />", titulaciones)
+						.replace("[", "").replace("]", ""))
+				.concat("</html>");
 	}
 
 	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {

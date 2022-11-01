@@ -33,6 +33,9 @@ public class ColegiadoCrud {
 
 	private static final String SQL_NUMERO_MAXIMO_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_LASTNUMBER");
 
+	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO = Conf.getInstance()
+			.getProperty("TCOLEGIADO_UPDATE_ESTADO");
+
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
@@ -87,7 +90,7 @@ public class ColegiadoCrud {
 			pst.setInt(5, colegiado.telefono);
 
 			// EL colegiado
-			pst.setString(6, DtoAssembler.listaColegiadosToString(colegiado.titulacion));
+			pst.setString(6, DtoAssembler.listaTitulacionesColegiadoToString(colegiado.titulacion));
 
 			pst.setString(7, colegiado.centro);
 			pst.setInt(8, colegiado.annio);
@@ -182,6 +185,34 @@ public class ColegiadoCrud {
 			Jdbc.close(pst);
 		}
 
+	}
+
+	/**
+	 * Actualiza el estado del colegiado indicado con el nuevo estado.
+	 * 
+	 * @param colegiado
+	 * @param estado
+	 */
+	public static void updateEstadoColegiado(final ColegiadoDto colegiado, String estado) {
+		Connection con = null;
+		PreparedStatement pst = null;
+
+		try {
+			con = Jdbc.getConnection();
+
+			pst = con.prepareStatement(SQL_ACTUALIZAR_ESTADO_COLEGIADO);
+
+			pst.setString(1, estado);
+			pst.setString(2, colegiado.numeroColegiado);
+
+			pst.executeUpdate();
+
+		} catch (SQLException sqle) {
+			throw new PersistenceException(sqle);
+
+		} finally {
+			Jdbc.close(pst);
+		}
 	}
 
 	/**
