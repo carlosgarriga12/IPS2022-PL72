@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import persistence.DtoAssembler;
+import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;

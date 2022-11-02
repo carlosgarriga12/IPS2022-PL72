@@ -12,6 +12,7 @@ import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
+import persistence.curso.Precio_Colectivos;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
 import persistence.util.Conf;
@@ -36,7 +37,8 @@ public class InscripcionColegiadoCRUD {
 			stmt.setString(i++, colegiado.DNI);
 			stmt.setInt(i++, curso.codigoCurso);
 			stmt.setString(i++, LocalDate.now().toString());
-			stmt.setDouble(i++, curso.precio);
+			double precio = Precio_Colectivos.StringToPrecio_Colectivos(curso.CantidadPagarColectivo).getPrecio(colegiado.TipoColectivo);
+			stmt.setDouble(i++, precio);
 			stmt.setString(i++, "PREINSCRITO");
 			stmt.execute();
 			

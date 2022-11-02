@@ -22,6 +22,7 @@ public class CursoDto {
 	public String estado = CURSO_PLANIFICADO;
 	public LocalDate fechaCierre;
 	public LocalDate fechaApertura;
+	public String CantidadPagarColectivo;
 	
 	public String toString() {
 		return "titulo= " +titulo+ ", fechaInicio= "+fechaInicio+", precio "+precio;

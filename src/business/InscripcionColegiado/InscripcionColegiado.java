@@ -12,6 +12,7 @@ import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
+import persistence.curso.Precio_Colectivos;
 
 public class InscripcionColegiado {
 	
@@ -28,14 +29,14 @@ public class InscripcionColegiado {
 	
 	public static void EmitirJustificante(ColegiadoDto colegiado, CursoDto curso) throws BusinessException {
 		String contenido = "Nombre: "+colegiado.nombre+" "+colegiado.apellidos+"  Número Colegiado: " + colegiado.numeroColegiado + "  Fecha Solicitud: "
-				+ LocalDate.now().toString() + "  Cantidad a Abonar: " + curso.precio;
+				+ LocalDate.now().toString() + "  Cantidad a Abonar: " + Precio_Colectivos.StringToPrecio_Colectivos(curso.CantidadPagarColectivo).getPrecio(colegiado.TipoColectivo);
 		
 		JOptionPane.showMessageDialog(null, "<html><p align='center'>Justificante de Inscripcion:</p><p>"+contenido+"</p></html>");
 	}
 	
 	public static ColegiadoDto InicioSesion(String Num) throws BusinessException {
 		
-		return ColegiadoCrud.findColegiadoNumColegiado(Num);
+		return ColegiadoCrud.findColegiadoDni(Num);
 		}
 	
 	public static List<Colegiado_Inscripcion> Lista_Inscritos_Curso(CursoDto c){

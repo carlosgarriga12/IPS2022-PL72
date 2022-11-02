@@ -21,12 +21,7 @@ public class Colegiado_Inscripcion {
 	}
 	
 	public double cantidadPagada() {
-		if(I.estado.equals("PAGADO")) {
-			return I.cantidadPagar;
-		}
-		else {
-			return 0;
-		}
+		return I.cantidadAbonada;
 	}
 
 	@Override
