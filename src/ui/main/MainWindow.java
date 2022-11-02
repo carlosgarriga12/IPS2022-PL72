@@ -2773,7 +2773,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private boolean comprobarCamposT() {
-		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9) {
+		if (textFieldDNIColegiado.getText().isEmpty() || textFieldDNIColegiado.getText().length() != 9) {
 			JOptionPane.showMessageDialog(null,
 					"Revise que no haya dejado ningún campo vacío y el formato del DNI es el correcto\n"
 							+ "Sigue el ejemplo del campo correspondiente",
@@ -2850,8 +2850,8 @@ public class MainWindow extends JFrame {
 			return false;
 		}
 
-		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9
-				|| textFieldNumeroTarjetaColegiado.getText().isBlank()
+		if (textFieldDNIColegiado.getText().isEmpty() || textFieldDNIColegiado.getText().length() != 9
+				|| textFieldNumeroTarjetaColegiado.getText().isEmpty()
 				|| textFieldNumeroTarjetaColegiado.getText().length() != 5) {
 			JOptionPane.showMessageDialog(null,
 					"Revise que no haya dejado ningún campo vacío y el formato del DNI y de la tarjeta de crédito son correctos\n"

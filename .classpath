@@ -4,6 +4,6 @@
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.39.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.9.4.jar"/>
 	<classpathentry kind="lib" path="lib/jcalendar-1.4.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_341"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
