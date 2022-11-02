@@ -218,7 +218,7 @@ public class MainWindow extends JFrame {
 	private JPanel pnCrearCurso;
 	private JPanel pnCrearCursoTitulo;
 	private JLabel lblCrearCurso;
-	private JPanel pnCrearCursoCampos;
+	private JPanel pnHorarios;
 	private JPanel pnCrearCursoButtons;
 	private DefaultButton btnCrearCursoCancelar;
 	private JButton btnCrearCursoCrear;
@@ -296,6 +296,7 @@ public class MainWindow extends JFrame {
 	private JLabel lbNumeroSolicitudesColegiado;
 	private JPanel pnNumeroSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
+	private JPanel pnColectivos;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -1717,8 +1718,9 @@ public class MainWindow extends JFrame {
 			pnCrearCurso = new JPanel();
 			pnCrearCurso.setLayout(new BorderLayout(0, 0));
 			pnCrearCurso.add(getPnCrearCursoTitulo(), BorderLayout.NORTH);
-			pnCrearCurso.add(getPnCrearCursoCampos(), BorderLayout.CENTER);
+			pnCrearCurso.add(getPnHorarios(), BorderLayout.WEST);
 			pnCrearCurso.add(getPnCrearCursoButtons(), BorderLayout.SOUTH);
+			pnCrearCurso.add(getPnColectivos(), BorderLayout.EAST);
 		}
 		return pnCrearCurso;
 	}
@@ -1740,15 +1742,15 @@ public class MainWindow extends JFrame {
 		return lblCrearCurso;
 	}
 
-	private JPanel getPnCrearCursoCampos() {
-		if (pnCrearCursoCampos == null) {
-			pnCrearCursoCampos = new JPanel();
-			pnCrearCursoCampos.setOpaque(false);
-			pnCrearCursoCampos.setBorder(new EmptyBorder(0, 100, 0, 100));
-			pnCrearCursoCampos.setLayout(new BorderLayout(0, 0));
-			pnCrearCursoCampos.add(getPnCrearCursoCenterContainer());
+	private JPanel getPnHorarios() {
+		if (pnHorarios == null) {
+			pnHorarios = new JPanel();
+			pnHorarios.setOpaque(false);
+			pnHorarios.setBorder(new EmptyBorder(0, 100, 0, 100));
+			pnHorarios.setLayout(new BorderLayout(0, 0));
+			pnHorarios.add(getPnCrearCursoCenterContainer());
 		}
-		return pnCrearCursoCampos;
+		return pnHorarios;
 	}
 
 	private JPanel getPnCrearCursoButtons() {
@@ -3261,5 +3263,11 @@ public class MainWindow extends JFrame {
 			pnListadoAltaSolicitanteRefrescarListaBotonContainer.add(getBtActualizarListaSolicitudesColegiado());
 		}
 		return pnListadoAltaSolicitanteRefrescarListaBotonContainer;
+	}
+	private JPanel getPnColectivos() {
+		if (pnColectivos == null) {
+			pnColectivos = new JPanel();
+		}
+		return pnColectivos;
 	}
 }
