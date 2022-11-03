@@ -353,7 +353,7 @@ public class MainWindow extends JFrame {
 		this.setFont(LookAndFeel.PRIMARY_FONT);
 
 		// TODO: Revisar dimensiones ventana
-		setBounds(100, 100, 1126, 740);
+		setBounds(100, 100, 1126, 820);
 
 		mainPanel = new JPanel();
 		mainPanel.setName("");
@@ -1957,7 +1957,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado = new JPanel();
 			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesColegiado.setOpaque(false);
-			pnHomeAccionesColegiado.setLayout(new GridLayout(5, 1, 0, 10));
+			pnHomeAccionesColegiado.setLayout(new GridLayout(6, 1, 0, 10));
 
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
@@ -1971,12 +1971,14 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria = new JPanel();
 			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesSecretaria.setOpaque(false);
-			pnHomeAccionesSecretaria.setLayout(new GridLayout(5, 1, 0, 10));
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(6, 1, 0, 10));
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAddCurso());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaListadoInscripciones());
+			pnHomeAccionesSecretaria.add(getBtHomeSecretariaTransferencias());
+			
 		}
 		return pnHomeAccionesSecretaria;
 	}
