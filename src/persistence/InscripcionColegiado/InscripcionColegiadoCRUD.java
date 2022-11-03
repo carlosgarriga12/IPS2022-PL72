@@ -7,9 +7,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import org.sqlite.core.SafeStmtPtr;
 
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -228,6 +225,28 @@ public class InscripcionColegiadoCRUD {
 			Jdbc.close(stmt);
 		}
 	}
+	
+	public static void pagarBancoFechaIncorrecta(String dni, int curso, double precioPagar) {
+		PreparedStatement stmt = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_BANCO_TRANSFERENCIA);
+			stmt.setString(1, LocalDate.now()
+								.plusMonths(7)
+								.toString());
+			stmt.setString(2, Ficheros.generarCodigoTransferencia(12));
+			stmt.setDouble(3, precioPagar);
+			stmt.setInt(4, curso);
+			stmt.setString(5, dni);
+			stmt.executeUpdate();
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
 
 
 	public static void procesarTransferencia(String estado, String incidencias, int codigoCurso, String dni, String devolver) {
@@ -249,6 +268,9 @@ public class InscripcionColegiadoCRUD {
 			Jdbc.close(stmt);
 		}
 	}
+
+
+	
 
 
 	

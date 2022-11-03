@@ -3454,7 +3454,7 @@ public class MainWindow extends JFrame {
 								"Seleccione el curso", JOptionPane.WARNING_MESSAGE);
 					} else {
 						try {
-							// InscripcionColegiado.pagarBancoTransferencia(cursoSeleccionado.codigoCurso);
+							InscripcionColegiado.pagarBancoTransferencia(cursoSeleccionado.codigoCurso);
 							InscripcionColegiado.emitirFicheroTransferenciaPorCurso(cursoSeleccionado.codigoCurso);
 						} catch (BusinessException e1) {
 							e1.printStackTrace();
@@ -3465,11 +3465,6 @@ public class MainWindow extends JFrame {
 						btnProcesarPagos.setEnabled(true);
 						tbCourses.setEnabled(false);
 						panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
-						JOptionPane.showMessageDialog(null,
-								"Se acaba de generar un fichero con los datos bancarios de cada inscripción del curso seleccionado\n"
-								+ "Se mostrarán en la siguiente tabla, aunque también puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
-								+ "Contiene los datos más recientes sobre las transferencias de los clientes en la cuenta bancaria del COIIPA",
-								"Consulta los datos bancarios", JOptionPane.INFORMATION_MESSAGE);
 						if (tbTransferencias!=null) {
 							try {
 								tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
@@ -3480,6 +3475,11 @@ public class MainWindow extends JFrame {
 							tbTransferencias.repaint();
 						}
 						
+						JOptionPane.showMessageDialog(null,
+								"Se acaba de generar un fichero con los datos bancarios de cada inscripción del curso seleccionado\n"
+								+ "Se mostrarán en la siguiente tabla, aunque también puede visualizarlo en la carpeta transferencias, cuyo nombre es " + cursoSeleccionado.codigoCurso + "_banco.csv\n"
+								+ "Contiene los datos más recientes sobre las transferencias de los clientes en la cuenta bancaria del COIIPA",
+								"Consulta los datos bancarios", JOptionPane.INFORMATION_MESSAGE);
 						
 					
 					}

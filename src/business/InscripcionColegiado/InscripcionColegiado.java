@@ -3,8 +3,8 @@ package business.InscripcionColegiado;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 
@@ -26,7 +26,6 @@ public class InscripcionColegiado {
 	}
 
 	public static boolean isInscrito(ColegiadoDto colegiado, CursoDto cursoSeleccionado) throws BusinessException {
-		// TODO Auto-generated method stub
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
 	
@@ -84,9 +83,19 @@ public class InscripcionColegiado {
 	}
 	
 	public static void pagarBancoTransferencia(int curso) {
+		Random r = new Random();
 		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripcionesPorCursoId(curso);
 		for (int i=0; i < lista.size(); i++) {
-			InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, lista.get(i).precio);
+			int numeroAleatorio = r.nextInt(5); 
+			double precioPagar = lista.get(i).precio;
+			
+			if (numeroAleatorio==0) { precioPagar = 0; }
+			else if (numeroAleatorio==1) { InscripcionColegiadoCRUD.pagarBancoFechaIncorrecta(lista.get(i).colegiado.DNI, curso, precioPagar); return; }
+			else if (numeroAleatorio==2) { precioPagar -= 1; }
+			else if (numeroAleatorio==3) {}
+			else { precioPagar += 1;}
+
+			InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
 		}		
 	}
 	
@@ -107,14 +116,14 @@ public class InscripcionColegiado {
 		int i=0;
 		while (i < lista.size()) {
 			InscripcionColegiadoDto elemento = lista.get(i);
-			if (elemento.fechaTransferencia==null) {
+			if (elemento.fechaTransferencia==null || elemento.cantidadPagada==0) {
 				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA NO PAGADA", codigoCurso, elemento.colegiado.DNI, "NADA");
 				i++;
 				break;
 			}
 			LocalDate fechaPreinscripcion = elemento.fechaPreinscripcion;
 			LocalDate fechaTransferencia = elemento.fechaTransferencia;
-			if (Period.between(fechaPreinscripcion, fechaTransferencia).getDays() > 2 || fechaTransferencia.isBefore(fechaPreinscripcion)) {
+			if (Duration.between(fechaPreinscripcion.atStartOfDay(), fechaTransferencia.atStartOfDay()).toDays() > 2 || fechaTransferencia.isBefore(fechaPreinscripcion)) {
 				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "PLAZO INVÁLIDO",
 						 codigoCurso, elemento.colegiado.DNI, elemento.cantidadPagada + "€");
 				i++;
