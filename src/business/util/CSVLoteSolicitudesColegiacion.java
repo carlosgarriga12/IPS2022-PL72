@@ -148,6 +148,8 @@ public class CSVLoteSolicitudesColegiacion {
 		}
 
 		Optional<File> ficheroLote = Arrays.stream(Objects.requireNonNull(destinationFolder.listFiles())).findFirst();
+		
+		System.out.println(ficheroLote.get().getAbsolutePath());
 
 		if (ficheroLote.isPresent()) {
 			String line;
