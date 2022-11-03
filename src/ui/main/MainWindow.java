@@ -3351,7 +3351,7 @@ public class MainWindow extends JFrame {
 			btHomeSecretariaTransferencias.setMnemonic('T');
 			btHomeSecretariaTransferencias.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					try {
+					try { 
 						if (Curso.listarTodosLosCursos().isEmpty()) {
 							JOptionPane.showMessageDialog(null, "Lo sentimos, no hay ningún curso disponible","No existen cursos", JOptionPane.WARNING_MESSAGE);
 						} else {
