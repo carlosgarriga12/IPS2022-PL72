@@ -47,7 +47,9 @@ public class DtoAssembler {
 		c.numeroCuenta = rs.getString("numeroCuenta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
 		c.numeroColegiado = rs.getString("numero");
-
+		c.perito = rs.getString("perito");
+		c.posicionPerito = rs.getInt("posicionPerito");
+		
 		return c;
 
 	}

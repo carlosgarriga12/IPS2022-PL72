@@ -32,7 +32,8 @@ public class ColegiadoCrud {
 			.getProperty("TCOLEGIADO_ASIGNACION_NUMERO_COLEGIADO");
 
 	private static final String SQL_NUMERO_MAXIMO_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_LASTNUMBER");
-
+	
+	
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 

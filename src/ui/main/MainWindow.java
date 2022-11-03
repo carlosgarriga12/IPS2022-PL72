@@ -58,10 +58,12 @@ import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.DateUtils;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
+import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.jdbc.PersistenceException;
+import persistence.perito.PeritoCRUD;
 import persistence.recibo.ReciboCRUD;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
@@ -297,6 +299,18 @@ public class MainWindow extends JFrame {
 	private JPanel pnNumeroSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
 	private JPanel pnColectivos;
+	private JPanel pnListaProfesionalesPeritos;
+	private JPanel pnBotones;
+	private JButton btnAddPerito;
+	private JButton btnRenovarPerito;
+	private JPanel pnPedirDNI;
+	private JLabel lblPedirDNI;
+	private JTextField txtDNIPerito;
+	private JPanel pnListaPeritos;
+	private JLabel lblListaPeritos;
+	private JPanel pnListaPeritosProfesionales;
+	private JScrollPane spListaPeritos;
+	private JTable tbListadoPeritosProfesionales;
 
 	public MainWindow() {
 		setTitle("COIIPA : GestiÃ³n de servicios");
@@ -316,21 +330,23 @@ public class MainWindow extends JFrame {
 		mainPanel.setLayout(mainCardLayout);
 
 		// TODO: Cambiar orden para ver al arrancar el programa
-		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
-		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
-		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
-		mainPanel.add(getPnInscripcion(), INSCRIPCION_CURSO_PANEL_NAME);
-		mainPanel.add(getPnListadoCursos(), LISTADO_CURSOS_PANEL_NAME);
-		mainPanel.add(getPnPagarInscripcionColegiado(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
-		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
-		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
-		mainPanel.add(getPnCrearCurso(), ADD_CURSO_PANEL_NAME);
+		
+//		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
+//		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
+//		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
+//		mainPanel.add(getPnInscripcion(), INSCRIPCION_CURSO_PANEL_NAME);
+//		mainPanel.add(getPnListadoCursos(), LISTADO_CURSOS_PANEL_NAME);
+//		mainPanel.add(getPnPagarInscripcionColegiado(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
+//		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
+//		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
+//		mainPanel.add(getPnCrearCurso(), ADD_CURSO_PANEL_NAME);
+		mainPanel.add(getPnListaProfesionalesPeritos(), "name_1300511342168100");
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-		inicializarCampos();
+	//	inicializarCampos();
 	}
 
 	private void inicializarCampos() {
@@ -3269,5 +3285,171 @@ public class MainWindow extends JFrame {
 			pnColectivos = new JPanel();
 		}
 		return pnColectivos;
+	}
+	private JPanel getPnListaProfesionalesPeritos() {
+		if (pnListaProfesionalesPeritos == null) {
+			pnListaProfesionalesPeritos = new JPanel();
+			pnListaProfesionalesPeritos.setLayout(new BorderLayout(0, 0));
+			pnListaProfesionalesPeritos.add(getPnBotones(), BorderLayout.SOUTH);
+			pnListaProfesionalesPeritos.add(getPnPedirDNI(), BorderLayout.NORTH);
+			pnListaProfesionalesPeritos.add(getPnListaPeritos(), BorderLayout.CENTER);
+		}
+		return pnListaProfesionalesPeritos;
+	}
+	private JPanel getPnBotones() {
+		if (pnBotones == null) {
+			pnBotones = new JPanel();
+			pnBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnBotones.add(getBtnAddPerito());
+			pnBotones.add(getBtnRenovarPerito());
+		}
+		return pnBotones;
+	}
+	private JButton getBtnAddPerito() {
+		if (btnAddPerito == null) {
+			btnAddPerito = new JButton("A\u00F1adir perito");
+			btnAddPerito.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					String dni = txtDNIPerito.getText(); 
+					if (dni.isEmpty()) {
+						JOptionPane.showMessageDialog(pnListaProfesionalesPeritos, "Por favor introduzca su "
+								+ "DNI para realizar cualquier operación");
+						return;
+					} 
+					ColegiadoDto colegiado = ColegiadoCrud.findColegiadoDni(dni);
+					if (colegiado != null) {
+						if (colegiado.perito == null) {
+							if (JOptionPane.showConfirmDialog(pnListaProfesionalesPeritos,"¿Quieres inscribirte como perito en las listas?\n" +  "Nombre: " + colegiado.nombre + "\n" + "Apellidos: " + colegiado.apellidos) 
+									== JOptionPane.YES_OPTION) {
+								PeritoCRUD.addPerito(dni);
+								TableModel peritosModel = new ColegiadoModel( PeritoCRUD.findAllPeritosPosicion() ).getPeritoModel();
+								tbListadoPeritosProfesionales.setModel(peritosModel);
+								JOptionPane.showMessageDialog(pnListaPeritosProfesionales, "Has sido añadido a la lista con éxito");
+							} 
+						} else {
+							JOptionPane.showMessageDialog(pnListaPeritosProfesionales, "No es posible añadir el perito");
+						}
+					} else {
+						JOptionPane.showMessageDialog(pnListaPeritosProfesionales,
+								"No existe colegiado con DNI: " + txtDNIPerito.getText());
+					}
+				}
+			});
+		}
+		return btnAddPerito;
+	}
+	private JButton getBtnRenovarPerito() {
+		if (btnRenovarPerito == null) {
+			btnRenovarPerito = new JButton("Renovar perito");
+			btnRenovarPerito.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					String dni = txtDNIPerito.getText(); 
+					if (dni.isEmpty()) {
+						JOptionPane.showMessageDialog(pnListaProfesionalesPeritos, "Por favor introduzca su "
+								+ "DNI para realizar cualquier operación");
+						return;
+					}
+					ColegiadoDto colegiado = ColegiadoCrud.findColegiadoDni(dni);
+					if (colegiado != null) {
+						if (colegiado.perito.equals(ColegiadoDto.Perito_estado.SIN_RENOVAR.toString())/*Si se puede renovar se renueva*/) {
+							if (JOptionPane.showConfirmDialog(pnListaProfesionalesPeritos,
+									"¿Quieres inscribirte como perito en las listas?\n" +  "Nombre: " + colegiado.nombre + "\n" + "Apellidos: " + colegiado.apellidos) 
+									== JOptionPane.YES_OPTION) {
+								PeritoCRUD.renovarPerito(dni);
+								TableModel peritosModel = new ColegiadoModel( PeritoCRUD.findAllPeritosPosicion() ).getPeritoModel();
+								tbListadoPeritosProfesionales.setModel(peritosModel);
+								JOptionPane.showMessageDialog(pnListaPeritosProfesionales, "Has sido renovado a la lista con éxito");
+							} 
+						} else {
+							JOptionPane.showMessageDialog(pnListaPeritosProfesionales, "No es posible renovar el perito");
+						}
+					} else {
+						JOptionPane.showMessageDialog(pnListaPeritosProfesionales,
+								"No existe colegiado con DNI: " + txtDNIPerito.getText());
+					}
+				}
+			});
+		}
+		return btnRenovarPerito;
+	}
+	private JPanel getPnPedirDNI() {
+		if (pnPedirDNI == null) {
+			pnPedirDNI = new JPanel();
+			pnPedirDNI.add(getLblPedirDNI());
+			pnPedirDNI.add(getTxtDNIPerito());
+		}
+		return pnPedirDNI;
+	}
+	private JLabel getLblPedirDNI() {
+		if (lblPedirDNI == null) {
+			lblPedirDNI = new JLabel("Introduzca su DNI por favor: ");
+			lblPedirDNI.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		}
+		return lblPedirDNI;
+	}
+	private JTextField getTxtDNIPerito() {
+		if (txtDNIPerito == null) {
+			txtDNIPerito = new JTextField();
+			txtDNIPerito.setFont(new Font("Tahoma", Font.PLAIN, 20));
+			txtDNIPerito.setColumns(10);
+		}
+		return txtDNIPerito;
+	}
+	private JPanel getPnListaPeritos() {
+		if (pnListaPeritos == null) {
+			pnListaPeritos = new JPanel();
+			pnListaPeritos.setLayout(new BorderLayout(0, 0));
+			pnListaPeritos.add(getLblListaPeritos(), BorderLayout.NORTH);
+			pnListaPeritos.add(getPnListaPeritosProfesionales(), BorderLayout.CENTER);
+		}
+		return pnListaPeritos;
+	}
+	private JLabel getLblListaPeritos() {
+		if (lblListaPeritos == null) {
+			lblListaPeritos = new JLabel("Lista de peritos profesionales");
+			lblListaPeritos.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			lblListaPeritos.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lblListaPeritos;
+	}
+	private JPanel getPnListaPeritosProfesionales() {
+		if (pnListaPeritosProfesionales == null) {
+			pnListaPeritosProfesionales = new JPanel();
+			pnListaPeritosProfesionales.setLayout(new BorderLayout(0, 0));
+			pnListaPeritosProfesionales.add(getSpListaPeritos());
+		}
+		return pnListaPeritosProfesionales;
+	}
+	private JScrollPane getSpListaPeritos() {
+		if (spListaPeritos == null) {
+			spListaPeritos = new JScrollPane(getTbListadoPeritos());
+		}
+		return spListaPeritos;
+	}
+	
+	private JTable getTbListadoPeritos() {
+		if (tbListadoPeritosProfesionales == null) {
+			tbListadoPeritosProfesionales = new JTable();
+			tbListadoPeritosProfesionales.setIntercellSpacing(new Dimension(0, 0));
+			tbListadoPeritosProfesionales.setShowGrid(false);
+			tbListadoPeritosProfesionales.setRowMargin(0);
+			tbListadoPeritosProfesionales.setRequestFocusEnabled(false);
+			tbListadoPeritosProfesionales.setFocusable(false);
+			tbListadoPeritosProfesionales.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbListadoPeritosProfesionales.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbListadoPeritosProfesionales.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbListadoPeritosProfesionales.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbListadoPeritosProfesionales.setShowVerticalLines(false);
+			tbListadoPeritosProfesionales.setOpaque(false);
+
+			tbListadoPeritosProfesionales.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbListadoPeritosProfesionales.setGridColor(new Color(255, 255, 255));
+			
+			TableModel peritosModel = new ColegiadoModel( PeritoCRUD.findAllPeritosPosicion() ).getPeritoModel();
+			tbListadoPeritosProfesionales.setModel( peritosModel );
+			
+			
+		}
+		return tbListadoPeritosProfesionales;
 	}
 }

@@ -28,20 +28,18 @@ public class ColegiadoModel {
 	}
 
 	public TableModel getColegiadoModel(final boolean showAllFields) throws BusinessException {
-		DefaultTableModel model = new DefaultTableModel();
+		DefaultTableModel model = new DefaultTableModel() {
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
 
 		if (colegiados.size() == 0) {
 			model.addColumn("");
 			model.addRow(new Object[] { "NO HAY SOLICITUDES DE ALTA DE COLEGIADOS" });
 
 		} else {
-
-//			model.addColumn(HEADER_COLUMN1);
-//			model.addColumn(HEADER_COLUMN2);
-//			model.addColumn(HEADER_COLUMN3);
-//			model.addColumn(HEADER_COLUMN4);
-//			model.addColumn(HEADER_COLUMN5);
-//			model.addColumn(HEADER_COLUMN6);
 			
 			model.setColumnIdentifiers(new Object[] {HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3, HEADER_COLUMN4, HEADER_COLUMN5, HEADER_COLUMN6});
 
@@ -55,6 +53,32 @@ public class ColegiadoModel {
 
 		return model;
 
+	}
+	
+	public TableModel getPeritoModel() {
+		DefaultTableModel model = new DefaultTableModel() {
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
+		};
+
+		if (colegiados.size() == 0) {
+			model.addColumn("");
+			model.addRow(new Object[] { "NO HAY PERITOS EN LA LISTA DE PROFESIONALES" });
+
+		} else {
+			
+			model.setColumnIdentifiers(new Object[] {HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3, "Renovacion","PosicionPerito"});
+
+			for (ColegiadoDto c : colegiados) {
+				model.addRow(new Object[] { createCustomCell(c.DNI), createCustomCell(c.nombre),
+						createCustomCell(c.apellidos),createCustomCell(c.perito), createCustomCell(c.posicionPerito) });
+			}
+			
+		}
+
+		return model;
 	}
 
 	/**
@@ -73,7 +97,7 @@ public class ColegiadoModel {
 		return cell.getText();
 
 	}
-
+	
 	public boolean isCellEditable(int i, int i1) {
 		return false; // To change body of generated methods, choose Tools | Templates.
 	}
