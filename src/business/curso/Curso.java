@@ -13,6 +13,7 @@ import persistence.curso.CursoDto;
  * @version v1.0.0
  *
  */
+
 public class Curso {
 
 	private static CursoDto selectedCourse;
