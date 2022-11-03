@@ -38,7 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -77,13 +76,6 @@ import ui.model.InscripcionColegiadoModel;
 import ui.util.TimeFormatter;
 import java.awt.Insets;
 import javax.swing.BoxLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.table.DefaultTableModel;
 
 public class MainWindow extends JFrame {
 

@@ -36,10 +36,9 @@ public class InscripcionColegiado {
 		JOptionPane.showMessageDialog(null, "<html><p align='center'>Justificante de Inscripcion:</p><p>"+contenido+"</p></html>");
 	}
 	
-	public static ColegiadoDto InicioSesion(String Num) throws BusinessException {
-		
+	public static ColegiadoDto InicioSesion(String Num) throws BusinessException {	
 		return ColegiadoCrud.findColegiadoNumColegiado(Num);
-		}
+	}
 	
 	public static List<Colegiado_Inscripcion> Lista_Inscritos_Curso(CursoDto c){
 		return InscripcionColegiadoCRUD.Lista_Inscritos_Curso(c);
