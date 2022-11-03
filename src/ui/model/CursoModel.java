@@ -63,31 +63,58 @@ public class CursoModel {
 	}
 
 	/**
-	 * @deprecated Para mostrar los cursos planificados utilizar el método
-	 *             {@link #getCursosPlanificadosModel}
-	 * @param showAllFields
+	 * @since Segundo Sprint Miguel.
+	 * @param showAllFields <code>
+	 * 				<ul>
+	 * 					<li>0 Todos los cursos</li>
+	 * 					<li>1 Todos los cursos menos id</li>
+	 * 				</ul>
+	 * 			</code>
 	 * @return
 	 * @throws BusinessException
 	 */
-	public TableModel getCursoModel(final boolean showAllFields) throws BusinessException {
+	public TableModel getCursoModel(final int showAllFields) throws BusinessException {
 
+		// 0 -> todos
+		// 1 -> todos menos id
 		// Listado de cursos actualmente planificados
+		DefaultTableModel model = new DefaultTableModel() {
+			private static final long serialVersionUID = 1L;
 
-		DefaultTableModel model = new DefaultTableModel();
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 
 		if (cursos.size() == 0) {
 			model.addColumn("");
 			model.addRow(new Object[] { "NO HAY CURSOS PLANIFICADOS ACTUALMENTE" });
 
 		} else {
+			if (showAllFields == 1) {
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
 
-			model.addColumn(HEADER_COLUMN6);
-			model.addColumn(HEADER_COLUMN1);
-			model.addColumn(HEADER_COLUMN2);
-			model.addColumn(HEADER_COLUMN3);
-			model.addColumn(HEADER_COLUMN4);
+				model.addColumn(HEADER_COLUMN7);
+				model.addColumn(HEADER_COLUMN8);
+				model.addColumn(HEADER_COLUMN9);
 
-			if (showAllFields) {
+				model.addColumn(HEADER_COLUMN6);
+
+				for (CursoDto c : cursos) {
+					model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.fechaApertura,
+							c.fechaCierre, c.estado, c.codigoCurso });
+				}
+
+			} else {
+				model.addColumn(HEADER_COLUMN6);
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
+				model.addColumn(HEADER_COLUMN4);
+
 				model.addColumn(HEADER_COLUMN7);
 				model.addColumn(HEADER_COLUMN8);
 				model.addColumn(HEADER_COLUMN9);
@@ -103,16 +130,15 @@ public class CursoModel {
 
 				}
 
-			} else {
 				for (CursoDto c : cursos) {
 					model.addRow(
 							new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio });
 				}
 			}
-
 		}
 
 		return model;
+
 	}
 
 	public boolean isCellEditable(int i, int i1) {

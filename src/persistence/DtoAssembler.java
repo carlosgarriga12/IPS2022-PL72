@@ -174,12 +174,51 @@ public class DtoAssembler {
 
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
-		I.cantidadPagar = rs.getDouble("CantidadPagar");
+		I.cantidadPagada = rs.getDouble("CantidadPagar");
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
 
 		return new Colegiado_Inscripcion(c, I);
 
+	}
+	
+	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+		int i = 1;
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString(i++);
+		d.colegiado.nombre = rs.getString(i++);
+		d.colegiado.apellidos = rs.getString(i++);
+		d.cantidadPagada = rs.getDouble(i++);
+		String fechaTransferencia = rs.getString(i++);
+		d.codigoTransferencia = rs.getString(i++);
+		String fechaPreinscripcion = rs.getString(i++);
+		if (fechaTransferencia==null) {
+			d.fechaTransferencia = null;
+			d.fechaPreinscripcion = null;
+		} else {
+			d.fechaTransferencia = LocalDate.parse(fechaTransferencia);
+			d.fechaPreinscripcion = LocalDate.parse(fechaPreinscripcion);
+		}
+		d.precio = rs.getDouble(i++);
+		d.estado = rs.getString(i++);
+		d.incidencias = rs.getString(i++);
+		return d;
+	}
+	
+	public static InscripcionColegiadoDto resultsetToIncripcionTransferenciaProcesar(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+		int i = 1;
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString(i++);
+		d.colegiado.nombre = rs.getString(i++);
+		d.colegiado.apellidos = rs.getString(i++);
+		d.cantidadPagada = rs.getDouble(i++);
+		d.precio = rs.getDouble(i++);
+		d.estado = rs.getString(i++);
+		d.incidencias = rs.getString(i++);
+		d.devolver = rs.getString(i++);
+		return d;
 	}
 
 }
