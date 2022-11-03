@@ -23,14 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -63,6 +61,7 @@ import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.curso.Precio_Colectivos;
 import persistence.jdbc.PersistenceException;
 import persistence.recibo.ReciboCRUD;
 import ui.components.LookAndFeel;
@@ -73,6 +72,8 @@ import ui.components.messages.MessageType;
 import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
+import ui.model.ModeloCurso;
+import ui.model.ModeloInscripcion;
 import ui.util.TimeFormatter;
 
 public class MainWindow extends JFrame {
@@ -156,7 +157,6 @@ public class MainWindow extends JFrame {
 
 	private JPanel pnInscripcion;
 	private JScrollPane spCursos;
-	private JList<CursoDto> lsCursos;
 	private JLabel lbInscripcionSeleccionarCursos;
 	private JButton btnInscribete;
 	private JLabel lbAlerta;
@@ -191,7 +191,6 @@ public class MainWindow extends JFrame {
 
 	private JPanel pnHomeNorth;
 	private JPanel pnHomeCenter;
-	private JPanel pnHomeSouth;
 	private JPanel pnHomeTituloColegiado;
 	private JPanel pnHomeTituloSecretaria;
 	private JLabel lbTituloHomeColegiado;
@@ -204,15 +203,8 @@ public class MainWindow extends JFrame {
 	private DefaultButton btHomeSecretariaAbrirInscripciones;
 	private DefaultButton btHomeSecretariaConsultarTitulacionSolicitante;
 	private DefaultButton btHomeSecretariaEmitirCuotas;
-	private JPanel pnHomeSouthDatabaseOptions;
-	private JPanel pnHomeClearDatabase;
-	private JPanel pnHomeLoadDatabase;
-	private DefaultButton btHomeLoadDatabase;
-	private JPanel pnHomeSouthTitle;
-	private JLabel lbHomeSouthDatabaseTitle;
 	private DefaultButton btHomeSecretariaAddCurso;
 	private DefaultButton btHomeSecretariaListadoInscripciones;
-	private DefaultButton btHomeClearDatabase;
 	private JPanel pnListadoCursos;
 	private JPanel pnPagarInscripcion;
 	private JPanel pnListadoInscripciones;
@@ -220,28 +212,22 @@ public class MainWindow extends JFrame {
 	private JPanel pnCrearCurso;
 	private JPanel pnCrearCursoTitulo;
 	private JLabel lblCrearCurso;
-	private JPanel pnCrearCursoCampos;
+	private JPanel pnHorarios;
 	private JPanel pnCrearCursoButtons;
 	private DefaultButton btnCrearCursoCancelar;
 	private JButton btnCrearCursoCrear;
 	private JPanel pnCrearCursoCenterContainer;
 	private JPanel pnCrearCursoTituloCurso;
 	private JPanel pnCrearCursoFechaImparticion;
-	private JPanel pnCrearCursoPrecioInscripcion;
 	private JLabel lblTituloCurso;
 	private JTextField txCrearCursoTituloCursoInput;
 	private JLabel lblFechaImparticion;
 	private JTextField txCrearCursoFechaImparticionInput;
-	private JLabel lblCrearCursoPrecio;
-	private JTextField txCrearCursoPrecioInscripcionInput;
 	private JScrollPane spnCursos;
 	private JLabel lbAlertaListadoInscripciones;
 
 	private JLabel lbTotalIngresos;
 	private JLabel lbTotalIngresosText;
-
-	private JList<Colegiado_Inscripcion> lInscripciones;
-	private JList<CursoDto> lCursos;
 
 	private JPanel pnConsultarTitulacionNorth;
 	private JPanel pnConsultarTitulacionCenter;
@@ -299,6 +285,24 @@ public class MainWindow extends JFrame {
 	private JPanel pnNumeroSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitanteRefrescarListaBotonContainer;
 	private DefaultButton btRecepcionarLoteSolicitudesPendientesColegiado;
+	private JPanel pnColectivos;
+	private JTable tbCursosAbiertos;
+	List<CursoDto> cursosAbiertosPnInscripcion;
+	private JTable tbCursosInscripciones;
+	private JTable tbInscripciones;
+	private JPanel pnColectivosCenter;
+	private JPanel pnColectivosEliminar;
+	private JComboBox<Integer> cbColectivosEliminar;
+	private JButton btnEliminarColectivo;
+	private JPanel pnColectivosAnadir;
+	private JComboBox<Integer> cbColectivosAnadir;
+	private JButton btnAnadirColectivo;
+	private JPanel panel;
+	private Precio_Colectivos colectivos_Precios;
+	private JPanel pnPrecioAnadirColectivo;
+	private JTextField txPrecioAnadirColectivo;
+	private JLabel lbPrecioAnadirColectivo;
+	private JComboBox<String> cbSeleccionarColectivo;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -346,7 +350,6 @@ public class MainWindow extends JFrame {
 			pnHome.setLayout(new BorderLayout(0, 0));
 			pnHome.add(getPnHomeNorth(), BorderLayout.NORTH);
 			pnHome.add(getPnHomeCenter(), BorderLayout.CENTER);
-			pnHome.add(getPnHomeSouth(), BorderLayout.SOUTH);
 		}
 		return pnHome;
 	}
@@ -1457,7 +1460,7 @@ public class MainWindow extends JFrame {
 			pnInscripcion.add(getBtMostrarCursos());
 			pnInscripcion.add(getBtnInscripcionToInicio());
 
-			JLabel lbLoginUsername_1 = new JLabel("Introduzca su número de Colegiado-Precolegiado:");
+			JLabel lbLoginUsername_1 = new JLabel("Introduzca su DNI:");
 			lbLoginUsername_1.setHorizontalAlignment(SwingConstants.LEFT);
 			lbLoginUsername_1.setFont(new Font("Arial", Font.BOLD, 12));
 			lbLoginUsername_1.setBounds(356, 10, 324, 35);
@@ -1468,32 +1471,94 @@ public class MainWindow extends JFrame {
 			txCursoDNI.setColumns(10);
 			txCursoDNI.setBounds(356, 44, 324, 35);
 			pnInscripcion.add(txCursoDNI);
+
+			getCbSeleccionarColectivo();
+			
+			JLabel lblNewLabel = new JLabel("Seleccione el colectivo al que pertenece:");
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lblNewLabel.setBounds(18, 15, 260, 24);
+			pnInscripcion.add(lblNewLabel);
 		}
 		return pnInscripcion;
+	}
+	
+	private JComboBox<String> getCbSeleccionarColectivo() {
+		if(cbSeleccionarColectivo==null) {
+			cbSeleccionarColectivo = new JComboBox();
+			cbSeleccionarColectivo.setModel(new DefaultComboBoxModel(new String[] {"Colegiado", "Precolegiado", "Estudiante", "Desempleado", "Otros"}));
+			cbSeleccionarColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbSeleccionarColectivo.setAlignmentX(0.0f);
+			cbSeleccionarColectivo.setBounds(18, 46, 137, 26);
+			pnInscripcion.add(cbSeleccionarColectivo);
+		}
+		return cbSeleccionarColectivo;
 	}
 
 	private JScrollPane getSpCursos() {
 		if (spCursos == null) {
 			spCursos = new JScrollPane();
-			spCursos.setBounds(18, 139, 1057, 408);
-			spCursos.setViewportView(getLsCursos());
+			spCursos.setBounds(18, 139, 1057, 384);
+			spCursos.setViewportView(getTbCursosAbiertos());
 		}
 		return spCursos;
 	}
+	
+	private JTable getTbCursosAbiertos() {
+		if(tbCursosAbiertos == null) {
+			tbCursosAbiertos = new JTable();
+			tbCursosAbiertos.setIntercellSpacing(new Dimension(0, 0));
+			tbCursosAbiertos.setShowGrid(false);
+			tbCursosAbiertos.setRowMargin(0);
+			tbCursosAbiertos.setRequestFocusEnabled(false);
+			tbCursosAbiertos.setFocusable(false);
+			tbCursosAbiertos.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbCursosAbiertos.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbCursosAbiertos.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbCursosAbiertos.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbCursosAbiertos.setShowVerticalLines(false);
+			tbCursosAbiertos.setOpaque(false);
 
-	private JList<CursoDto> getLsCursos() {
-		if (lsCursos == null) {
-			lsCursos = new JList<CursoDto>();
-			lsCursos.setFont(new Font("Arial", Font.BOLD, 15));
+			tbCursosAbiertos.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbCursosAbiertos.setGridColor(new Color(255, 255, 255));
+
+			tbCursosAbiertos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
+			
+
 		}
-		return lsCursos;
+		return tbCursosAbiertos;
+	}
+	
+	private JTable getTbCursosInscripciones() {
+		if(tbCursosInscripciones == null) {
+			tbCursosInscripciones = new JTable();
+			tbCursosInscripciones.setIntercellSpacing(new Dimension(0, 0));
+			tbCursosInscripciones.setShowGrid(false);
+			tbCursosInscripciones.setRowMargin(0);
+			tbCursosInscripciones.setRequestFocusEnabled(false);
+			tbCursosInscripciones.setFocusable(false);
+			tbCursosInscripciones.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbCursosInscripciones.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbCursosInscripciones.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbCursosInscripciones.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbCursosInscripciones.setShowVerticalLines(false);
+			tbCursosInscripciones.setOpaque(false);
+
+			tbCursosInscripciones.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbCursosInscripciones.setGridColor(new Color(255, 255, 255));
+
+			tbCursosInscripciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
+			
+
+		}
+		return tbCursosInscripciones;
 	}
 
 	private JLabel getLbInscripcionSeleccionarCursos() {
 		if (lbInscripcionSeleccionarCursos == null) {
 			lbInscripcionSeleccionarCursos = new JLabel("Selecciona un Curso:");
 			lbInscripcionSeleccionarCursos.setDisplayedMnemonic('s');
-			lbInscripcionSeleccionarCursos.setLabelFor(getLsCursos());
 			lbInscripcionSeleccionarCursos.setFont(new Font("Arial", Font.BOLD, 16));
 			lbInscripcionSeleccionarCursos.setBounds(18, 70, 361, 35);
 		}
@@ -1503,11 +1568,13 @@ public class MainWindow extends JFrame {
 	private JButton getBtnInscribete() {
 		if (btnInscribete == null) {
 			btnInscribete = new DefaultButton("Inscribirme", "ventana", "Inscribirme", 'n', ButtonColor.NORMAL);
+			btnInscribete.setLocation(794, 533);
 			btnInscribete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					lbConfirmacionInscripcion.setVisible(false);
 					lbAlerta.setVisible(false);
-					CursoDto cursoSeleccionado = lsCursos.getSelectedValue();
+					int IndexCursoSeleccionado = getTbCursosAbiertos().getSelectedRow();
+					CursoDto cursoSeleccionado = cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
 					try {
 						if (cursoSeleccionado == null) {
 							lbAlerta.setText("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
@@ -1575,7 +1642,7 @@ public class MainWindow extends JFrame {
 			lbConfirmacionInscripcion.setFont(new Font("Arial", Font.BOLD, 18));
 			lbConfirmacionInscripcion.setBorder(new LineBorder(Color.BLACK));
 
-			lbConfirmacionInscripcion.setBounds(18, 558, 719, 61);
+			lbConfirmacionInscripcion.setBounds(18, 548, 719, 61);
 
 		}
 		return lbConfirmacionInscripcion;
@@ -1592,30 +1659,32 @@ public class MainWindow extends JFrame {
 
 						if (c == null || txCursoDNI.getText().isEmpty()) {
 							lbAlerta.setText(
-									"Para mostrar los Cursos es Necesario un Numero de Colegiado-Precolegiado correcto");
+									"Para mostrar los Cursos es Necesario un DNI correcto");
 							lbAlerta.setVisible(true);
 
 						} else {
+							if(!c.TipoColectivo.equals(cbSeleccionarColectivo.getSelectedItem())){
+								lbAlerta.setText("El colectivo seleccionado no se corresponde con el colectivo asociado al DNI");
+								lbAlerta.setVisible(true);
+								return;
+							}
 							colegiado = c;
 
-							List<CursoDto> cursosAbiertos = InscripcionCursoFormativo.getCursosAbiertos();
+							cursosAbiertosPnInscripcion = InscripcionCursoFormativo.getCursosAbiertos();
+							cursosAbiertosPnInscripcion = cursosAbiertosPnInscripcion.stream()
+									.filter(curso -> Precio_Colectivos.StringToPrecio_Colectivos(curso.CantidadPagarColectivo).containsAlgunColectivo(c.TipoColectivo, "Todos"))
+									.collect(Collectors.toList());
 
-							if (cursosAbiertos.isEmpty()) {
+							if (cursosAbiertosPnInscripcion.isEmpty()) {
 								lbAlerta.setVisible(true);
-								lbAlerta.setText("Lo sentimos, No hay cursos Disponibles");
-							} else {
-								lsCursos.setModel(new AbstractListModel<CursoDto>() {
-									private static final long serialVersionUID = 1L;
-									CursoDto[] values = cursosAbiertos.toArray(new CursoDto[cursosAbiertos.size()]);
+								lbAlerta.setText("Lo sentimos, No hay cursos Disponibles para el colectivo seleccionado");
+								return;
+							}
+							else {
+								
+								TableModel tableModel = new ModeloCurso(cursosAbiertosPnInscripcion).getCursoModel(true, c.TipoColectivo);
 
-									public int getSize() {
-										return values.length;
-									}
-
-									public CursoDto getElementAt(int index) {
-										return values[index];
-									}
-								});
+								getTbCursosAbiertos().setModel(tableModel);
 							}
 						}
 					} catch (BusinessException e1) {
@@ -1623,7 +1692,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btMostrarCursos.setBounds(782, 21, 293, 66);
+			btMostrarCursos.setBounds(757, 21, 318, 66);
 
 		}
 		return btMostrarCursos;
@@ -1641,7 +1710,7 @@ public class MainWindow extends JFrame {
 			});
 			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
 
-			btnInscripcionToInicio.setBounds(795, 604, 280, 64);
+			btnInscripcionToInicio.setBounds(795, 619, 280, 64);
 
 		}
 		return btnInscripcionToInicio;
@@ -1667,17 +1736,6 @@ public class MainWindow extends JFrame {
 			pnHomeCenter.add(getPnHomeAccionesSecretaria());
 		}
 		return pnHomeCenter;
-	}
-
-	private JPanel getPnHomeSouth() {
-		if (pnHomeSouth == null) {
-			pnHomeSouth = new JPanel();
-			pnHomeSouth.setBackground(LookAndFeel.SECONDARY_COLOR);
-			pnHomeSouth.setLayout(new BorderLayout(0, 0));
-			pnHomeSouth.add(getPnHomeSouthTitle_1(), BorderLayout.NORTH);
-			pnHomeSouth.add(getPnHomeSouthDatabaseOptions());
-		}
-		return pnHomeSouth;
 	}
 
 	private JPanel getPnHomeTituloColegiado() {
@@ -1720,8 +1778,10 @@ public class MainWindow extends JFrame {
 			pnCrearCurso = new JPanel();
 			pnCrearCurso.setLayout(new BorderLayout(0, 0));
 			pnCrearCurso.add(getPnCrearCursoTitulo(), BorderLayout.NORTH);
-			pnCrearCurso.add(getPnCrearCursoCampos(), BorderLayout.CENTER);
+			pnCrearCurso.add(getPnHorarios(), BorderLayout.WEST);
 			pnCrearCurso.add(getPnCrearCursoButtons(), BorderLayout.SOUTH);
+			pnCrearCurso.add(getPnColectivos(), BorderLayout.CENTER);
+			colectivos_Precios = new Precio_Colectivos();
 		}
 		return pnCrearCurso;
 	}
@@ -1743,15 +1803,15 @@ public class MainWindow extends JFrame {
 		return lblCrearCurso;
 	}
 
-	private JPanel getPnCrearCursoCampos() {
-		if (pnCrearCursoCampos == null) {
-			pnCrearCursoCampos = new JPanel();
-			pnCrearCursoCampos.setOpaque(false);
-			pnCrearCursoCampos.setBorder(new EmptyBorder(0, 100, 0, 100));
-			pnCrearCursoCampos.setLayout(new BorderLayout(0, 0));
-			pnCrearCursoCampos.add(getPnCrearCursoCenterContainer());
+	private JPanel getPnHorarios() {
+		if (pnHorarios == null) {
+			pnHorarios = new JPanel();
+			pnHorarios.setOpaque(false);
+			pnHorarios.setBorder(new EmptyBorder(0, 100, 0, 0));
+			pnHorarios.setLayout(new BorderLayout(0, 0));
+			pnHorarios.add(getPnCrearCursoCenterContainer(), BorderLayout.CENTER);
 		}
-		return pnCrearCursoCampos;
+		return pnHorarios;
 	}
 
 	private JPanel getPnCrearCursoButtons() {
@@ -1822,36 +1882,26 @@ public class MainWindow extends JFrame {
 								"No puede crear un curso con una fecha anterior a la actual");
 						return;
 					}
+					
+					if(colectivos_Precios.size()==0) {
+						JOptionPane.showMessageDialog(pnCrearCurso,"Es necesario anadir precios de curso para algun colectivo");
+						return;
+					}
 
-					if (txCrearCursoPrecioInscripcionInput.getText().isEmpty()) {
-						JOptionPane.showMessageDialog(pnCrearCurso, "El precio del curso esta vacio");
-						return;
-					}
-					try {
-						precio = Double.valueOf(txCrearCursoPrecioInscripcionInput.getText());
-					} catch (Exception e) {
-						txCrearCursoPrecioInscripcionInput.setText("");
-						txCrearCursoPrecioInscripcionInput.grabFocus();
-						JOptionPane.showMessageDialog(pnCrearCurso,
-								"Introduzca un valor decimal " + "para el precio del curso");
-						return;
-					}
-					if (precio <= 0) {
-						txCrearCursoPrecioInscripcionInput.setText("");
-						txCrearCursoPrecioInscripcionInput.grabFocus();
-						JOptionPane.showMessageDialog(pnCrearCurso, "El precio tiene que ser positivo");
-						return;
-					}
+
 					CursoDto curso = new CursoDto();
 					curso.titulo = txCrearCursoTituloCursoInput.getText();
 					curso.precio = precio;
 					curso.fechaInicio = fecha;
 					curso.estado = CursoDto.CURSO_PLANIFICADO;
 					curso.codigoCurso = CursoCRUD.generarCodigoCurso();
+					curso.CantidadPagarColectivo = colectivos_Precios.toString();
 
 					Curso.add(curso);
 
 					JOptionPane.showMessageDialog(pnCrearCurso, "Curso creado correctamente");
+					
+					colectivos_Precios = new Precio_Colectivos();
 				}
 			});
 		}
@@ -1863,7 +1913,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado = new JPanel();
 			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesColegiado.setOpaque(false);
-			pnHomeAccionesColegiado.setLayout(new GridLayout(4, 1, 0, 10));
+			pnHomeAccionesColegiado.setLayout(new GridLayout(5, 1, 0, 10));
 
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
@@ -1994,73 +2044,6 @@ public class MainWindow extends JFrame {
 		return btHomeSecretariaEmitirCuotas;
 	}
 
-	private JPanel getPnHomeSouthDatabaseOptions() {
-		if (pnHomeSouthDatabaseOptions == null) {
-			pnHomeSouthDatabaseOptions = new JPanel();
-			pnHomeSouthDatabaseOptions.setOpaque(false);
-			pnHomeSouthDatabaseOptions.setBorder(new EmptyBorder(30, 50, 30, 50));
-			pnHomeSouthDatabaseOptions.setBackground(LookAndFeel.SECONDARY_COLOR);
-			pnHomeSouthDatabaseOptions.setLayout(new GridLayout(0, 2, 30, 0));
-			pnHomeSouthDatabaseOptions.add(getPnHomeLoadDatabase());
-			pnHomeSouthDatabaseOptions.add(getPnHomeClearDatabase());
-		}
-		return pnHomeSouthDatabaseOptions;
-	}
-
-	private JPanel getPnHomeClearDatabase() {
-		if (pnHomeClearDatabase == null) {
-			pnHomeClearDatabase = new JPanel();
-			pnHomeClearDatabase.setOpaque(false);
-			pnHomeClearDatabase.setLayout(new BorderLayout(0, 0));
-			pnHomeClearDatabase.add(getBtHomeLoadDatabase());
-		}
-		return pnHomeClearDatabase;
-	}
-
-	private JPanel getPnHomeLoadDatabase() {
-		if (pnHomeLoadDatabase == null) {
-			pnHomeLoadDatabase = new JPanel();
-			pnHomeLoadDatabase.setOpaque(false);
-			pnHomeLoadDatabase.setLayout(new BorderLayout(0, 0));
-			pnHomeLoadDatabase.add(getBtHomeClearDatabase());
-		}
-		return pnHomeLoadDatabase;
-	}
-
-	private DefaultButton getBtHomeLoadDatabase() {
-		if (btHomeLoadDatabase == null) {
-			btHomeLoadDatabase = new DefaultButton("Cargar datos", "ventana", "CargarDatos", 'r', ButtonColor.INFO);
-			btHomeLoadDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// TODO: Cargar datos en la base de datos
-				}
-			});
-		}
-		return btHomeLoadDatabase;
-	}
-
-	private JPanel getPnHomeSouthTitle_1() {
-		if (pnHomeSouthTitle == null) {
-			pnHomeSouthTitle = new JPanel();
-			pnHomeSouthTitle.setOpaque(false);
-			FlowLayout fl_pnHomeSouthTitle = new FlowLayout(FlowLayout.CENTER, 5, 5);
-			fl_pnHomeSouthTitle.setAlignOnBaseline(true);
-			pnHomeSouthTitle.setLayout(fl_pnHomeSouthTitle);
-			pnHomeSouthTitle.add(getLbHomeSouthDatabaseTitle_1());
-		}
-		return pnHomeSouthTitle;
-	}
-
-	private JLabel getLbHomeSouthDatabaseTitle_1() {
-		if (lbHomeSouthDatabaseTitle == null) {
-			lbHomeSouthDatabaseTitle = new JLabel("Base de datos");
-			lbHomeSouthDatabaseTitle.setHorizontalAlignment(SwingConstants.CENTER);
-			lbHomeSouthDatabaseTitle.setFont(new Font("Arial", Font.PLAIN, 24));
-			lbHomeSouthDatabaseTitle.setForeground(LookAndFeel.TERTIARY_COLOR);
-		}
-		return lbHomeSouthDatabaseTitle;
-	}
-
 	private DefaultButton getBtHomeSecretariaAddCurso() {
 		if (btHomeSecretariaAddCurso == null) {
 			btHomeSecretariaAddCurso = new DefaultButton("Añadir un curso", "ventana", "AddCurso", 'd',
@@ -2086,18 +2069,6 @@ public class MainWindow extends JFrame {
 			});
 		}
 		return btHomeSecretariaListadoInscripciones;
-	}
-
-	private DefaultButton getBtHomeClearDatabase() {
-		if (btHomeClearDatabase == null) {
-			btHomeClearDatabase = new DefaultButton("Vaciar BBDD", "ventana", "VaciarDB", 'v', ButtonColor.INFO);
-			btHomeClearDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// TODO: Vaciar base de datos
-				}
-			});
-		}
-		return btHomeClearDatabase;
 	}
 
 	private JPanel getPnListadoCursos() {
@@ -2189,6 +2160,30 @@ public class MainWindow extends JFrame {
 		}
 		return tbListadoTodosCursos;
 	}
+	
+	private JTable getTbInscripciones() {
+		if(tbInscripciones == null) {
+			tbInscripciones = new JTable();
+			tbInscripciones.setIntercellSpacing(new Dimension(0, 0));
+			tbInscripciones.setShowGrid(false);
+			tbInscripciones.setRowMargin(0);
+			tbInscripciones.setRequestFocusEnabled(false);
+			tbInscripciones.setFocusable(false);
+			tbInscripciones.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbInscripciones.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbInscripciones.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbInscripciones.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbInscripciones.setShowVerticalLines(false);
+			tbInscripciones.setOpaque(false);
+
+			tbInscripciones.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbInscripciones.setGridColor(new Color(255, 255, 255));
+
+			tbInscripciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		}
+		return tbInscripciones;
+	}
 
 	private JPanel getPnListadoInscripciones() {
 		if (pnListadoInscripciones == null) {
@@ -2200,9 +2195,7 @@ public class MainWindow extends JFrame {
 			spnInscripciones.setBounds(547, 99, 481, 417);
 			pnListadoInscripciones.add(spnInscripciones);
 
-			lInscripciones = new JList<Colegiado_Inscripcion>();
-
-			spnInscripciones.setViewportView(lInscripciones);
+			spnInscripciones.setViewportView(getTbInscripciones());
 
 			lbTotalIngresosText = new JLabel("Total Ingresos:");
 			lbTotalIngresosText.setVisible(false);
@@ -2317,8 +2310,9 @@ public class MainWindow extends JFrame {
 						btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
 
 					} catch (BusinessException e1) {
-
-						e1.printStackTrace();
+						pnConsultarColegiadoDatosColegiadoSeleccionado.setVisible(true);
+						lbColegiadoSeleccionadoSolicitudRespuesta.setText(e1.getMessage());
+//						e1.printStackTrace();
 					}
 				}
 			});
@@ -2447,7 +2441,6 @@ public class MainWindow extends JFrame {
 			pnCrearCursoCenterContainer.setLayout(new GridLayout(3, 1, 0, 10));
 			pnCrearCursoCenterContainer.add(getPnCrearCursoTituloCurso());
 			pnCrearCursoCenterContainer.add(getPnCrearCursoFechaImparticion());
-			pnCrearCursoCenterContainer.add(getPnCrearCursoPrecioInscripcion());
 		}
 		return pnCrearCursoCenterContainer;
 	}
@@ -2472,17 +2465,6 @@ public class MainWindow extends JFrame {
 			pnCrearCursoFechaImparticion.add(getTxCrearCursoFechaImparticionInput());
 		}
 		return pnCrearCursoFechaImparticion;
-	}
-
-	private JPanel getPnCrearCursoPrecioInscripcion() {
-		if (pnCrearCursoPrecioInscripcion == null) {
-			pnCrearCursoPrecioInscripcion = new JPanel();
-			pnCrearCursoPrecioInscripcion.setOpaque(false);
-			pnCrearCursoPrecioInscripcion.setLayout(new GridLayout(0, 2, 10, 0));
-			pnCrearCursoPrecioInscripcion.add(getLblCrearCursoPrecio());
-			pnCrearCursoPrecioInscripcion.add(getTxCrearCursoPrecioInscripcionInput());
-		}
-		return pnCrearCursoPrecioInscripcion;
 	}
 
 	private JLabel getLblTituloCurso() {
@@ -2524,56 +2506,25 @@ public class MainWindow extends JFrame {
 		return txCrearCursoFechaImparticionInput;
 	}
 
-	private JLabel getLblCrearCursoPrecio() {
-		if (lblCrearCursoPrecio == null) {
-			lblCrearCursoPrecio = new JLabel("Precio inscripcion: ");
-			lblCrearCursoPrecio.setLabelFor(getTxCrearCursoPrecioInscripcionInput());
-			lblCrearCursoPrecio.setHorizontalAlignment(SwingConstants.CENTER);
-			lblCrearCursoPrecio.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		}
-		return lblCrearCursoPrecio;
-	}
-
-	private JTextField getTxCrearCursoPrecioInscripcionInput() {
-		if (txCrearCursoPrecioInscripcionInput == null) {
-			txCrearCursoPrecioInscripcionInput = new JTextField();
-			txCrearCursoPrecioInscripcionInput.setColumns(10);
-			TextPlaceHolderCustom.setPlaceholder("Introduce el precio", txCrearCursoPrecioInscripcionInput);
-		}
-		return txCrearCursoPrecioInscripcionInput;
-	}
-
 	private JScrollPane getSpnCursos() {
 		if (spnCursos == null) {
 			spnCursos = new JScrollPane();
 			spnCursos.setBounds(67, 99, 481, 417);
-
-			lCursos = new JList<CursoDto>();
-			spnCursos.add(lCursos);
-			lCursos.addListSelectionListener(new ListSelectionListener() {
+			spnCursos.add(getTbCursosInscripciones());
+			getTbCursosInscripciones().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
 					getLbAlertaListadoInscripciones().setVisible(false);
 					List<Colegiado_Inscripcion> listInscripciones = InscripcionColegiado
-							.Lista_Inscritos_Curso(lCursos.getSelectedValue());
+							.Lista_Inscritos_Curso(cursosAbiertosPnInscripcion.get(tbCursosInscripciones.getSelectedRow()));
 					if (listInscripciones.isEmpty()) {
 						getLbAlertaListadoInscripciones().setVisible(true);
 						getLbAlertaListadoInscripciones()
 								.setText("Actualmente no hay inscritos en el curso seleccionado");
 					} else {
+						
+						TableModel tableModel = new ModeloInscripcion(listInscripciones).getCursoModel();
 
-						lInscripciones.setModel(new AbstractListModel<Colegiado_Inscripcion>() {
-							private static final long serialVersionUID = 1L;
-							Colegiado_Inscripcion[] values = listInscripciones
-									.toArray(new Colegiado_Inscripcion[listInscripciones.size()]);
-
-							public int getSize() {
-								return values.length;
-							}
-
-							public Colegiado_Inscripcion getElementAt(int index) {
-								return values[index];
-							}
-						});
+						getTbInscripciones().setModel(tableModel);
 
 						lbTotalIngresosText.setVisible(true);
 						lbTotalIngresos.setVisible(true);
@@ -2584,30 +2535,22 @@ public class MainWindow extends JFrame {
 				}
 			});
 
-			spnCursos.setViewportView(lCursos);
+			spnCursos.setViewportView(getTbCursosInscripciones());
 
 		}
 		return spnCursos;
 	}
 
 	public void ActualizaModeloListaCursos() {
-		List<CursoDto> listCursos = Curso.listaCursosAbiertosYCerrados();
-		if (listCursos.isEmpty()) {
+		cursosAbiertosPnInscripcion = Curso.listaCursosAbiertosYCerrados();
+		if (cursosAbiertosPnInscripcion.isEmpty()) {
 			getLbAlertaListadoInscripciones().setVisible(true);
 			getLbAlertaListadoInscripciones().setText("Lo sentimos, no hay cursos disponibles actualmente");
 		} else {
-			lCursos.setModel(new AbstractListModel<CursoDto>() {
-				private static final long serialVersionUID = 1L;
-				CursoDto[] values = listCursos.toArray(new CursoDto[listCursos.size()]);
+			
+			TableModel tableModel = new ModeloCurso(cursosAbiertosPnInscripcion).getCursoModel(false, "");
 
-				public int getSize() {
-					return values.length;
-				}
-
-				public CursoDto getElementAt(int index) {
-					return values[index];
-				}
-			});
+			getTbCursosInscripciones().setModel(tableModel);
 		}
 	}
 
@@ -2704,7 +2647,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private boolean comprobarCamposT() {
-		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9) {
+		if (textFieldDNIColegiado.getText().isEmpty() || textFieldDNIColegiado.getText().length() != 9) {
 			JOptionPane.showMessageDialog(null,
 					"Revise que no haya dejado ningún campo vacío y el formato del DNI es el correcto\n"
 							+ "Sigue el ejemplo del campo correspondiente",
@@ -2782,8 +2725,8 @@ public class MainWindow extends JFrame {
 			return false;
 		}
 
-		if (textFieldDNIColegiado.getText().isBlank() || textFieldDNIColegiado.getText().length() != 9
-				|| textFieldNumeroTarjetaColegiado.getText().isBlank()
+		if (textFieldDNIColegiado.getText().isEmpty() || textFieldDNIColegiado.getText().length() != 9
+				|| textFieldNumeroTarjetaColegiado.getText().isEmpty()
 				|| textFieldNumeroTarjetaColegiado.getText().length() != 5) {
 			JOptionPane.showMessageDialog(null,
 					"Revise que no haya dejado ningún campo vacío y el formato del DNI y de la tarjeta de crédito son correctos\n"
@@ -3297,6 +3240,167 @@ public class MainWindow extends JFrame {
 
 		lbConsultarTitulacionTitle.setText("Consultar titulación de un solicitante de Ingreso");
 
-		lbNumeroSolicitudesColegiado.setText("No hay ninguna solicitud");
+		lbNumeroSolicitudesColegiado.setText("No hay ninguna solicitud");	
+	}
+	
+	private JPanel getPnColectivos() {
+		if (pnColectivos == null) {
+			pnColectivos = new JPanel();
+			pnColectivos.setBorder(null);
+			pnColectivos.setLayout(new BorderLayout(50, 70));
+			pnColectivos.add(getPnColectivosCenter(), BorderLayout.CENTER);
+			pnColectivos.add(getPanel(), BorderLayout.NORTH);
+		}
+		return pnColectivos;
+	}
+	private JPanel getPnColectivosCenter() {
+		if (pnColectivosCenter == null) {
+			pnColectivosCenter = new JPanel();
+			pnColectivosCenter.setBounds(new Rectangle(0, 0, 500, 0));
+			pnColectivosCenter.setLayout(new BorderLayout(50, 25));
+			pnColectivosCenter.add(getPnColectivosAnadir(), BorderLayout.NORTH);
+			pnColectivosCenter.add(getPnColectivosEliminar());
+		}
+		return pnColectivosCenter;
+	}
+	private JPanel getPnColectivosEliminar() {
+		if (pnColectivosEliminar == null) {
+			pnColectivosEliminar = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnColectivosEliminar.getLayout();
+			flowLayout.setAlignment(FlowLayout.LEADING);
+			pnColectivosEliminar.add(getCbColectivosEliminar());
+			pnColectivosEliminar.add(getBtnEliminarColectivo());
+		}
+		return pnColectivosEliminar;
+	}
+	private JComboBox<Integer> getCbColectivosEliminar() {
+		if (cbColectivosEliminar == null) {
+			cbColectivosEliminar = new JComboBox();
+		}
+		return cbColectivosEliminar;
+	}
+	private JButton getBtnEliminarColectivo() {
+		if (btnEliminarColectivo == null) {
+			btnEliminarColectivo = new JButton("Eliminar");
+			btnEliminarColectivo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(cbColectivosEliminar.getModel() == null || cbColectivosEliminar.getModel().getSelectedItem()==null) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "Para Eliminar un curso, debe haber un curso seleccionado");
+						return;
+					}
+					colectivos_Precios.remove((String) cbColectivosEliminar.getModel().getSelectedItem());
+					cbColectivosEliminar.setModel(new DefaultComboBoxModel(colectivos_Precios.getColectivos_precios().toArray()));
+
+				}
+			});
+			btnEliminarColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btnEliminarColectivo;
+	}
+	private JPanel getPnColectivosAnadir() {
+		if (pnColectivosAnadir == null) {
+			pnColectivosAnadir = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnColectivosAnadir.getLayout();
+			flowLayout.setAlignment(FlowLayout.LEFT);
+			pnColectivosAnadir.add(getCbColectivosAnadir());
+			pnColectivosAnadir.add(getPnPrecioAnadirColectivo());
+			pnColectivosAnadir.add(getBtnAnadirColectivo());
+		}
+		return pnColectivosAnadir;
+	}
+	private JComboBox<Integer> getCbColectivosAnadir() {
+		if (cbColectivosAnadir == null) {
+			cbColectivosAnadir = new JComboBox();
+			cbColectivosAnadir.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbColectivosAnadir.setModel(new DefaultComboBoxModel(new String[] {"Colegiado", "Precolegiado", "Estudiante", "Desempleado", "Otros", "Todos"}));
+			cbColectivosAnadir.setAlignmentX(0.0f);
+		}
+		return cbColectivosAnadir;
+	}
+	private JButton getBtnAnadirColectivo() {
+		if (btnAnadirColectivo == null) {
+			btnAnadirColectivo = new JButton("A\u00F1adir");
+			btnAnadirColectivo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(colectivos_Precios==null) {
+						colectivos_Precios = new Precio_Colectivos();
+					}
+					if(txPrecioAnadirColectivo.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "Es necesario introducir un precio");
+						return;
+					}
+					try {
+						double precio = Double.valueOf(txPrecioAnadirColectivo.getText());
+						String colectivo = (String) cbColectivosAnadir.getSelectedItem();
+						if(precio < 0) {
+							JOptionPane.showMessageDialog(pnCrearCurso, "No se puede anadir un precio negativo");
+							return;
+						}
+						if(colectivos_Precios.containsColectivo(colectivo)) {
+							JOptionPane.showMessageDialog(pnCrearCurso, "No se puede anadir porque el colectivo ya ha sido anadido");
+							return;
+						}
+						if(colectivo.equals("Todos")) {
+							if(colectivos_Precios.size()!=0) {
+								JOptionPane.showMessageDialog(pnCrearCurso, "No se puede anadir un precio para todos porque hay precios para otros colectivos");
+								return;
+							}
+							colectivos_Precios.add(colectivo, precio);
+							cbColectivosEliminar.setModel(new DefaultComboBoxModel(colectivos_Precios.getColectivos_precios().toArray()));
+							return;
+						}
+						else {
+							if(colectivos_Precios.containsColectivo("Todos")) {
+								JOptionPane.showMessageDialog(pnCrearCurso, "No se puede anadir un precio para el colectivo seleccionado porque hay un precio para todos");
+								return;
+							}
+							else {
+								colectivos_Precios.add(colectivo, precio);
+								cbColectivosEliminar.setModel(new DefaultComboBoxModel(colectivos_Precios.getColectivos_precios().toArray()));
+								return;
+							}
+						}
+					}catch(Exception e1) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "Introduzca un precio correcto");
+					}
+					
+				}
+			});
+			btnAnadirColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btnAnadirColectivo;
+	}
+	private JPanel getPanel() {
+		if (panel == null) {
+			panel = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+			flowLayout.setVgap(0);
+			flowLayout.setHgap(0);
+		}
+		return panel;
+	}
+	private JPanel getPnPrecioAnadirColectivo() {
+		if (pnPrecioAnadirColectivo == null) {
+			pnPrecioAnadirColectivo = new JPanel();
+			pnPrecioAnadirColectivo.setLayout(new BorderLayout(0, 0));
+			pnPrecioAnadirColectivo.add(getTxPrecioAnadirColectivo());
+			pnPrecioAnadirColectivo.add(getLbPrecioAnadirColectivo(), BorderLayout.NORTH);
+		}
+		return pnPrecioAnadirColectivo;
+	}
+	private JTextField getTxPrecioAnadirColectivo() {
+		if (txPrecioAnadirColectivo == null) {
+			txPrecioAnadirColectivo = new JTextField();
+			txPrecioAnadirColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txPrecioAnadirColectivo.setColumns(10);
+		}
+		return txPrecioAnadirColectivo;
+	}
+	private JLabel getLbPrecioAnadirColectivo() {
+		if (lbPrecioAnadirColectivo == null) {
+			lbPrecioAnadirColectivo = new JLabel("Precio:");
+			lbPrecioAnadirColectivo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		}
+		return lbPrecioAnadirColectivo;
 	}
 }

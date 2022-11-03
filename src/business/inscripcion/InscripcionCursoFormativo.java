@@ -7,6 +7,7 @@ import java.util.List;
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
+import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;

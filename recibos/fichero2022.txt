@@ -1,4 +1,3 @@
 Fichero de recibos 
-Numero de recibo	Fecha de emision	DNI		Numero cuenta		Cantidad
-1					2022-10-13			12345678T		98786		50.0
-2					2022-10-13			12345678R		98786		50.0
+Numero de recibo	Fecha de emision	DNI				Numero cuenta	Cantidad
+1					2022-11-03			71778880C		12345			50.0

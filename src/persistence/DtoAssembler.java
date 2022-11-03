@@ -13,7 +13,6 @@ import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
-import persistence.curso.Precio_Colectivos;
 
 public class DtoAssembler {
 
@@ -56,6 +55,7 @@ public class DtoAssembler {
 		c.numeroCuenta = rs.getString("numeroCuenta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
 		c.numeroColegiado = rs.getString("numero");
+		c.TipoColectivo = rs.getString("TipoColectivo");
 
 		return c;
 
@@ -153,10 +153,9 @@ public class DtoAssembler {
 		c.titulo = rs.getString("TITULO");
 		c.fechaInicio = LocalDate.parse(rs.getString("FECHAIMPARTIR"));
 		c.plazasDisponibles = rs.getInt("PLAZAS");
-		// TODO: Cantidad pagar del colegiado
-		// c.precio = rs.getDouble("PRECIO");
 		c.fechaApertura = LocalDate.parse(rs.getString("FECHAAPERTURA"));
 		c.fechaCierre = LocalDate.parse(rs.getString("FECHACIERRE"));
+		c.CantidadPagarColectivo = rs.getString("CantidadPagarColectivo");
 
 		return c;
 	}

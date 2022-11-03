@@ -16,4 +16,5 @@ public class ColegiadoDto {
 	public LocalDate fechaSolicitud; // 03/10/2022
 	public String estado; // "PENDIENTE"
 	public String numeroColegiado; // 2022-0001
+	public String TipoColectivo;
 }

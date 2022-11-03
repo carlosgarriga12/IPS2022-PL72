@@ -65,10 +65,9 @@ public class CursoCRUD {
 			int i = 1;
 			pst.setString(i++, curso.titulo);
 			pst.setString(i++, curso.fechaInicio.toString());
-			// TODO: antidad a pagar del colegiado
-			//pst.setDouble(i++, curso.precio);
 			pst.setInt(i++, curso.codigoCurso);
 			pst.setString(i++, curso.estado);
+			pst.setString(i++, curso.CantidadPagarColectivo);
 			
 			pst.executeUpdate();
 		} catch (SQLException e) {
