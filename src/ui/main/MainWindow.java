@@ -3441,7 +3441,7 @@ public class MainWindow extends JFrame {
 		return lblSeleccionaCursoTransf;
 	}
 	private JButton getBtnMovimientosBancarios() {
-		if (btnMovimientosBancarios == null) {
+		if (btnMovimientosBancarios == null) { 
 			btnMovimientosBancarios = new DefaultButton("Solicitar movimientos bancarios del curso", "ventana", "ValidarTransferencia",
 					'S', ButtonColor.NORMAL);
 			btnMovimientosBancarios.setToolTipText("Pulsa para registrar la actividad bancaria del curso seleccionado");
@@ -3465,6 +3465,7 @@ public class MainWindow extends JFrame {
 						btnProcesarPagos.setEnabled(true);
 						tbCourses.setEnabled(false);
 						panelMuestraTransferenciasCentro.add(getScrollPaneTransferencias());
+						
 						if (tbTransferencias!=null) {
 							try {
 								tableModel = new InscripcionColegiadoModel(InscripcionColegiado.obtenerTransferencias(cursoSeleccionado.codigoCurso)).getCursoModel(InscripcionColegiadoModel.TRANSFERENCIAS_RECIBIDAS);
