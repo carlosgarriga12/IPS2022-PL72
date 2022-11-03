@@ -393,7 +393,7 @@ public class MainWindow extends JFrame {
 			tbCoursesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			try {
-				TableModel tableModel = new CursoModel(Curso.listarCursosPlanificados()).getCursoModel(false);
+				TableModel tableModel = new CursoModel(Curso.listarCursosPlanificados()).getCursosPlanificadosModel();
 
 				tbCoursesList.setModel(tableModel);
 			} catch (BusinessException e) {
@@ -819,7 +819,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void refreshScheduledCoursesList() throws BusinessException {
-		TableModel tableModel = new CursoModel(Curso.listarCursosPlanificados()).getCursoModel(false);
+		TableModel tableModel = new CursoModel(Curso.listarCursosPlanificados()).getCursosPlanificadosModel();
 		tbCoursesList.setModel(tableModel);
 		tbCoursesList.repaint();
 	}

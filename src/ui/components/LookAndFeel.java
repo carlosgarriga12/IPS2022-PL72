@@ -3,8 +3,6 @@ package ui.components;
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.UIManager;
-
 /**
  * 
  * @author Francisco Coya

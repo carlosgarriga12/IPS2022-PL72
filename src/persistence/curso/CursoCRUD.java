@@ -5,10 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import business.BusinessException;
+import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
@@ -125,7 +127,9 @@ public class CursoCRUD {
 
 			// Filtrado de cursos planificados
 			for (CursoDto c : allCourses) {
-				if (c.estado.equals(CursoDto.CURSO_PLANIFICADO)) {
+				 
+				if (c.estado.equals(CursoDto.CURSO_PLANIFICADO) 
+						&& DateUtils.checkDateIsAfter(c.fechaInicio, LocalDate.now())) {
 					res.add(c);
 				}
 			}

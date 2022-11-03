@@ -27,7 +27,14 @@ public class ColegiadoModel extends DefaultTableModel {
 	}
 
 	public TableModel getColegiadoModel(final boolean showAllFields) throws BusinessException {
-		DefaultTableModel model = new DefaultTableModel();
+		DefaultTableModel model = new DefaultTableModel() {
+			private static final long serialVersionUID = 360537344960895264L;
+
+			@Override
+			public boolean isCellEditable(int i, int i1) {
+				return false;
+			}
+		};
 
 		if (colegiados.size() == 0) {
 			model.addColumn("");

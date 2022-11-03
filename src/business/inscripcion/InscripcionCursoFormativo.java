@@ -57,6 +57,8 @@ public class InscripcionCursoFormativo {
 			throw new BusinessException(
 					"Por favor, corriga el periodo de inscripción. La fecha de inscripción ha de ser a partir del día de hoy");
 
+			
+			
 			// Si fecha cierre < fecha apertura
 			// ó fecha inicio < fecha apertura
 		} else if (DateUtils.checkDateIsAfter(curso.fechaApertura, curso.fechaInicio)) {

@@ -13,6 +13,7 @@ import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.curso.Precio_Colectivos;
 
 public class DtoAssembler {
 
