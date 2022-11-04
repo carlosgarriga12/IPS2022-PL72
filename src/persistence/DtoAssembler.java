@@ -13,6 +13,7 @@ import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.curso.Precio_Colectivos;
 
 public class DtoAssembler {
 
@@ -97,12 +98,9 @@ public class DtoAssembler {
 	public static String listaTitulacionesColegiadoToString(List<String> titulaciones) {
 		return String.join(",", titulaciones).replace("[", "").replace("]", "");
 	}
-	
+
 	public static String listaTitulacionesColegiadoToStringForTable(List<String> titulaciones) {
-		return "<html>"
-				.concat(String.join("<br />", titulaciones)
-						.replace("[", "").replace("]", ""))
-				.concat("</html>");
+		return "<html>".concat(String.join("<br />", titulaciones).replace("[", "").replace("]", "")).concat("</html>");
 	}
 
 	public static List<CursoDto> toCursoList(ResultSet rs) throws SQLException {
@@ -136,7 +134,10 @@ public class DtoAssembler {
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
 
 		// TODO: Cantidad a pagar colegiado
-		// newCursoDto.precio = rs.getDouble("Precio");
+		if(rs.getString("CantidadPagarColectivo") != null) {
+			newCursoDto.precio = Precio_Colectivos.StringToPrecio_Colectivos(rs.getString("CantidadPagarColectivo"))
+					.getPrecio("Colegiado");			
+		}
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
 
@@ -181,7 +182,7 @@ public class DtoAssembler {
 		return new Colegiado_Inscripcion(c, I);
 
 	}
-	
+
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;
@@ -193,7 +194,7 @@ public class DtoAssembler {
 		String fechaTransferencia = rs.getString(i++);
 		d.codigoTransferencia = rs.getString(i++);
 		String fechaPreinscripcion = rs.getString(i++);
-		if (fechaTransferencia==null) {
+		if (fechaTransferencia == null) {
 			d.fechaTransferencia = null;
 			d.fechaPreinscripcion = null;
 		} else {
@@ -205,7 +206,7 @@ public class DtoAssembler {
 		d.incidencias = rs.getString(i++);
 		return d;
 	}
-	
+
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferenciaProcesar(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;

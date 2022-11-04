@@ -353,7 +353,7 @@ public class MainWindow extends JFrame {
 		this.setFont(LookAndFeel.PRIMARY_FONT);
 
 		// TODO: Revisar dimensiones ventana
-		setBounds(100, 100, 1126, 820);
+		setBounds(100, 100, 1126, 804);
 
 		mainPanel = new JPanel();
 		mainPanel.setName("");
