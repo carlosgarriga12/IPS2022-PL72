@@ -2739,7 +2739,7 @@ public class MainWindow extends JFrame {
 											idCurso));
 
 							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(),
-									idCurso, "PAGADO", "TARJETA");
+									idCurso, "INSCRITO", "TARJETA");
 
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
