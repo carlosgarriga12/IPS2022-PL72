@@ -1,6 +1,7 @@
 package persistence.curso;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Precio_Colectivos {
 	ArrayList<String> colectivos_precios;
@@ -39,7 +40,7 @@ public class Precio_Colectivos {
 	}
 	
 	public int indiceColectivo(String colectivo) {
-		return colectivos_precios.stream().map(s -> s.split(":")[0]).toList().indexOf(colectivo);
+		return colectivos_precios.stream().map(s -> s.split(":")[0]).collect(Collectors.toList()).indexOf(colectivo);
 	}
 	
 	public boolean containsAlgunColectivo(String ... colectivo) {
@@ -67,8 +68,6 @@ public class Precio_Colectivos {
 		double precio = Double.valueOf(colectivo_precio.split(":")[1]);
 		return precio;
 	}
-	
-	
 	
 	public ArrayList<String> getColectivos_precios() {
 		return colectivos_precios;

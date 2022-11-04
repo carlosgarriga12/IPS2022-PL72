@@ -11,6 +11,7 @@ import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
+import persistence.curso.profesorado.ProfesorDto;
 
 public class DtoAssembler {
 
@@ -126,6 +127,25 @@ public class DtoAssembler {
 
 		return new Colegiado_Inscripcion(c, I);
 
+	}
+
+	public static List<ProfesorDto> toProfesorDtoList(ResultSet rs) throws SQLException {
+		List<ProfesorDto> profesores = new ArrayList<>();
+
+		while (rs.next()) {
+			profesores.add(resultSetToProfesorDto(rs));
+		}
+
+		return profesores;
+	}
+
+	private static ProfesorDto resultSetToProfesorDto(ResultSet rs) throws SQLException {
+		ProfesorDto p = new ProfesorDto();
+		p.nombre = rs.getString("nombre");
+		p.apellidos = rs.getString("apellidos");
+		p.idCurso = rs.getInt("idCurso");
+		
+		return p;
 	}
 
 }
