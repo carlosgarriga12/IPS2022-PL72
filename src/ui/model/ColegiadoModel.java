@@ -19,6 +19,7 @@ public class ColegiadoModel extends DefaultTableModel {
 	public static final String HEADER_COLUMN4 = "TELÉFONO";
 	public static final String HEADER_COLUMN5 = "FECHA DE SOLICITUD";
 	public static final String HEADER_COLUMN6 = "TITULACIÓN";
+	public static final String HEADER_COLUMN7 = "NUMERO COLEGIADO";
 
 	private List<ColegiadoDto> colegiados;
 
@@ -48,6 +49,45 @@ public class ColegiadoModel extends DefaultTableModel {
 			for (ColegiadoDto c : colegiados) {
 				model.addRow(new Object[] { c.DNI, c.nombre, c.apellidos, c.telefono, c.fechaSolicitud,
 						c.titulacion.isEmpty() ? "Sin titulación"
+								: DtoAssembler.listaTitulacionesColegiadoToString(c.titulacion) });
+			}
+
+		}
+
+		return model;
+
+	}
+
+	/**
+	 * Modelo de tabla para Colegiado destina de mostrar los datos de las
+	 * solicitudes aceptadas del lote recepcionado.
+	 * 
+	 * @since HU. 19062
+	 * @return TableModel con el listado de solicitantes a colegiado admitidos.
+	 * @throws BusinessException
+	 */
+	public TableModel getNuevoColegiadoModel() throws BusinessException {
+		DefaultTableModel model = new DefaultTableModel() {
+			private static final long serialVersionUID = 360537344960895264L;
+
+			@Override
+			public boolean isCellEditable(int i, int i1) {
+				return false;
+			}
+		};
+
+		if (colegiados.size() == 0) {
+			model.addColumn("");
+			model.addRow(new Object[] { "YA SE HA RECEPCIONADO EL LOTE DE SOLICITUDES DE COLEGIACION" });
+
+		} else {
+
+			model.setColumnIdentifiers(new Object[] { HEADER_COLUMN7, HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3,
+					HEADER_COLUMN4, HEADER_COLUMN5, HEADER_COLUMN6 });
+
+			for (ColegiadoDto c : colegiados) {
+				model.addRow(new Object[] { c.numeroColegiado, c.DNI, c.nombre, c.apellidos, c.telefono,
+						c.fechaSolicitud, c.titulacion.isEmpty() ? "Sin titulación"
 								: DtoAssembler.listaTitulacionesColegiadoToString(c.titulacion) });
 			}
 

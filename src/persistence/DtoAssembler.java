@@ -16,6 +16,9 @@ import persistence.curso.CursoDto;
 import persistence.curso.Precio_Colectivos;
 
 public class DtoAssembler {
+	
+	public static final String SEPARADOR_TITULACIONES = ",";
+	public static final String SPECIAL_CHARACTERS_REGEX = "[!@#$%&*()^:[-].;_+=|<>?{}/]";
 
 	public static List<ColegiadoDto> toColegiadoList(ResultSet rs) throws SQLException {
 		List<ColegiadoDto> colegiados = new ArrayList<>();
@@ -79,7 +82,7 @@ public class DtoAssembler {
 			return new ArrayList<>();
 		}
 
-		return Arrays.asList(titulaciones.trim().split(",")).stream().map(t -> t.trim().strip())
+		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream().map(t -> t.trim().strip())
 				.collect(Collectors.toList());
 	}
 
@@ -96,7 +99,7 @@ public class DtoAssembler {
 	 * @return Cadena con las titulaciones separadas por coma.
 	 */
 	public static String listaTitulacionesColegiadoToString(List<String> titulaciones) {
-		return String.join(",", titulaciones).replace("[", "").replace("]", "");
+		return String.join(SEPARADOR_TITULACIONES, titulaciones).replace("[", "").replace("]", "");
 	}
 
 	public static String listaTitulacionesColegiadoToStringForTable(List<String> titulaciones) {

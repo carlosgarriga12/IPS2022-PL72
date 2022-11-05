@@ -2,6 +2,7 @@ package business.colegiado;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import business.BusinessException;
 import business.util.Argument;
@@ -61,7 +62,8 @@ public class Colegiado {
 	}
 
 	public static List<ColegiadoDto> findAllSolicitudesAltaColegiados() throws BusinessException {
-		return ColegiadoCrud.findAllSolicitudesAltaColegiados();
+		return ColegiadoCrud.findAllSolicitudesAltaColegiados().stream()
+				.sorted((c1, c2) -> c2.fechaSolicitud.compareTo(c1.fechaSolicitud)).collect(Collectors.toList());
 	}
 
 	/**
@@ -171,6 +173,10 @@ public class Colegiado {
 
 		List<ColegiadoDto> loteColegiados = CSVLoteSolicitudesColegiacion.leerLoteSolicitudesColegiacion();
 
+		if (loteColegiados.size() == 0) {
+			throw new BusinessException("No hay lotes de colegiación para recepcionar");
+		}
+
 		for (ColegiadoDto col : loteColegiados) {
 
 			boolean titulacionAdmitida = false;
@@ -183,8 +189,10 @@ public class Colegiado {
 						// Caso 1: El colegiado es apto: Posee al menos una de las titulaciones
 						// admitidas
 
+						ColegiadoDto colegiadoAllData = ColegiadoCrud.findColegiadoDni(col.DNI);
+
 						updateNumColegiado(col.DNI);
-						colegiadosAdmitidos.add(col);
+						colegiadosAdmitidos.add(colegiadoAllData);
 						titulacionAdmitida = true;
 
 					}
@@ -265,33 +273,49 @@ public class Colegiado {
 	private static void comprobarArgumentos(ColegiadoDto colegiado) {
 		Argument.isNotNull(colegiado);
 
-		Argument.isNotNull(colegiado.DNI);
-		Argument.isNotEmpty(colegiado.DNI);
+		Argument.isNotEmpty(colegiado.DNI, "El DNI es obligatorio.");
 		Argument.longitudNueve(colegiado.DNI);
 
-		Argument.isNotNull(colegiado.nombre);
-		Argument.isNotEmpty(colegiado.nombre);
-
-		Argument.isNotNull(colegiado.apellidos);
-		Argument.isNotEmpty(colegiado.apellidos);
-
-		Argument.isNotNull(colegiado.poblacion);
-		Argument.isNotEmpty(colegiado.poblacion);
-
-		Argument.isNotNull(colegiado.centro);
-		Argument.isNotEmpty(colegiado.centro);
+		Argument.isNotEmpty(colegiado.nombre, "El nombre es obligatorio.");
+		Argument.isNotEmpty(colegiado.apellidos, "Los apellidos son obligatorios.");
+		Argument.isNotEmpty(colegiado.poblacion, "La población es obligatoria.");
+		Argument.isNotEmpty(colegiado.centro, "El centro es obligatorio.");
 
 		// Nota: La titulacion no se valida ya que puede no tener titulación.
+//		validarTitulaciones(colegiado.titulacion);
 
 		Argument.isPositive(colegiado.annio);
-
-		Argument.isTrue(colegiado.numeroCuenta.length() == 12);
-
+		Argument.isTrue(colegiado.numeroCuenta.length() == 12,
+				"El número de cuenta ha de tener 12 caracteres alfanuméricos.");
 		Argument.isPositive(colegiado.telefono);
+		Argument.longitudNueve(colegiado.telefono, "El número de teléfono ha de tener 9 dígitos.");
+		Argument.menorQueMax(colegiado.annio, "El año ha de ser igual o superior al año en curso.");
+	}
 
-		Argument.longitudNueve(colegiado.telefono);
+	/**
+	 * Comprueba, en el caso de que el solicitante esté en posesión de una o más
+	 * titulaciones, si el formato es el correcto.
+	 * <p>
+	 * Si el solicitante está en posesión de más de una titulación, ha de separar
+	 * dichas titulaciones por
+	 * {@link persistence.DtoAssembler#SEPARADOR_TITULACIONES}
+	 *
+	 * @param titulacion
+	 */
+	public static boolean validarTitulaciones(String titulacion) {
+		boolean isValid = true;
+		// Caso 1: Vacío --> Sin titulacion
 
-		Argument.menorQueMax(colegiado.annio);
+		// Caso 2: Una titulacion
+		if (titulacion.length() == 0) {
+			Argument.isNotEmpty(titulacion);
+			isValid = false;
+		}
+
+		// Caso 3: Dos o más titulaciones
+
+		return isValid;
+
 	}
 
 	public static String getMaxNumberColegiado() {

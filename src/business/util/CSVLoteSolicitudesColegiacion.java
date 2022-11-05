@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
+
 import business.BusinessException;
 import persistence.colegiado.ColegiadoDto;
 
@@ -33,7 +35,7 @@ import persistence.colegiado.ColegiadoDto;
  */
 public class CSVLoteSolicitudesColegiacion {
 
-	public static final String DEFAULT_SOLICITUDES_COLEGIACION_FOLDER = "lotes_colegiacion/";
+	public static final String DEFAULT_SOLICITUDES_COLEGIACION_FOLDER = "lotes_colegiacion";
 	public static final String DEFAULT_SOLICITUDES_COLEGIACION_FILENAME = "lote";
 
 	public static final String CSV_SEPARATOR = ";";
@@ -105,8 +107,9 @@ public class CSVLoteSolicitudesColegiacion {
 			e.printStackTrace();
 
 		} finally {
-			pW.flush();
-			pW.close();
+			if (pW != null) {
+				pW.close();
+			}
 		}
 
 		return outputFilename;
@@ -116,17 +119,34 @@ public class CSVLoteSolicitudesColegiacion {
 	 * Vacía el directorio de los lotes de solicitudes de colegiacion.
 	 * 
 	 * @param folder
+	 * @throws IOException
 	 */
-	private static void eliminarLotesGeneradosAnteriormente() {
+	private static void eliminarLotesGeneradosAnteriormente() throws IOException {
 		File destinationFolder = new File(DEFAULT_SOLICITUDES_COLEGIACION_FOLDER);
 
 		if (destinationFolder.exists()) {
-			Arrays.stream(Objects.requireNonNull(destinationFolder.listFiles())).filter(f -> !f.isDirectory())
+			Arrays.stream(Objects.requireNonNull(destinationFolder.listFiles())).filter(File::exists)
 					.forEach(File::delete);
-		} else {
-			destinationFolder.mkdir();
+			// FileUtils.cleanDirectory(destinationFolder);
+			FileUtils.forceDelete(destinationFolder);
+
 		}
 
+		destinationFolder.mkdir();
+	}
+
+	/**
+	 * Comprueba si existe el fichero CSV con el lote de solicitudes de colegiación
+	 * para recepcionar.
+	 * 
+	 * @return true si existe el fichero y false en caso contrario.
+	 * @throws IOException Si se produce un error al leer el directorio.
+	 */
+	public static boolean existeLoteSolicitudesParaRecepcion() throws IOException {
+		File destinationFolder = new File(DEFAULT_SOLICITUDES_COLEGIACION_FOLDER);
+
+		return destinationFolder.canRead() && !FileUtils.isEmptyDirectory(destinationFolder)
+				&& Arrays.stream(Objects.requireNonNull(destinationFolder.listFiles())).count() == 1;
 	}
 
 	/**
@@ -148,8 +168,6 @@ public class CSVLoteSolicitudesColegiacion {
 		}
 
 		Optional<File> ficheroLote = Arrays.stream(Objects.requireNonNull(destinationFolder.listFiles())).findFirst();
-		
-		System.out.println(ficheroLote.get().getAbsolutePath());
 
 		if (ficheroLote.isPresent()) {
 			String line;
@@ -184,6 +202,12 @@ public class CSVLoteSolicitudesColegiacion {
 				System.err
 						.println("Se produjo un error al leer el fichero de lote de solicitudes. " + ioe.getMessage());
 				ioe.printStackTrace();
+			} finally {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}

@@ -46,6 +46,11 @@ public abstract class Argument {
 		String v = String.valueOf(telefono);
 		isTrue(v.length() == 9);
 	}
+	
+	public static void longitudNueve(int telefono, String msg) {
+		String v = String.valueOf(telefono);
+		isTrue(v.length() == 9, msg);
+	}
 
 	public static void longitudCinco(int numeroTarjeta) {
 		String v = String.valueOf(numeroTarjeta);
@@ -62,6 +67,10 @@ public abstract class Argument {
 
 	public static void menorQueMax(int annio) {
 		isTrue(annio <= LocalDate.now().getYear());
+	}
+	
+	public static void menorQueMax(int annio, String msg) {
+		isTrue(annio <= LocalDate.now().getYear(), msg);
 	}
 
 

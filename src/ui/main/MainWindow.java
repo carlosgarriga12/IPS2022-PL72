@@ -17,6 +17,9 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Date;
@@ -55,6 +58,7 @@ import business.InscripcionColegiado.InscripcionColegiado;
 import business.colegiado.Colegiado;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
+import business.util.CSVLoteSolicitudesColegiacion;
 import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -95,6 +99,7 @@ public class MainWindow extends JFrame {
 	private static final String CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME = "consultarTitulacionSolicitantePanel";
 	private static final String INSCRIPCION_CURSO_TRANSFERENCIAS = "incripcionColegiadoTransferencias";
 	private static final String INSCRIPCION_CURSO_TRANSFERENCIAS_PROCESADAS = "inscripcionColegiadoTransferenciasProcesadas";
+	protected static final String RECEPCION_LOTES_COLEGIACION_PANEL = "recepcionLotesColegiacion";
 
 	private static final int ALL_MINUS_ID = 1;
 	private static final int ALL_CURSO = 0;
@@ -190,7 +195,7 @@ public class MainWindow extends JFrame {
 	private JLabel lblNewLabelDatCentro;
 	private JPanel pnDatosTituloColegiadoLabel;
 	private JPanel pnDatosTituloColegiadoCheck;
-	private JTextField textFieldTitulo;
+	private JTextField textFieldTitulaciones;
 	private JLabel lblTitulacinSegunSus;
 	private JTextField txCursoDNI;
 
@@ -345,6 +350,15 @@ public class MainWindow extends JFrame {
 
 	// CURSO SOBRE EL QUE QUEREMOS MIRAR LAS CUENTAS DEL BANCO
 	private CursoDto cursoSeleccionado;
+	private JLabel lbTitulacionAltaInfo;
+	private JPanel pnRecepcionLoteResultado;
+	private JPanel pnRecepcionLoteNorth;
+	private JLabel lbTituloRecepcionLote;
+	private JPanel pnRecepcionLoteCenter;
+	private JPanel pnRecepcionLoteSouth;
+	private JButton btVolverHomeRecepcionLote;
+	private JScrollPane spRecepcionLoteTablaDatos;
+	private JTable tbListadoNuevosColegiadosRecepcionLote;
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -375,6 +389,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnCrearCurso(), ADD_CURSO_PANEL_NAME);
 		mainPanel.add(getPnTransferencias(), INSCRIPCION_CURSO_TRANSFERENCIAS);
 		mainPanel.add(getPnTransferenciasProcesadas(), INSCRIPCION_CURSO_TRANSFERENCIAS_PROCESADAS);
+		mainPanel.add(getPnRecepcionLoteResultado(), RECEPCION_LOTES_COLEGIACION_PANEL);
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -993,13 +1008,15 @@ public class MainWindow extends JFrame {
 
 	private boolean anadirColegiadoBaseDatos(ColegiadoDto dto) {
 		try {
+
 			Colegiado.addColegiado(dto);
 
 			return true;
 		} catch (BusinessException e) {
-			JOptionPane.showMessageDialog(this,
-					"Por favor, revise que no haya introducido un DNI que no es suyo, este DNI ya ha sido registrado",
-					"DNI invÃ¡lido", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage());
+//			JOptionPane.showMessageDialog(this,
+//					"Por favor, revise que no haya introducido un DNI que no es suyo, este DNI ya ha sido registrado",
+//					"DNI invÃ¡lido", JOptionPane.INFORMATION_MESSAGE);
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this,
 					"Por favor, revise que no deje ningÃºn campo vacÃ­o y se ha introducido correctamente cada dato (longitudes correspondientes, formato de datos, ...)\n"
@@ -1018,6 +1035,7 @@ public class MainWindow extends JFrame {
 		dto.centro = getTextFieldCentroColegiado().getText();
 		dto.numeroCuenta = getTextFieldNumeroCuenta().getText();
 		dto.titulacion = DtoAssembler.parseTitulacionesColegiado(getTextFieldTitulacion().getText());
+
 		try {
 			dto.telefono = Integer.parseInt(getTextFieldTelefono().getText());
 			dto.annio = Integer.parseInt(getTextFieldAno().getText());
@@ -1431,6 +1449,8 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldCentroColegiado() {
 		if (textFieldCentro == null) {
 			textFieldCentro = new JTextField();
+			textFieldCentro.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			textFieldCentro.setEnabled(false);
 			textFieldCentro.setToolTipText("Escriba su centro educativo");
 			TextPlaceHolderCustom.setPlaceholder("Escuela de Ingenieria Informatica", textFieldCentro);
 			textFieldCentro.setHorizontalAlignment(SwingConstants.LEFT);
@@ -1453,8 +1473,23 @@ public class MainWindow extends JFrame {
 	private JPanel getPnDatosTituloColegiadoLabel() {
 		if (pnDatosTituloColegiadoLabel == null) {
 			pnDatosTituloColegiadoLabel = new JPanel();
-			pnDatosTituloColegiadoLabel.setLayout(new GridLayout(0, 1, 0, 0));
-			pnDatosTituloColegiadoLabel.add(getLblTitulacinSegunSus());
+			GridBagLayout gbl_pnDatosTituloColegiadoLabel = new GridBagLayout();
+			gbl_pnDatosTituloColegiadoLabel.columnWidths = new int[] { 269, 0 };
+			gbl_pnDatosTituloColegiadoLabel.rowHeights = new int[] { 130, 100, 0 };
+			gbl_pnDatosTituloColegiadoLabel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+			gbl_pnDatosTituloColegiadoLabel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+			pnDatosTituloColegiadoLabel.setLayout(gbl_pnDatosTituloColegiadoLabel);
+			GridBagConstraints gbc_lblTitulacinSegunSus = new GridBagConstraints();
+			gbc_lblTitulacinSegunSus.fill = GridBagConstraints.BOTH;
+			gbc_lblTitulacinSegunSus.insets = new Insets(0, 0, 5, 0);
+			gbc_lblTitulacinSegunSus.gridx = 0;
+			gbc_lblTitulacinSegunSus.gridy = 0;
+			pnDatosTituloColegiadoLabel.add(getLblTitulacinSegunSus(), gbc_lblTitulacinSegunSus);
+			GridBagConstraints gbc_lbTitulacionAltaInfo = new GridBagConstraints();
+			gbc_lbTitulacionAltaInfo.fill = GridBagConstraints.BOTH;
+			gbc_lbTitulacionAltaInfo.gridx = 0;
+			gbc_lbTitulacionAltaInfo.gridy = 1;
+			pnDatosTituloColegiadoLabel.add(getLbTitulacionAltaInfo(), gbc_lbTitulacionAltaInfo);
 		}
 		return pnDatosTituloColegiadoLabel;
 	}
@@ -1469,19 +1504,43 @@ public class MainWindow extends JFrame {
 	}
 
 	private JTextField getTextFieldTitulacion() {
-		if (textFieldTitulo == null) {
-			textFieldTitulo = new JTextField();
-			textFieldTitulo.setToolTipText("Teclee la titulación");
-			TextPlaceHolderCustom.setPlaceholder("Licenciado en Informática", textFieldTitulo);
-			textFieldTitulo.setHorizontalAlignment(SwingConstants.LEFT);
-			textFieldTitulo.setColumns(10);
+		if (textFieldTitulaciones == null) {
+			textFieldTitulaciones = new JTextField();
+			textFieldTitulaciones.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && textFieldTitulaciones.getText().length() == 1
+							|| textFieldTitulaciones.getText() == "") {
+						textFieldCentro.setEnabled(false);
+					}
+
+					if (String.valueOf(e.getKeyChar()).matches(DtoAssembler.SPECIAL_CHARACTERS_REGEX)) {
+						e.consume();
+						JOptionPane.showMessageDialog(pnDatosColTitulacionText,
+								"Las titulaciones tienen que ir separadas por una coma",
+								"Alta Colegiado: Error en datos introducidos", JOptionPane.ERROR_MESSAGE);
+					}
+
+					if (textFieldTitulaciones.getText().length() > 0) {
+						textFieldCentro.setEnabled(true);
+					} else {
+						textFieldCentro.setEnabled(false);
+					}
+				}
+			});
+			textFieldTitulaciones.setToolTipText("Teclee la titulación");
+			TextPlaceHolderCustom.setPlaceholder("Licenciado en Informática,Medicina,Ingeniería Electrónica",
+					textFieldTitulaciones);
+			textFieldTitulaciones.setHorizontalAlignment(SwingConstants.LEFT);
+			textFieldTitulaciones.setColumns(10);
 		}
-		return textFieldTitulo;
+		return textFieldTitulaciones;
 	}
 
 	private JLabel getLblTitulacinSegunSus() {
 		if (lblTitulacinSegunSus == null) {
 			lblTitulacinSegunSus = new JLabel("Titulación segun sus estudios:");
+			lblTitulacinSegunSus.setVerticalAlignment(SwingConstants.BOTTOM);
 			lblTitulacinSegunSus.setHorizontalAlignment(SwingConstants.CENTER);
 			lblTitulacinSegunSus.setFont(LookAndFeel.PRIMARY_FONT);
 			lblTitulacinSegunSus.setDisplayedMnemonic('I');
@@ -1978,7 +2037,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAddCurso());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaListadoInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaTransferencias());
-			
+
 		}
 		return pnHomeAccionesSecretaria;
 	}
@@ -2292,6 +2351,8 @@ public class MainWindow extends JFrame {
 			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionNorth(), BorderLayout.NORTH);
 			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionCenter(), BorderLayout.CENTER);
 			pnConsultarTitulacionSolicitante.add(getPnConsultarTitulacionSouth(), BorderLayout.SOUTH);
+
+			enableRecepcionarLoteButton();
 		}
 		return pnConsultarTitulacionSolicitante;
 	}
@@ -2345,7 +2406,7 @@ public class MainWindow extends JFrame {
 
 						// Si se envió el lote de forma satisfactoria, mostrar mensaje informativo
 						String mensajeInformativoLote = "Se ha enviado el lote " + nombreLote
-								+ " \ndentro en la carpeta lotesSolicitudes";
+								+ " \ndentro del directorio: lotes_colegiacion";
 
 						pnConsultarColegiadoDatosColegiadoSeleccionado.setVisible(true);
 						lbColegiadoSeleccionadoSolicitudRespuesta.setText(mensajeInformativoLote);
@@ -2353,6 +2414,7 @@ public class MainWindow extends JFrame {
 						JOptionPane.showMessageDialog(null, mensajeInformativoLote,
 								"Información | Envío lote solicitudes colegiación", JOptionPane.INFORMATION_MESSAGE);
 
+						// Habilitar el boton para permitir la recepcion del lote
 						btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
 
 					} catch (BusinessException e1) {
@@ -2624,17 +2686,15 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					if (comprobarCamposT() && comprobarColegiadoInscripcion()) {
 						try {
-							int idCurso = Integer.parseInt(((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
-							InscripcionColegiado.comprobarFecha(
-									InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(),
-											idCurso));
-							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(),
-									idCurso, "PENDIENTE",
-									"TRANSFERENCIA");
+							int idCurso = Integer.parseInt(
+									((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
+							InscripcionColegiado.comprobarFecha(InscripcionColegiado
+									.findFechaPreinscripcion(textFieldDNIColegiado.getText(), idCurso));
+							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), idCurso,
+									"PENDIENTE", "TRANSFERENCIA");
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por transferencia bancaria\n"
-											+ "La inscripción al curso con identificador "
-											+ idCurso
+											+ "La inscripción al curso con identificador " + idCurso
 											+ " se ha tramitado correctamente, queda en estado pendiente\n"
 											+ "Tendrá que realizar la transferencia a través del banco en la fecha establecida\n"
 											+ "En otro caso, su solicitud quedará cancelada (tiene 48 horas desde este momento para pagar)",
@@ -2644,7 +2704,7 @@ public class MainWindow extends JFrame {
 						} catch (BusinessException e1) {
 							JOptionPane.showMessageDialog(null,
 									"Lo sentimos, no puede hacerse cargo de pagar un curso en el que se ha preinscrito hace más de dos días, "
-									+ "tampoco puede pagarlo antes de dicha fecha\n"
+											+ "tampoco puede pagarlo antes de dicha fecha\n"
 											+ "Inténtelo de nuevo la próxima vez",
 									"Inscripción no válida", JOptionPane.WARNING_MESSAGE);
 							reiniciarInscripcionColegiadoPagar();
@@ -2664,9 +2724,9 @@ public class MainWindow extends JFrame {
 		this.calendarioFechaCaducidad.setDate(new Date());
 	}
 
-
 	private boolean comprobarColegiadoInscripcion() {
-		int idCurso = Integer.parseInt(((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
+		int idCurso = Integer
+				.parseInt(((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
 		// comprobamos que el dni asociado sea un colegiado
 		try {
 			if (Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText()) == null) {
@@ -2683,8 +2743,7 @@ public class MainWindow extends JFrame {
 		}
 		// comprobamos que se ha inscrito en el curso
 		try {
-			InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(),
-					idCurso);
+			InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(), idCurso);
 			return true;
 		} catch (BusinessException e) {
 			JOptionPane.showMessageDialog(null,
@@ -2733,13 +2792,13 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					if (comprobarCampos() && comprobarColegiadoInscripcion() && comprobarFechaCaducidad()) {
 						try {
-							int idCurso = Integer.parseInt(((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
-							InscripcionColegiado.comprobarFecha(
-									InscripcionColegiado.findFechaPreinscripcion(textFieldDNIColegiado.getText(),
-											idCurso));
+							int idCurso = Integer.parseInt(
+									((String) comboBoxIdentificadorCursosAbiertos.getSelectedItem()).substring(0, 1));
+							InscripcionColegiado.comprobarFecha(InscripcionColegiado
+									.findFechaPreinscripcion(textFieldDNIColegiado.getText(), idCurso));
 
-							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(),
-									idCurso, "INSCRITO", "TARJETA");
+							InscripcionColegiado.pagarCursoColegiado(textFieldDNIColegiado.getText(), idCurso,
+									"INSCRITO", "TARJETA");
 
 							JOptionPane.showMessageDialog(null,
 									"Ha seleccionado usted la opción de pagar por tarjeta de crédito\n"
@@ -3051,6 +3110,7 @@ public class MainWindow extends JFrame {
 		List<ColegiadoDto> colegiados = Colegiado.findAllSolicitudesAltaColegiados();
 		TableModel allSolicitudesColegiado = new ColegiadoModel(colegiados).getColegiadoModel(false);
 
+		pnConsultarColegiadoDatosColegiadoSeleccionado.setVisible(false);
 		lbNumeroSolicitudesColegiado.setText("Mostrando " + colegiados.size() + " Solicitudes");
 		tbListadoSolicitudesColegiado.setModel(allSolicitudesColegiado);
 
@@ -3160,12 +3220,12 @@ public class MainWindow extends JFrame {
 			gbl_pnDatosColTitulacionText.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
 			gbl_pnDatosColTitulacionText.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 			pnDatosColTitulacionText.setLayout(gbl_pnDatosColTitulacionText);
-			GridBagConstraints gbc_textFieldTitulo = new GridBagConstraints();
-			gbc_textFieldTitulo.gridheight = 2;
-			gbc_textFieldTitulo.fill = GridBagConstraints.BOTH;
-			gbc_textFieldTitulo.gridx = 0;
-			gbc_textFieldTitulo.gridy = 1;
-			pnDatosColTitulacionText.add(getTextFieldTitulacion(), gbc_textFieldTitulo);
+			GridBagConstraints gbc_textFieldTitulaciones = new GridBagConstraints();
+			gbc_textFieldTitulaciones.gridheight = 2;
+			gbc_textFieldTitulaciones.fill = GridBagConstraints.BOTH;
+			gbc_textFieldTitulaciones.gridx = 0;
+			gbc_textFieldTitulaciones.gridy = 1;
+			pnDatosColTitulacionText.add(getTextFieldTitulacion(), gbc_textFieldTitulaciones);
 		}
 		return pnDatosColTitulacionText;
 	}
@@ -3248,33 +3308,25 @@ public class MainWindow extends JFrame {
 					.setToolTipText("Haz click aquí para recepcionar el lote de solicitudes de colegiación");
 			btRecepcionarLoteSolicitudesPendientesColegiado.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+
 					try {
 						List<ColegiadoDto> colegiadosAdmitidos = Colegiado.recepcionarLoteSolicitudesColegiacion()
 								.stream().sorted((c1, c2) -> c1.fechaSolicitud.compareTo(c2.fechaSolicitud))
 								.collect(Collectors.toList());
 
-						lbConsultarTitulacionTitle.setText("Listado de nuevos colegiados del COIIPA.");
-						lbNumeroSolicitudesColegiado
-								.setText("Mostrando " + String.valueOf(colegiadosAdmitidos.size()) + " resultados");
-
 						TableModel solicitudesColegiadoAdmitidasModel = new ColegiadoModel(colegiadosAdmitidos)
-								.getColegiadoModel(false);
+								.getNuevoColegiadoModel();
 
-						tbListadoSolicitudesColegiado.setModel(solicitudesColegiadoAdmitidasModel);
-						tbListadoSolicitudesColegiado.repaint();
-
-						btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(false);
-
-						JOptionPane.showMessageDialog(null,
-								"Se ha recepcionado el lote correctamente. La tabla se ha actualizado con los nuevos Colegiados del COIIPA.",
-								"Información: Recepción de lote de solicitudes de colegiados",
-								JOptionPane.INFORMATION_MESSAGE);
+						tbListadoNuevosColegiadosRecepcionLote.setModel(solicitudesColegiadoAdmitidasModel);
+						tbListadoNuevosColegiadosRecepcionLote.repaint();
 
 					} catch (BusinessException be) {
 
 						lbColegiadoSeleccionadoSolicitudRespuesta.setText(be.getMessage());
-						be.printStackTrace();
+						// be.printStackTrace();
 					}
+
+					mainCardLayout.show(mainPanel, RECEPCION_LOTES_COLEGIACION_PANEL);
 				}
 			});
 			btRecepcionarLoteSolicitudesPendientesColegiado.setBounds(new Rectangle(0, 0, 250, 80));
@@ -3282,12 +3334,23 @@ public class MainWindow extends JFrame {
 		return btRecepcionarLoteSolicitudesPendientesColegiado;
 	}
 
+	private void enableRecepcionarLoteButton() {
+		try {
+			boolean enableRecepcionButton = CSVLoteSolicitudesColegiacion.existeLoteSolicitudesParaRecepcion();
+			btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(enableRecepcionButton);
+
+		} catch (IOException e) {
+			lbColegiadoSeleccionadoSolicitudRespuesta.setText("No hay lotes de solicitudes para recepcionar.");
+			e.printStackTrace();
+		}
+	}
+
 	private void resetearAjustesVentanaSolicitudesColegidado() {
 		lbColegiadoSeleccionadoSolicitudRespuesta.setText("");
 		lbColegiadoSeleccionadoSolicitudRespuesta.setVisible(false);
 
 		btActualizarListaSolicitudesColegiado.setEnabled(true);
-		btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
+		// btRecepcionarLoteSolicitudesPendientesColegiado.setEnabled(true);
 
 		lbConsultarTitulacionTitle.setText("Consultar titulación de un solicitante de Ingreso");
 
@@ -4052,4 +4115,106 @@ public class MainWindow extends JFrame {
 		return tbProcesarTransferencias;
 	}
 
+	private JLabel getLbTitulacionAltaInfo() {
+		if (lbTitulacionAltaInfo == null) {
+			lbTitulacionAltaInfo = new JLabel("Separe las titulaciones por una coma ','");
+			lbTitulacionAltaInfo.setVerticalAlignment(SwingConstants.TOP);
+			lbTitulacionAltaInfo.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbTitulacionAltaInfo;
+	}
+
+	private JPanel getPnRecepcionLoteResultado() {
+		if (pnRecepcionLoteResultado == null) {
+			pnRecepcionLoteResultado = new JPanel();
+			pnRecepcionLoteResultado.setOpaque(false);
+			pnRecepcionLoteResultado.setLayout(new BorderLayout(0, 10));
+			pnRecepcionLoteResultado.add(getPnRecepcionLoteNorth(), BorderLayout.NORTH);
+			pnRecepcionLoteResultado.add(getPnRecepcionLoteCenter(), BorderLayout.CENTER);
+			pnRecepcionLoteResultado.add(getPnRecepcionLoteSouth(), BorderLayout.SOUTH);
+		}
+		return pnRecepcionLoteResultado;
+	}
+
+	private JPanel getPnRecepcionLoteNorth() {
+		if (pnRecepcionLoteNorth == null) {
+			pnRecepcionLoteNorth = new JPanel();
+			pnRecepcionLoteNorth.add(getLbTituloRecepcionLote());
+		}
+		return pnRecepcionLoteNorth;
+	}
+
+	private JLabel getLbTituloRecepcionLote() {
+		if (lbTituloRecepcionLote == null) {
+			lbTituloRecepcionLote = new JLabel("Listado de nuevos colegiados");
+			lbTituloRecepcionLote.setFont(LookAndFeel.HEADING_1_FONT);
+		}
+		return lbTituloRecepcionLote;
+	}
+
+	private JPanel getPnRecepcionLoteCenter() {
+		if (pnRecepcionLoteCenter == null) {
+			pnRecepcionLoteCenter = new JPanel();
+			pnRecepcionLoteCenter.setLayout(new BorderLayout(0, 0));
+			pnRecepcionLoteCenter.add(getSpRecepcionLoteTablaDatos());
+		}
+		return pnRecepcionLoteCenter;
+	}
+
+	private JPanel getPnRecepcionLoteSouth() {
+		if (pnRecepcionLoteSouth == null) {
+			pnRecepcionLoteSouth = new JPanel();
+			pnRecepcionLoteSouth.add(getBtVolverHomeRecepcionLote());
+		}
+		return pnRecepcionLoteSouth;
+	}
+
+	private JButton getBtVolverHomeRecepcionLote() {
+		if (btVolverHomeRecepcionLote == null) {
+			btVolverHomeRecepcionLote = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicioRecepcion", 'v',
+					ButtonColor.NORMAL);
+			btVolverHomeRecepcionLote.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int opt = JOptionPane.showConfirmDialog(null,
+							"¿Está seguro que quiere volver a la página de inicio?");
+
+					if (opt == JOptionPane.OK_OPTION) {
+						mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					}
+				}
+			});
+		}
+		return btVolverHomeRecepcionLote;
+	}
+
+	private JScrollPane getSpRecepcionLoteTablaDatos() {
+		if (spRecepcionLoteTablaDatos == null) {
+			spRecepcionLoteTablaDatos = new JScrollPane(getTbListadoNuevosColegiadosRecepcionLote());
+		}
+		return spRecepcionLoteTablaDatos;
+	}
+
+	private JTable getTbListadoNuevosColegiadosRecepcionLote() {
+		if (tbListadoNuevosColegiadosRecepcionLote == null) {
+			tbListadoNuevosColegiadosRecepcionLote = new JTable();
+			tbListadoNuevosColegiadosRecepcionLote.setRowSelectionAllowed(false);
+
+			tbListadoNuevosColegiadosRecepcionLote.setIntercellSpacing(new Dimension(0, 0));
+			tbListadoNuevosColegiadosRecepcionLote.setShowGrid(false);
+			tbListadoNuevosColegiadosRecepcionLote.setRowMargin(0);
+			tbListadoNuevosColegiadosRecepcionLote.setRequestFocusEnabled(false);
+			tbListadoNuevosColegiadosRecepcionLote.setFocusable(false);
+			tbListadoNuevosColegiadosRecepcionLote.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbListadoNuevosColegiadosRecepcionLote.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbListadoNuevosColegiadosRecepcionLote.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbListadoNuevosColegiadosRecepcionLote.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbListadoNuevosColegiadosRecepcionLote.setShowVerticalLines(false);
+			tbListadoNuevosColegiadosRecepcionLote.setOpaque(false);
+
+			tbListadoNuevosColegiadosRecepcionLote.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbListadoNuevosColegiadosRecepcionLote.setGridColor(new Color(255, 255, 255));
+
+		}
+		return tbListadoNuevosColegiadosRecepcionLote;
+	}
 }
