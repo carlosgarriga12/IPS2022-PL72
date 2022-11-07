@@ -25,6 +25,8 @@ public class Colegiado {
 		}
 	};
 
+	public static final int MAX_LONGITUD_NUMERO_CUENTA = 16;
+
 	/**
 	 * Añade un nuevo colegiado al sistema con los datos del dto
 	 * 
@@ -285,8 +287,8 @@ public class Colegiado {
 //		validarTitulaciones(colegiado.titulacion);
 
 		Argument.isPositive(colegiado.annio);
-		Argument.isTrue(colegiado.numeroCuenta.length() == 12,
-				"El número de cuenta ha de tener 12 caracteres alfanuméricos.");
+		Argument.isTrue(colegiado.numeroCuenta.length() == MAX_LONGITUD_NUMERO_CUENTA,
+				"El número de cuenta ha de tener " + MAX_LONGITUD_NUMERO_CUENTA + " caracteres alfanuméricos.");
 		Argument.isPositive(colegiado.telefono);
 		Argument.longitudNueve(colegiado.telefono, "El número de teléfono ha de tener 9 dígitos.");
 		Argument.menorQueMax(colegiado.annio, "El año ha de ser igual o superior al año en curso.");

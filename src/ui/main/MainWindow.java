@@ -1168,8 +1168,9 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldNumeroCuenta() {
 		if (textFieldNumeroCuenta == null) {
 			textFieldNumeroCuenta = new JTextField();
-			TextPlaceHolderCustom.setPlaceholder("ES6612344321", textFieldNumeroCuenta);
-			textFieldNumeroCuenta.setToolTipText("Registre su numero de cuenta bancaria");
+			TextPlaceHolderCustom.setPlaceholder("ES66123443215567", textFieldNumeroCuenta);
+			textFieldNumeroCuenta.setToolTipText(
+					"Registre su numero de cuenta bancaria. El número de cuenta bancaria está formado por 16 caracteres alfanuméricos");
 			textFieldNumeroCuenta.setHorizontalAlignment(SwingConstants.LEFT);
 			textFieldNumeroCuenta.setColumns(10);
 		}

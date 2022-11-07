@@ -81,8 +81,11 @@ public class DtoAssembler {
 		if (titulaciones == null || titulaciones.isEmpty()) {
 			return new ArrayList<>();
 		}
-
-		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream().map(t -> t.trim().strip())
+		
+		// Nota: Se introduce un filtro para el caso en el que se introduzcan dos comas seguidas
+		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream()
+				.filter(t -> !t.isEmpty())
+				.map(t -> t.trim().strip())
 				.collect(Collectors.toList());
 	}
 
