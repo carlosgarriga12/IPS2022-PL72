@@ -449,8 +449,6 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton btnInscripcionToInicio_1;
 
-
-
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1762,13 +1760,15 @@ public class MainWindow extends JFrame {
 	private JButton getBtnInscribete() {
 		if (btnInscribete == null) {
 			btnInscribete = new DefaultButton("Inscribirme", "ventana", "Inscribirme", 'n', ButtonColor.NORMAL);
+			btnInscribete.setEnabled(false);
 			btnInscribete.setLocation(794, 533);
 			btnInscribete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					lbConfirmacionInscripcion.setVisible(false);
 					lbAlerta.setVisible(false);
 					int IndexCursoSeleccionado = getTbCursosAbiertos().getSelectedRow();
-					CursoDto cursoSeleccionado = cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
+					CursoDto cursoSeleccionado = IndexCursoSeleccionado == -1 ? null
+							: cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
 					try {
 						if (cursoSeleccionado == null) {
 							lbAlerta.setText("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
@@ -1782,6 +1782,7 @@ public class MainWindow extends JFrame {
 											"La inscripcion en el curso seleccionado se ha realizado correctamente");
 									lbConfirmacionInscripcion.setForeground(Color.green);
 									lbConfirmacionInscripcion.setVisible(true);
+
 								} else {
 									lbConfirmacionInscripcion.setText(
 											"Lo sentimos, no hay plazas disponibles para inscribirse en este curso");
@@ -1856,7 +1857,9 @@ public class MainWindow extends JFrame {
 							lbAlerta.setVisible(true);
 
 						} else {
-							if (!c.TipoColectivo.equals(cbSeleccionarColectivo.getSelectedItem())) {
+
+							if (!c.TipoColectivo
+									.equalsIgnoreCase(String.valueOf(cbSeleccionarColectivo.getSelectedItem()))) {
 								lbAlerta.setText(
 										"El colectivo seleccionado no se corresponde con el colectivo asociado al DNI");
 								lbAlerta.setVisible(true);
@@ -1882,6 +1885,8 @@ public class MainWindow extends JFrame {
 										c.TipoColectivo);
 
 								getTbCursosAbiertos().setModel(tableModel);
+
+								btnInscribete.setEnabled(true);
 							}
 						}
 					} catch (BusinessException e1) {
@@ -1903,6 +1908,8 @@ public class MainWindow extends JFrame {
 			btnInscripcionToInicio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+
+					btnInscribete.setEnabled(false);
 				}
 			});
 			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -2099,7 +2106,7 @@ public class MainWindow extends JFrame {
 					JOptionPane.showMessageDialog(pnCrearCurso, "Curso creado correctamente");
 
 					colectivos_Precios = new Precio_Colectivos();
-					
+
 				}
 			});
 		}
@@ -3471,10 +3478,10 @@ public class MainWindow extends JFrame {
 			pnColectivosCenter = new JPanel();
 			pnColectivosCenter.setBounds(new Rectangle(0, 0, 500, 0));
 			GridBagLayout gbl_pnColectivosCenter = new GridBagLayout();
-			gbl_pnColectivosCenter.columnWidths = new int[]{520, 0};
-			gbl_pnColectivosCenter.rowHeights = new int[] {50, 30, 50, 30, 0};
-			gbl_pnColectivosCenter.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-			gbl_pnColectivosCenter.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_pnColectivosCenter.columnWidths = new int[] { 520, 0 };
+			gbl_pnColectivosCenter.rowHeights = new int[] { 50, 30, 50, 30, 0 };
+			gbl_pnColectivosCenter.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+			gbl_pnColectivosCenter.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 			pnColectivosCenter.setLayout(gbl_pnColectivosCenter);
 			GridBagConstraints gbc_pnColectivosAnadir = new GridBagConstraints();
 			gbc_pnColectivosAnadir.anchor = GridBagConstraints.NORTH;
@@ -4337,14 +4344,15 @@ public class MainWindow extends JFrame {
 		}
 		return tbListadoNuevosColegiadosRecepcionLote;
 	}
+
 	private JPanel getPnColectivosCuotasSeleccionadas() {
 		if (pnColectivosCuotasSeleccionadas == null) {
 			pnColectivosCuotasSeleccionadas = new JPanel();
 			GridBagLayout gbl_pnColectivosCuotasSeleccionadas = new GridBagLayout();
-			gbl_pnColectivosCuotasSeleccionadas.columnWidths = new int[]{0, 0};
-			gbl_pnColectivosCuotasSeleccionadas.rowHeights = new int[]{0, 0, 0};
-			gbl_pnColectivosCuotasSeleccionadas.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-			gbl_pnColectivosCuotasSeleccionadas.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			gbl_pnColectivosCuotasSeleccionadas.columnWidths = new int[] { 0, 0 };
+			gbl_pnColectivosCuotasSeleccionadas.rowHeights = new int[] { 0, 0, 0 };
+			gbl_pnColectivosCuotasSeleccionadas.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+			gbl_pnColectivosCuotasSeleccionadas.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 			pnColectivosCuotasSeleccionadas.setLayout(gbl_pnColectivosCuotasSeleccionadas);
 			GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 			gbc_lblNewLabel_1.anchor = GridBagConstraints.WEST;
@@ -4359,6 +4367,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnColectivosCuotasSeleccionadas;
 	}
+
 	private JLabel getLblNewLabel_1() {
 		if (lblNewLabel_1 == null) {
 			lblNewLabel_1 = new JLabel("Colectivos A\u00F1adidos:");
@@ -4367,6 +4376,7 @@ public class MainWindow extends JFrame {
 		}
 		return lblNewLabel_1;
 	}
+
 	private JLabel getLblNewLabel_2() {
 		if (lblNewLabel_2 == null) {
 			lblNewLabel_2 = new JLabel("Se mostraran los precios para cada colectivo en el desplegable");
@@ -4374,23 +4384,7 @@ public class MainWindow extends JFrame {
 		}
 		return lblNewLabel_2;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private JPanel getPnSolicitudServicios() {
 		if (pnSolicitudServicios == null) {
 			pnSolicitudServicios = new JPanel();
@@ -4401,7 +4395,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudServicios;
 	}
-	
+
 	private JPanel getPnTituloSolicitud() {
 		if (pnTituloSolicitud == null) {
 			pnTituloSolicitud = new JPanel();
@@ -4409,8 +4403,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnTituloSolicitud;
 	}
-	
-	
+
 	private JLabel getLbTituloSolicitud() {
 		if (lbTituloSolicitud == null) {
 			lbTituloSolicitud = new JLabel("Registro de solicitudes de Servicios");
@@ -4418,8 +4411,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbTituloSolicitud;
 	}
-	
-	
+
 	private JPanel getPnCenterSolicitud() {
 		if (pnCenterSolicitud == null) {
 			pnCenterSolicitud = new JPanel();
@@ -4431,8 +4423,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnCenterSolicitud;
 	}
-	
-	
+
 	private JPanel getPnSolicitudDni() {
 		if (pnSolicitudDni == null) {
 			pnSolicitudDni = new JPanel();
@@ -4442,8 +4433,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudDni;
 	}
-	
-	
+
 	private JLabel getLbSolicitudDni() {
 		if (lbSolicitudDni == null) {
 			lbSolicitudDni = new JLabel("Introduzca su DNI:");
@@ -4451,7 +4441,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbSolicitudDni;
 	}
-	
+
 	private JTextField getTextField_3() {
 		if (txSolicitudDni == null) {
 			txSolicitudDni = new JTextField();
@@ -4460,8 +4450,7 @@ public class MainWindow extends JFrame {
 		}
 		return txSolicitudDni;
 	}
-	
-	
+
 	private JPanel getPnSolicitudCorreo() {
 		if (pnSolicitudCorreo == null) {
 			pnSolicitudCorreo = new JPanel();
@@ -4471,7 +4460,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudCorreo;
 	}
-	
+
 	private JLabel getLbSolicitudCorreo() {
 		if (lbSolicitudCorreo == null) {
 			lbSolicitudCorreo = new JLabel("Introduzca su correo electronico:");
@@ -4479,7 +4468,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbSolicitudCorreo;
 	}
-	
+
 	private JTextField getTextField_1_1() {
 		if (txSolicitudCorreo == null) {
 			txSolicitudCorreo = new JTextField();
@@ -4488,8 +4477,7 @@ public class MainWindow extends JFrame {
 		}
 		return txSolicitudCorreo;
 	}
-	
-	
+
 	private JPanel getPnSolicitudDescripcion() {
 		if (pnSolicitudDescripcion == null) {
 			pnSolicitudDescripcion = new JPanel();
@@ -4499,7 +4487,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudDescripcion;
 	}
-	
+
 	private JLabel getLbSolicitudDescripcion() {
 		if (lbSolicitudDescripcion == null) {
 			lbSolicitudDescripcion = new JLabel("Introduzca una descripci\u00F3n de lo que desea:");
@@ -4507,7 +4495,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbSolicitudDescripcion;
 	}
-	
+
 	private JScrollPane getScrollPane() {
 		if (scrollPane == null) {
 			scrollPane = new JScrollPane();
@@ -4515,8 +4503,7 @@ public class MainWindow extends JFrame {
 		}
 		return scrollPane;
 	}
-	
-	
+
 	private JTextField getTextField_2_1() {
 		if (txSolicitudDescripcion == null) {
 			txSolicitudDescripcion = new JTextField();
@@ -4525,7 +4512,7 @@ public class MainWindow extends JFrame {
 		}
 		return txSolicitudDescripcion;
 	}
-	
+
 	private JPanel getPnSolicitudUrgente() {
 		if (pnSolicitudUrgente == null) {
 			pnSolicitudUrgente = new JPanel();
@@ -4535,7 +4522,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudUrgente;
 	}
-	
+
 	private JLabel getLbSolicitudUrgente() {
 		if (lbSolicitudUrgente == null) {
 			lbSolicitudUrgente = new JLabel("Seleccione la urgencia de la solicitud:");
@@ -4543,7 +4530,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbSolicitudUrgente;
 	}
-	
+
 	private JPanel getPnSolicitudRadioButton() {
 		if (pnSolicitudRadioButton == null) {
 			pnSolicitudRadioButton = new JPanel();
@@ -4552,7 +4539,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSolicitudRadioButton;
 	}
-	
+
 	private JRadioButton getRbSolicitudNormal() {
 		if (rbSolicitudNormal == null) {
 			rbSolicitudNormal = new JRadioButton("Normal");
@@ -4562,7 +4549,7 @@ public class MainWindow extends JFrame {
 		}
 		return rbSolicitudNormal;
 	}
-	
+
 	private JRadioButton getRbSolicitudUrgente() {
 		if (rbSolicitudUrgente == null) {
 			rbSolicitudUrgente = new JRadioButton("Urgente");
@@ -4571,7 +4558,7 @@ public class MainWindow extends JFrame {
 		}
 		return rbSolicitudUrgente;
 	}
-	
+
 	private JPanel getPnSouthSolicitud() {
 		if (pnSouthSolicitud == null) {
 			pnSouthSolicitud = new JPanel();
@@ -4581,7 +4568,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnSouthSolicitud;
 	}
-	
+
 	private DefaultButton getBtnRegistrarSolicitud() {
 		if (btnRegistrarSolicitud == null) {
 			btnRegistrarSolicitud = new DefaultButton("Registrar Solicitud");
@@ -4591,32 +4578,32 @@ public class MainWindow extends JFrame {
 					String dni = txSolicitudDni.getText().trim();
 					String correo = txSolicitudCorreo.getText().trim();
 					String descripcion = txSolicitudDescripcion.getText().trim();
-					int urgencia = rbSolicitudUrgente.isSelected() ? 1:0;
-					
-					if(dni.length()!=9) {
+					int urgencia = rbSolicitudUrgente.isSelected() ? 1 : 0;
+
+					if (dni.length() != 9) {
 						JOptionPane.showMessageDialog(pnSolicitudServicios, "Introduzca un formato de dni valido");
 						return;
 					}
-					if(correo.isEmpty()) {
-						JOptionPane.showMessageDialog(pnSolicitudServicios, "Es necesario introducir un correo electronico");
+					if (correo.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudServicios,
+								"Es necesario introducir un correo electronico");
 						return;
 					}
-					if(descripcion.isEmpty()) {
+					if (descripcion.isEmpty()) {
 						JOptionPane.showMessageDialog(pnSolicitudServicios, "Es necesario incluir una descripcion");
 						return;
 					}
-					
+
 					SolicitudServiciosDto s = new SolicitudServiciosDto();
 					s.CorreoElectronico = correo;
 					s.DNI = dni;
 					s.Descripcion = descripcion;
 					s.Urgente = urgencia;
-					
+
 					SolicitudServicios.insertSolicitudServicios(s);
-					
+
 					JOptionPane.showMessageDialog(pnSolicitudServicios, "Se ha registrado la solicitud correctamente");
-					
-					
+
 				}
 			});
 			btnRegistrarSolicitud.setHorizontalAlignment(SwingConstants.LEFT);
@@ -4624,10 +4611,11 @@ public class MainWindow extends JFrame {
 		}
 		return btnRegistrarSolicitud;
 	}
-	
+
 	private DefaultButton getBtnInscripcionToInicio_1_1() {
 		if (btnInscripcionToInicio_1_1 == null) {
-			btnInscripcionToInicio_1_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btnInscripcionToInicio_1_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v',
+					ButtonColor.NORMAL);
 			btnInscripcionToInicio_1_1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -4640,20 +4628,7 @@ public class MainWindow extends JFrame {
 		}
 		return btnInscripcionToInicio_1_1;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private JPanel getPnAsignacionSolicitudesServicios() {
 		if (pnAsignacionSolicitudesServicios == null) {
 			pnAsignacionSolicitudesServicios = new JPanel();
@@ -4664,7 +4639,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudesServicios;
 	}
-	
+
 	private JPanel getPnAsignacionSolicitudesTitulo() {
 		if (pnAsignacionSolicitudesTitulo == null) {
 			pnAsignacionSolicitudesTitulo = new JPanel();
@@ -4672,7 +4647,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudesTitulo;
 	}
-	
+
 	private JLabel getLbAsignacionSolicitudTitulo() {
 		if (lbAsignacionSolicitudTitulo == null) {
 			lbAsignacionSolicitudTitulo = new JLabel("Asignacion de Solicitudes de Servicios");
@@ -4680,7 +4655,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbAsignacionSolicitudTitulo;
 	}
-	
+
 	private JPanel getPnAsignacionSolicitudesCenter() {
 		if (pnAsignacionSolicitudesCenter == null) {
 			pnAsignacionSolicitudesCenter = new JPanel();
@@ -4690,7 +4665,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudesCenter;
 	}
-	
+
 	private JPanel getPnAsignacionSolicitudes() {
 		if (pnAsignacionSolicitudes == null) {
 			pnAsignacionSolicitudes = new JPanel();
@@ -4700,8 +4675,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudes;
 	}
-	
-	
+
 	private JLabel getLbAsignacionSolicitudes() {
 		if (lbAsignacionSolicitudes == null) {
 			lbAsignacionSolicitudes = new JLabel("Solicitudes de Servicios:");
@@ -4709,7 +4683,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbAsignacionSolicitudes;
 	}
-	
+
 	private JScrollPane getSpAsignacionSolicitudes() {
 		if (spAsignacionSolicitudes == null) {
 			spAsignacionSolicitudes = new JScrollPane();
@@ -4717,7 +4691,7 @@ public class MainWindow extends JFrame {
 		}
 		return spAsignacionSolicitudes;
 	}
-	
+
 	private JTable getTbAsignacionSolicitudes() {
 		if (tbAsignacionSolicitudes == null) {
 			tbAsignacionSolicitudes = new JTable();
@@ -4740,8 +4714,7 @@ public class MainWindow extends JFrame {
 		}
 		return tbAsignacionSolicitudes;
 	}
-	
-	
+
 	private JPanel getPnAsignacionSolicitudesPeritos() {
 		if (pnAsignacionSolicitudesPeritos == null) {
 			pnAsignacionSolicitudesPeritos = new JPanel();
@@ -4751,7 +4724,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudesPeritos;
 	}
-	
+
 	private JLabel getLbAsignacionSolicitudesPeritos() {
 		if (lbAsignacionSolicitudesPeritos == null) {
 			lbAsignacionSolicitudesPeritos = new JLabel("Lista de Peritos:");
@@ -4759,7 +4732,7 @@ public class MainWindow extends JFrame {
 		}
 		return lbAsignacionSolicitudesPeritos;
 	}
-	
+
 	private JScrollPane getSpAsignacionSolicitudesPeritos() {
 		if (spAsignacionSolicitudesPeritos == null) {
 			spAsignacionSolicitudesPeritos = new JScrollPane();
@@ -4767,7 +4740,7 @@ public class MainWindow extends JFrame {
 		}
 		return spAsignacionSolicitudesPeritos;
 	}
-	
+
 	private JTable getTbAsignacionSolicitudesPeritos() {
 		if (tbAsignacionSolicitudesPeritos == null) {
 			tbAsignacionSolicitudesPeritos = new JTable();
@@ -4787,12 +4760,11 @@ public class MainWindow extends JFrame {
 			tbAsignacionSolicitudesPeritos.setGridColor(new Color(255, 255, 255));
 
 			tbAsignacionSolicitudesPeritos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			
 
 		}
 		return tbAsignacionSolicitudesPeritos;
 	}
-	
+
 	private JPanel getPnAsignacionSolicitudesButton() {
 		if (pnAsignacionSolicitudesButton == null) {
 			pnAsignacionSolicitudesButton = new JPanel();
@@ -4801,7 +4773,7 @@ public class MainWindow extends JFrame {
 		}
 		return pnAsignacionSolicitudesButton;
 	}
-	
+
 	private DefaultButton getBtAsignarSolicitud() {
 		if (btAsignarSolicitud == null) {
 			btAsignarSolicitud = new DefaultButton("Asignar Solicitud");
@@ -4809,13 +4781,12 @@ public class MainWindow extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					int indexSolicitudes = getTbAsignacionSolicitudes().getSelectedRow();
 					int indexPeritos = getTbAsignacionSolicitudesPeritos().getSelectedRow();
-					
+
 					SolicitudServiciosDto solicitud = listaSolicitudesServicios.get(indexSolicitudes);
 					ColegiadoDto perito = listaPeritosOrdenada.get(indexPeritos);
-					
+
 					SolicitudServicios.AsociaSolicitudServicio(solicitud, perito);
-					
-					
+
 					ActualizaTablasSolicitudesServicios();
 				}
 			});
@@ -4823,10 +4794,11 @@ public class MainWindow extends JFrame {
 		}
 		return btAsignarSolicitud;
 	}
-	
+
 	private DefaultButton getBtnInscripcionToInicio_1() {
 		if (btnInscripcionToInicio_1 == null) {
-			btnInscripcionToInicio_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btnInscripcionToInicio_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v',
+					ButtonColor.NORMAL);
 			btnInscripcionToInicio_1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -4839,45 +4811,35 @@ public class MainWindow extends JFrame {
 		}
 		return btnInscripcionToInicio_1;
 	}
-	
+
 	private ArrayList<SolicitudServiciosDto> listaSolicitudesServicios;
 	private ArrayList<ColegiadoDto> listaPeritosOrdenada;
 	private DefaultButton btHomeSolicitudServicios;
 	private DefaultButton btHomeAsignacionSolicitudServicios;
-	
+
 	private void ActualizaTablasSolicitudesServicios() {
 		listaSolicitudesServicios = SolicitudServicios.listarSolicitudesServicios();
 		listaPeritosOrdenada = Perito.listarPeritosOrdenados();
 		getBtAsignarSolicitud().setEnabled(true);
-		
+
 		TableModel tableModelSolicitudes = new ModeloSolicitudServicios(listaSolicitudesServicios).getSolicitudModel();
 		TableModel tableModelPeritos = new ModeloPeritos(listaPeritosOrdenada).getPeritoModel();
 		getTbAsignacionSolicitudes().setModel(tableModelSolicitudes);
 		getTbAsignacionSolicitudesPeritos().setModel(tableModelPeritos);
-		
-		if(listaSolicitudesServicios.isEmpty() || listaPeritosOrdenada.isEmpty()) {
+
+		if (listaSolicitudesServicios.isEmpty() || listaPeritosOrdenada.isEmpty()) {
 			getBtAsignarSolicitud().setEnabled(false);
-		}
-		else {
+		} else {
 			getTbAsignacionSolicitudes().setRowSelectionInterval(0, 0);
 			getTbAsignacionSolicitudesPeritos().setRowSelectionInterval(0, 0);
 		}
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	private DefaultButton getBtHomeSolicitudServicios() {
 		if (btHomeSolicitudServicios == null) {
-			btHomeSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l', ButtonColor.NORMAL);
+			btHomeSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l',
+					ButtonColor.NORMAL);
 			btHomeSolicitudServicios.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, SOLICITUD_SERVICIOS);
@@ -4887,9 +4849,11 @@ public class MainWindow extends JFrame {
 		}
 		return btHomeSolicitudServicios;
 	}
+
 	private DefaultButton getBtHomeAsignacionSolicitudServicios() {
 		if (btHomeAsignacionSolicitudServicios == null) {
-			btHomeAsignacionSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l', ButtonColor.NORMAL);
+			btHomeAsignacionSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l',
+					ButtonColor.NORMAL);
 			btHomeAsignacionSolicitudServicios.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, ASIGNACION_SOLICITUD_SERVICIOS);

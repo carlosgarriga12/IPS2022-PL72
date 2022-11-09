@@ -281,7 +281,10 @@ public class Colegiado {
 		Argument.isNotEmpty(colegiado.nombre, "El nombre es obligatorio.");
 		Argument.isNotEmpty(colegiado.apellidos, "Los apellidos son obligatorios.");
 		Argument.isNotEmpty(colegiado.poblacion, "La población es obligatoria.");
-		Argument.isNotEmpty(colegiado.centro, "El centro es obligatorio.");
+
+		if (colegiado.titulacion.size() > 0) {
+			Argument.isNotEmpty(colegiado.centro, "El centro es obligatorio.");
+		}
 
 		// Nota: La titulacion no se valida ya que puede no tener titulación.
 //		validarTitulaciones(colegiado.titulacion);
