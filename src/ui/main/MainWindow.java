@@ -341,7 +341,7 @@ public class MainWindow extends JFrame {
 	private JTextField txtHoraInicio;
 	private JLabel lblHoraFin;
 	private JTextField txtHoraFin;
-	private JButton btnAñadirSesion;
+	private JButton btnAnadirSesion;
 	
 	List<SesionDto> fechasCurso = new ArrayList<>();
 	private JScrollPane spListaSesiones;
@@ -2089,19 +2089,20 @@ public class MainWindow extends JFrame {
 					}
 					
 					if(colectivos_Precios.size()==0) {
-						JOptionPane.showMessageDialog(pnCrearCurso,"Es necesario añadir precios de curso para algun colectivo");
+						JOptionPane.showMessageDialog(pnCrearCurso,"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
 					
 					if (fechasCurso.size() == 0) {
-						JOptionPane.showMessageDialog(pnCrearCurso, "Es necesario añadir alguna sesión para el curso");
-
+						JOptionPane.showMessageDialog(pnCrearCurso, "Es necesario anadir alguna sesinn para el curso");
+						
+					}
 					if (colectivos_Precios.size() == 0) {
 						JOptionPane.showMessageDialog(pnCrearCurso,
 								"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
-
+					System.out.println("LLegue");
 					CursoDto curso = new CursoDto();
 					curso.titulo = txtTituloCurso.getText();
 					curso.precio = precio;
@@ -2137,7 +2138,7 @@ public class MainWindow extends JFrame {
 					txtHoraFin.setText("");
 					txPrecioAnadirColectivo.setText("");
 					modeloSesiones.removeAllElements();
-					}
+					
 				}
 			});
 		}
@@ -4946,7 +4947,7 @@ public class MainWindow extends JFrame {
 			pnSesionesCurso.add(getTxtHoraInicio());
 			pnSesionesCurso.add(getLblHoraFin());
 			pnSesionesCurso.add(getTxtHoraFin());
-			pnSesionesCurso.add(getBtnAñadirSesion());
+			pnSesionesCurso.add(getBtnAnadirSesion());
 			pnSesionesCurso.add(getSpListaSesiones());
 			pnSesionesCurso.add(getBtnBorrarSesion());
 		}
@@ -4954,8 +4955,8 @@ public class MainWindow extends JFrame {
 	}
 	private JLabel getLblFechaSesion_1() {
 		if (lblFechaSesion == null) {
-			lblFechaSesion = new JLabel("Fecha sesion del curso: ");
-			lblFechaSesion.setBounds(0, 13, 194, 16);
+			lblFechaSesion = new JLabel("Fecha sesion: ");
+			lblFechaSesion.setBounds(0, 13, 99, 16);
 		}
 		return lblFechaSesion;
 	}
@@ -4963,7 +4964,7 @@ public class MainWindow extends JFrame {
 		if (txtFechaSesion == null) {
 			txtFechaSesion = new JTextField();
 			txtFechaSesion.setColumns(10);
-			txtFechaSesion.setBounds(149, 10, 116, 22);
+			txtFechaSesion.setBounds(68, 11, 116, 22);
 		}
 		return txtFechaSesion;
 	}
@@ -4978,7 +4979,7 @@ public class MainWindow extends JFrame {
 		if (txtHoraInicio == null) {
 			txtHoraInicio = new JTextField();
 			txtHoraInicio.setColumns(10);
-			txtHoraInicio.setBounds(149, 42, 116, 22);
+			txtHoraInicio.setBounds(68, 43, 116, 22);
 		}
 		return txtHoraInicio;
 	}
@@ -4993,72 +4994,72 @@ public class MainWindow extends JFrame {
 		if (txtHoraFin == null) {
 			txtHoraFin = new JTextField();
 			txtHoraFin.setColumns(10);
-			txtHoraFin.setBounds(149, 74, 116, 22);
+			txtHoraFin.setBounds(68, 78, 116, 22);
 		}
 		return txtHoraFin;
 	}
-	private JButton getBtnAñadirSesion() {
-		if (btnAñadirSesion == null) {
-			btnAñadirSesion = new JButton("A\u00F1adir sesion");
-			btnAñadirSesion.addActionListener(new ActionListener() {
+	private JButton getBtnAnadirSesion() {
+		if (btnAnadirSesion == null) {
+			btnAnadirSesion = new JButton("A\u00F1adir sesion");
+			btnAnadirSesion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//Fecha vacía
+					//Fecha vacna
 					if (txtFechaSesion.getText().isEmpty()) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de sesión está vacía");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de sesinn estn vacna");
 						txtFechaSesion.grabFocus();
 						return;
 					} 
-					//Formato erróneo fecha
+					//Formato errnneo fecha
 					LocalDate fechaSesion = null;
 					try {
 						fechaSesion = LocalDate.parse(txtFechaSesion.getText());
 					} catch (DateTimeParseException d) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de fecha es erróneo");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de fecha es errnneo");
 						txtFechaSesion.setText("");
 						txtFechaSesion.grabFocus();
 						return;
 					}
 					
-					//Fecha después a la actual
+					//Fecha despuns a la actual
 					if(fechaSesion.isBefore(LocalDate.now())) {
 						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede ser anterior a la actual");
 						txtFechaSesion.setText("");
 						txtFechaSesion.grabFocus();
 					}
 					
-					//Hora inicio vacía
+					//Hora inicio vacna
 					if (txtHoraInicio.getText().isEmpty()) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de inicio está vacía");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de inicio estn vacna");
 						txtHoraInicio.grabFocus();
 						return;
 					}
 					
 					LocalTime horaInicio = null;
 					
-					//Formato erróneo hora inicio
+					//Formato errnneo hora inicio
 					try {
 						horaInicio = LocalTime.parse(txtHoraInicio.getText());
 					} catch (DateTimeParseException d) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de inicio es erróneo");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de inicio es errnneo");
 						txtHoraInicio.setText("");
 						txtHoraInicio.grabFocus();
 						return;
 					}
 					
-					//Hora inicio vacía
+					//Hora inicio vacna
 					if (txtHoraFin.getText().isEmpty()) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de fin está vacía");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de fin estn vacna");
 						txtHoraFin.grabFocus();
 						return;
 					}
 					
 					LocalTime horaFin = null;
 					
-					//Formato erróneo hora inicio
+					//Formato errnneo hora inicio
 					try {
 						horaFin = LocalTime.parse(txtHoraFin.getText());
 					} catch (DateTimeParseException d) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de fin es erróneo");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de fin es errnneo");
 						txtHoraFin.setText("");
 						txtHoraFin.grabFocus();
 						return;
@@ -5069,9 +5070,9 @@ public class MainWindow extends JFrame {
 						return;
 					}
 					
-					//Comprobar que la fecha de fin está después de la de inicio
+					//Comprobar que la fecha de fin estn despuns de la de inicio
 					if (horaInicio.isAfter(horaFin) ) {
-						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede estar después que la fecha de fin");
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede estar despuns que la fecha de fin");
 						return;
 					}
 					
@@ -5094,14 +5095,14 @@ public class MainWindow extends JFrame {
 					    		fechaFin.compareTo(second) == 0) {
 					    	txtHoraInicio.setText("");
 					    	txtHoraFin.setText("");
-					    	JOptionPane.showMessageDialog(pnSesionesCurso, "La sesión se solapa con las anteriores");
+					    	JOptionPane.showMessageDialog(pnSesionesCurso, "La sesinn se solapa con las anteriores");
 					    	return;
 					    }
 					}
 					
 					fechasCurso.add(sesion);
 					
-					JOptionPane.showMessageDialog(pnSesionesCurso, "Añadida la siguiente sesión al curso: \nFecha: " + txtFechaSesion.getText() + 
+					JOptionPane.showMessageDialog(pnSesionesCurso, "Anadida la siguiente sesinn al curso: \nFecha: " + txtFechaSesion.getText() + 
 							"\nHora inicio: " + txtHoraInicio.getText() + "\nHora fin: " + txtHoraFin.getText());
 					
 					modeloSesiones.addElement(sesion);
@@ -5111,14 +5112,14 @@ public class MainWindow extends JFrame {
 					
 				}
 			});
-			btnAñadirSesion.setBounds(167, 113, 128, 25);
+			btnAnadirSesion.setBounds(49, 113, 128, 25);
 		}
-		return btnAñadirSesion;
+		return btnAnadirSesion;
 	}
 	private JScrollPane getSpListaSesiones() {
 		if (spListaSesiones == null) {
 			spListaSesiones = new JScrollPane();
-			spListaSesiones.setBounds(296, 13, 156, 81);
+			spListaSesiones.setBounds(194, 13, 156, 81);
 			spListaSesiones.setViewportView(getListSesiones());
 		}
 		return spListaSesiones;
@@ -5144,7 +5145,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 			});
-			btnBorrarSesion.setBounds(306, 113, 116, 25);
+			btnBorrarSesion.setBounds(211, 113, 116, 25);
 		}
 		return btnBorrarSesion;
 	}
