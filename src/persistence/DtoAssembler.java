@@ -14,6 +14,7 @@ import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.curso.Precio_Colectivos;
+import persistence.curso.profesorado.ProfesorDto;
 
 public class DtoAssembler {
 	
@@ -88,7 +89,6 @@ public class DtoAssembler {
 				.map(t -> t.trim().strip())
 				.collect(Collectors.toList());
 	}
-
 	/**
 	 * Devuelve la lista de colegiados en forma de cadena separados por coma.
 	 * 
@@ -185,11 +185,31 @@ public class DtoAssembler {
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
 		I.cantidadPagada = rs.getDouble("CantidadAbonada");
+		
+		
 
 		return new Colegiado_Inscripcion(c, I);
 
 	}
 
+	public static List<ProfesorDto> toProfesorDtoList(ResultSet rs) throws SQLException {
+		List<ProfesorDto> profesores = new ArrayList<>();
+
+		while (rs.next()) {
+			profesores.add(resultSetToProfesorDto(rs));
+		}
+
+		return profesores;
+	}
+
+	private static ProfesorDto resultSetToProfesorDto(ResultSet rs) throws SQLException {
+		ProfesorDto p = new ProfesorDto();
+		p.nombre = rs.getString("nombre");
+		p.apellidos = rs.getString("apellidos");
+		p.idCurso = rs.getInt("idCurso");
+		
+		return p;
+	}
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;

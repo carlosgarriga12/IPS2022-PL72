@@ -22,6 +22,10 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,11 +33,13 @@ import java.util.stream.Collectors;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -73,6 +79,10 @@ import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.curso.Precio_Colectivos;
+import persistence.curso.profesorado.ProfesorCRUD;
+import persistence.curso.profesorado.ProfesorDto;
+import persistence.curso.sesion.SesionCRUD;
+import persistence.curso.sesion.SesionDto;
 import persistence.jdbc.PersistenceException;
 import persistence.recibo.ReciboCRUD;
 import ui.components.LookAndFeel;
@@ -237,12 +247,6 @@ public class MainWindow extends JFrame {
 	private DefaultButton btnCrearCursoCancelar;
 	private JButton btnCrearCursoCrear;
 	private JPanel pnCrearCursoCenterContainer;
-	private JPanel pnCrearCursoTituloCurso;
-	private JPanel pnCrearCursoFechaImparticion;
-	private JLabel lblTituloCurso;
-	private JTextField txCrearCursoTituloCursoInput;
-	private JLabel lblFechaImparticion;
-	private JTextField txCrearCursoFechaImparticionInput;
 	private JScrollPane spnCursos;
 	private JLabel lbAlertaListadoInscripciones;
 
@@ -323,7 +327,28 @@ public class MainWindow extends JFrame {
 	private JTextField txPrecioAnadirColectivo;
 	private JLabel lbPrecioAnadirColectivo;
 	private JComboBox<String> cbSeleccionarColectivo;
+	private JPanel pnTituloCurso;
+	private JLabel lblTituloCurso;
+	private JTextField txtTituloCurso;
+	private JPanel pnProfesores;
+	private JPanel pnSpinnerProfesores;
+	private JLabel lblProfesores;
+	private JComboBox<String> cbProfesores;
+	private JPanel pnSesionesCurso;
+	private JLabel lblFechaSesion;
+	private JTextField txtFechaSesion;
+	private JLabel lblHoraInicio;
+	private JTextField txtHoraInicio;
+	private JLabel lblHoraFin;
+	private JTextField txtHoraFin;
+	private JButton btnAnadirSesion;
+	
+	List<SesionDto> fechasCurso = new ArrayList<>();
+	private JScrollPane spListaSesiones;
+	private JList listSesiones;
 
+	private DefaultListModel modeloSesiones = null;
+	private JButton btnBorrarSesion;
 	private JPanel pnTransferencias;
 	private JPanel pnTransferenciasCentro;
 	private JPanel pnTransferenciasNorte;
@@ -2044,6 +2069,7 @@ public class MainWindow extends JFrame {
 		return pnCrearCursoButtons;
 	}
 
+
 	private DefaultButton getBtnCrearCursoCancelar() {
 		if (btnCrearCursoCancelar == null) {
 			btnCrearCursoCancelar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
@@ -2056,60 +2082,76 @@ public class MainWindow extends JFrame {
 		}
 		return btnCrearCursoCancelar;
 	}
-
+	
 	private JButton getBtnCrearCursoCrear() {
 		if (btnCrearCursoCrear == null) {
 			btnCrearCursoCrear = new DefaultButton("Crear curso", "ventana", "CrearCurso", 'c', ButtonColor.NORMAL);
 			btnCrearCursoCrear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					// TODO: Pasar comprobaciones a business. Aqui solo imprimir y mostrar mensajes.
-					LocalDate fecha;
 					double precio = 0.0;
-					if (txCrearCursoTituloCursoInput.getText().isEmpty()) {
+					if (txtTituloCurso.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(pnCrearCurso, "El titulo del curso esta vacio");
 						return;
 					}
-					if (txCrearCursoFechaImparticionInput.getText().isEmpty()) {
-						JOptionPane.showMessageDialog(pnCrearCurso, "La fecha de imparticion del curso esta vacio");
+					
+					if(colectivos_Precios.size()==0) {
+						JOptionPane.showMessageDialog(pnCrearCurso,"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
-					try {
-						fecha = LocalDate.parse(txCrearCursoFechaImparticionInput.getText());
-					} catch (Exception e) {
-						txCrearCursoFechaImparticionInput.setText("");
-						txCrearCursoFechaImparticionInput.grabFocus();
-						JOptionPane.showMessageDialog(pnCrearCurso, "Introduzca un formato de fecha valido");
-						return;
+					
+					if (fechasCurso.size() == 0) {
+						JOptionPane.showMessageDialog(pnCrearCurso, "Es necesario anadir alguna sesinn para el curso");
+						
 					}
-					if (fecha.compareTo(LocalDate.now()) < 0) {
-						JOptionPane.showMessageDialog(pnCrearCurso,
-								"No puede crear un curso con una fecha anterior a la actual");
-						return;
-					}
-
 					if (colectivos_Precios.size() == 0) {
 						JOptionPane.showMessageDialog(pnCrearCurso,
 								"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
-
+					System.out.println("LLegue");
 					CursoDto curso = new CursoDto();
-					curso.titulo = txCrearCursoTituloCursoInput.getText();
+					curso.titulo = txtTituloCurso.getText();
 					curso.precio = precio;
-					curso.fechaInicio = fecha;
+					curso.fechaInicio = fechasCurso.get(0).horaInicio.toLocalDate();
 					curso.estado = CursoDto.CURSO_PLANIFICADO;
 					curso.codigoCurso = CursoCRUD.generarCodigoCurso();
 					curso.CantidadPagarColectivo = colectivos_Precios.toString();
-
+					
 					Curso.add(curso);
-
+					
+					for(int i = 0; i < fechasCurso.size() ; i++) {
+						SesionDto fecha = fechasCurso.get(i);
+						SesionCRUD.addSesion(curso.codigoCurso, 
+								fecha.horaInicio.toString(),
+								fecha.horaFin.toString());			
+					}
+					
+					ProfesorCRUD.asignarProfesorCurso(curso.codigoCurso, (String) cbProfesores.getSelectedItem());
+					
 					JOptionPane.showMessageDialog(pnCrearCurso, "Curso creado correctamente");
-
+					
 					colectivos_Precios = new Precio_Colectivos();
+
+					
+					txtTituloCurso.setText("");
+					List<ProfesorDto> profesores = ProfesorCRUD.listProfesoresLibres();
+					List<String> nombreProfesores = new ArrayList<>();
+					for (ProfesorDto p: profesores) {
+						nombreProfesores.add(p.nombre);
+					}
+					cbProfesores.setModel(new DefaultComboBoxModel( nombreProfesores.toArray() ));
+					txtFechaSesion.setText("");
+					txtHoraInicio.setText("");
+					txtHoraFin.setText("");
+					txPrecioAnadirColectivo.setText("");
+					modeloSesiones.removeAllElements();
+					
 
 				}
 			});
 		}
+
 		return btnCrearCursoCrear;
 	}
 
@@ -2252,7 +2294,6 @@ public class MainWindow extends JFrame {
 		}
 		return btHomeSecretariaEmitirCuotas;
 	}
-
 	private DefaultButton getBtHomeSecretariaAddCurso() {
 		if (btHomeSecretariaAddCurso == null) {
 			btHomeSecretariaAddCurso = new DefaultButton("Añadir un curso", "ventana", "AddCurso", 'd',
@@ -2651,84 +2692,27 @@ public class MainWindow extends JFrame {
 			pnCrearCursoCenterContainer.setOpaque(false);
 			pnCrearCursoCenterContainer.setBounds(new Rectangle(0, 0, 500, 0));
 			pnCrearCursoCenterContainer.setBorder(new EmptyBorder(70, 100, 70, 100));
-			pnCrearCursoCenterContainer.setLayout(new GridLayout(3, 1, 0, 10));
-			pnCrearCursoCenterContainer.add(getPnCrearCursoTituloCurso());
-			pnCrearCursoCenterContainer.add(getPnCrearCursoFechaImparticion());
+			pnCrearCursoCenterContainer.setLayout(new BorderLayout(0, 0));
+			pnCrearCursoCenterContainer.add(getPnTituloCurso(), BorderLayout.NORTH);
+			pnCrearCursoCenterContainer.add(getPnProfesores(), BorderLayout.EAST);
 		}
 		return pnCrearCursoCenterContainer;
-	}
-
-	private JPanel getPnCrearCursoTituloCurso() {
-		if (pnCrearCursoTituloCurso == null) {
-			pnCrearCursoTituloCurso = new JPanel();
-			pnCrearCursoTituloCurso.setOpaque(false);
-			pnCrearCursoTituloCurso.setLayout(new GridLayout(0, 2, 10, 0));
-			pnCrearCursoTituloCurso.add(getLblTituloCurso());
-			pnCrearCursoTituloCurso.add(getTxCrearCursoTituloCursoInput());
-		}
-		return pnCrearCursoTituloCurso;
-	}
-
-	private JPanel getPnCrearCursoFechaImparticion() {
-		if (pnCrearCursoFechaImparticion == null) {
-			pnCrearCursoFechaImparticion = new JPanel();
-			pnCrearCursoFechaImparticion.setOpaque(false);
-			pnCrearCursoFechaImparticion.setLayout(new GridLayout(0, 2, 10, 0));
-			pnCrearCursoFechaImparticion.add(getLblFechaImparticion_1());
-			pnCrearCursoFechaImparticion.add(getTxCrearCursoFechaImparticionInput());
-		}
-		return pnCrearCursoFechaImparticion;
-	}
-
-	private JLabel getLblTituloCurso() {
-		if (lblTituloCurso == null) {
-			lblTituloCurso = new JLabel("Título curso:");
-			lblTituloCurso.setLabelFor(getTxCrearCursoTituloCursoInput());
-			lblTituloCurso.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTituloCurso.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		}
-		return lblTituloCurso;
-	}
-
-	private JTextField getTxCrearCursoTituloCursoInput() {
-		if (txCrearCursoTituloCursoInput == null) {
-			txCrearCursoTituloCursoInput = new JTextField();
-			txCrearCursoTituloCursoInput.setColumns(10);
-			TextPlaceHolderCustom.setPlaceholder("Introduce el título", txCrearCursoTituloCursoInput);
-		}
-		return txCrearCursoTituloCursoInput;
-	}
-
-	private JLabel getLblFechaImparticion_1() {
-		if (lblFechaImparticion == null) {
-			lblFechaImparticion = new JLabel("Fecha imparticion: ");
-			lblFechaImparticion.setLabelFor(getTxCrearCursoFechaImparticionInput());
-			lblFechaImparticion.setHorizontalAlignment(SwingConstants.CENTER);
-			lblFechaImparticion.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		}
-		return lblFechaImparticion;
-	}
-
-	private JTextField getTxCrearCursoFechaImparticionInput() {
-		if (txCrearCursoFechaImparticionInput == null) {
-			txCrearCursoFechaImparticionInput = new JTextField();
-			txCrearCursoFechaImparticionInput.setColumns(10);
-			TextPlaceHolderCustom.setPlaceholder("Introduce la fecha de impartición",
-					txCrearCursoFechaImparticionInput);
-		}
-		return txCrearCursoFechaImparticionInput;
 	}
 
 	private JScrollPane getSpnCursos() {
 		if (spnCursos == null) {
 			spnCursos = new JScrollPane();
-			spnCursos.setBounds(67, 99, 481, 417);
+			spnCursos.setBounds(77, 99, 481, 417);
 			spnCursos.add(getTbCursosInscripciones());
 			getTbCursosInscripciones().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
 					getLbAlertaListadoInscripciones().setVisible(false);
+					int selectedRow = tbCursosInscripciones.getSelectedRow();
+					 if (selectedRow == -1) {
+                         selectedRow = 0;
+                     }
 					List<Colegiado_Inscripcion> listInscripciones = InscripcionColegiado.Lista_Inscritos_Curso(
-							cursosAbiertosPnInscripcion.get(tbCursosInscripciones.getSelectedRow()));
+							cursosAbiertosPnInscripcion.get(selectedRow));
 					if (listInscripciones.isEmpty()) {
 						getLbAlertaListadoInscripciones().setVisible(true);
 						getLbAlertaListadoInscripciones()
@@ -3146,7 +3130,7 @@ public class MainWindow extends JFrame {
 
 	private JLabel getLblNewLabelIdentificadorCurso() {
 		if (lblNewLabelIdentificadorCurso == null) {
-			lblNewLabelIdentificadorCurso = new JLabel("Curso a seleccionar:");
+			lblNewLabelIdentificadorCurso = new JLabel("Identificador del curso:");
 			lblNewLabelIdentificadorCurso.setLabelFor(getComboBoxIdentificadorCursosAbiertos());
 			lblNewLabelIdentificadorCurso.setDisplayedMnemonic('I');
 			lblNewLabelIdentificadorCurso.setHorizontalAlignment(SwingConstants.CENTER);
@@ -4863,5 +4847,276 @@ public class MainWindow extends JFrame {
 			btHomeAsignacionSolicitudServicios.setText("Asignacion Solicitud de Servicios");
 		}
 		return btHomeAsignacionSolicitudServicios;
+	}
+	private JPanel getPnTituloCurso() {
+		if (pnTituloCurso == null) {
+			pnTituloCurso = new JPanel();
+			pnTituloCurso.setLayout(new GridLayout(0, 2, 0, 0));
+			pnTituloCurso.add(getLblTituloCurso());
+			pnTituloCurso.add(getTxtTituloCurso());
+		}
+		return pnTituloCurso;
+	}
+	private JLabel getLblTituloCurso() {
+		if (lblTituloCurso == null) {
+			lblTituloCurso = new JLabel("Titulo");
+		}
+		return lblTituloCurso;
+	}
+	private JTextField getTxtTituloCurso() {
+		if (txtTituloCurso == null) {
+			txtTituloCurso = new JTextField();
+			txtTituloCurso.setColumns(10);
+		}
+		return txtTituloCurso;
+	}
+	private JPanel getPnProfesores() {
+		if (pnProfesores == null) {
+			pnProfesores = new JPanel();
+			pnProfesores.setLayout(new GridLayout(2, 2, 0, 0));
+			pnProfesores.add(getPnSpinnerProfesores());
+			pnProfesores.add(getPnSesionesCurso());
+		}
+		return pnProfesores;
+	}
+	private JPanel getPnSpinnerProfesores() {
+		if (pnSpinnerProfesores == null) {
+			pnSpinnerProfesores = new JPanel();
+			pnSpinnerProfesores.setLayout(new GridLayout(1, 2, 0, 0));
+			pnSpinnerProfesores.add(getLblProfesores());
+			pnSpinnerProfesores.add(getCbProfesores());
+		}
+		return pnSpinnerProfesores;
+	}
+	private JLabel getLblProfesores() {
+		if (lblProfesores == null) {
+			lblProfesores = new JLabel("Selecciona profesor para impartir curso:");
+		}
+		return lblProfesores;
+	}
+	private JComboBox<String> getCbProfesores() {
+		if (cbProfesores == null) {
+			cbProfesores = new JComboBox<String>();
+			List<ProfesorDto> profesores = ProfesorCRUD.listProfesoresLibres();
+			List<String> nombreProfesores = new ArrayList<>();
+			for (ProfesorDto p: profesores) {
+				nombreProfesores.add(p.nombre);
+			}
+			
+			cbProfesores.setModel(new DefaultComboBoxModel( nombreProfesores.toArray() ));
+		}
+		return cbProfesores;
+	}
+	private JPanel getPnSesionesCurso() {
+		if (pnSesionesCurso == null) {
+			pnSesionesCurso = new JPanel();
+			pnSesionesCurso.setLayout(null);
+			pnSesionesCurso.add(getLblFechaSesion_1());
+			pnSesionesCurso.add(getTxtFechaSesion());
+			pnSesionesCurso.add(getLblHoraInicio());
+			pnSesionesCurso.add(getTxtHoraInicio());
+			pnSesionesCurso.add(getLblHoraFin());
+			pnSesionesCurso.add(getTxtHoraFin());
+			pnSesionesCurso.add(getBtnAnadirSesion());
+			pnSesionesCurso.add(getSpListaSesiones());
+			pnSesionesCurso.add(getBtnBorrarSesion());
+		}
+		return pnSesionesCurso;
+	}
+	private JLabel getLblFechaSesion_1() {
+		if (lblFechaSesion == null) {
+			lblFechaSesion = new JLabel("Fecha sesion: ");
+			lblFechaSesion.setBounds(0, 13, 99, 16);
+		}
+		return lblFechaSesion;
+	}
+	private JTextField getTxtFechaSesion() {
+		if (txtFechaSesion == null) {
+			txtFechaSesion = new JTextField();
+			txtFechaSesion.setColumns(10);
+			txtFechaSesion.setBounds(68, 11, 116, 22);
+		}
+		return txtFechaSesion;
+	}
+	private JLabel getLblHoraInicio() {
+		if (lblHoraInicio == null) {
+			lblHoraInicio = new JLabel("Hora inicio: ");
+			lblHoraInicio.setBounds(0, 45, 148, 16);
+		}
+		return lblHoraInicio;
+	}
+	private JTextField getTxtHoraInicio() {
+		if (txtHoraInicio == null) {
+			txtHoraInicio = new JTextField();
+			txtHoraInicio.setColumns(10);
+			txtHoraInicio.setBounds(68, 43, 116, 22);
+		}
+		return txtHoraInicio;
+	}
+	private JLabel getLblHoraFin() {
+		if (lblHoraFin == null) {
+			lblHoraFin = new JLabel("Hora fin: ");
+			lblHoraFin.setBounds(0, 80, 148, 16);
+		}
+		return lblHoraFin;
+	}
+	private JTextField getTxtHoraFin() {
+		if (txtHoraFin == null) {
+			txtHoraFin = new JTextField();
+			txtHoraFin.setColumns(10);
+			txtHoraFin.setBounds(68, 78, 116, 22);
+		}
+		return txtHoraFin;
+	}
+	private JButton getBtnAnadirSesion() {
+		if (btnAnadirSesion == null) {
+			btnAnadirSesion = new JButton("A\u00F1adir sesion");
+			btnAnadirSesion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//Fecha vacna
+					if (txtFechaSesion.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de sesinn estn vacna");
+						txtFechaSesion.grabFocus();
+						return;
+					} 
+					//Formato errnneo fecha
+					LocalDate fechaSesion = null;
+					try {
+						fechaSesion = LocalDate.parse(txtFechaSesion.getText());
+					} catch (DateTimeParseException d) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de fecha es errnneo");
+						txtFechaSesion.setText("");
+						txtFechaSesion.grabFocus();
+						return;
+					}
+					
+					//Fecha despuns a la actual
+					if(fechaSesion.isBefore(LocalDate.now())) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede ser anterior a la actual");
+						txtFechaSesion.setText("");
+						txtFechaSesion.grabFocus();
+					}
+					
+					//Hora inicio vacna
+					if (txtHoraInicio.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de inicio estn vacna");
+						txtHoraInicio.grabFocus();
+						return;
+					}
+					
+					LocalTime horaInicio = null;
+					
+					//Formato errnneo hora inicio
+					try {
+						horaInicio = LocalTime.parse(txtHoraInicio.getText());
+					} catch (DateTimeParseException d) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de inicio es errnneo");
+						txtHoraInicio.setText("");
+						txtHoraInicio.grabFocus();
+						return;
+					}
+					
+					//Hora inicio vacna
+					if (txtHoraFin.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La hora de fin estn vacna");
+						txtHoraFin.grabFocus();
+						return;
+					}
+					
+					LocalTime horaFin = null;
+					
+					//Formato errnneo hora inicio
+					try {
+						horaFin = LocalTime.parse(txtHoraFin.getText());
+					} catch (DateTimeParseException d) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "El formato de hora de fin es errnneo");
+						txtHoraFin.setText("");
+						txtHoraFin.grabFocus();
+						return;
+					}
+					//Comprobar que la fecha de inicio y fin no son la misma
+					if (horaInicio.compareTo(horaFin) == 0 ) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede ser la misa que la fecha de fin");
+						return;
+					}
+					
+					//Comprobar que la fecha de fin estn despuns de la de inicio
+					if (horaInicio.isAfter(horaFin) ) {
+						JOptionPane.showMessageDialog(pnSesionesCurso, "La fecha de inicio no puede estar despuns que la fecha de fin");
+						return;
+					}
+					
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					
+					LocalDateTime fechaInicio = LocalDateTime.parse(txtFechaSesion.getText() + " " + txtHoraInicio.getText(), formatter);
+					LocalDateTime fechaFin = LocalDateTime.parse(txtFechaSesion.getText() + " " + txtHoraFin.getText(), formatter);
+					
+					SesionDto sesion = new SesionDto();
+					
+					sesion.horaInicio = fechaInicio;
+					sesion.horaFin = fechaFin;
+					
+					for(int i = 0; i < fechasCurso.size() ; i++) {
+					    LocalDateTime first = fechasCurso.get(i).horaInicio;
+					    LocalDateTime second = fechasCurso.get(i).horaFin;
+					    if (fechaInicio.isAfter(first) && fechaInicio.isBefore(second) || 
+					    		fechaFin.isAfter(first) && fechaFin.isBefore(second) ||
+					    		fechaInicio.compareTo(first) == 0 ||
+					    		fechaFin.compareTo(second) == 0) {
+					    	txtHoraInicio.setText("");
+					    	txtHoraFin.setText("");
+					    	JOptionPane.showMessageDialog(pnSesionesCurso, "La sesinn se solapa con las anteriores");
+					    	return;
+					    }
+					}
+					
+					fechasCurso.add(sesion);
+					
+					JOptionPane.showMessageDialog(pnSesionesCurso, "Anadida la siguiente sesinn al curso: \nFecha: " + txtFechaSesion.getText() + 
+							"\nHora inicio: " + txtHoraInicio.getText() + "\nHora fin: " + txtHoraFin.getText());
+					
+					modeloSesiones.addElement(sesion);
+					txtFechaSesion.setText("");
+					txtHoraInicio.setText("");
+					txtHoraFin.setText("");
+					
+				}
+			});
+			btnAnadirSesion.setBounds(49, 113, 128, 25);
+		}
+		return btnAnadirSesion;
+	}
+	private JScrollPane getSpListaSesiones() {
+		if (spListaSesiones == null) {
+			spListaSesiones = new JScrollPane();
+			spListaSesiones.setBounds(194, 13, 156, 81);
+			spListaSesiones.setViewportView(getListSesiones());
+		}
+		return spListaSesiones;
+	}
+	private JList getListSesiones() {
+		if (listSesiones == null) {
+			listSesiones = new JList();
+			modeloSesiones = new DefaultListModel();
+			listSesiones.setModel(modeloSesiones);
+			
+		}
+		return listSesiones;
+	}
+
+	private JButton getBtnBorrarSesion() {
+		if (btnBorrarSesion == null) {
+			btnBorrarSesion = new JButton("Borrar sesion");
+			btnBorrarSesion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (Object o : listSesiones.getSelectedValuesList()) {
+						modeloSesiones.removeElement(o);
+						fechasCurso.remove(o);
+					}
+				}
+			});
+			btnBorrarSesion.setBounds(211, 113, 116, 25);
+		}
+		return btnBorrarSesion;
 	}
 }
