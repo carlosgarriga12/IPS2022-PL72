@@ -35,7 +35,7 @@ public class PeritoCrud {
 				sol.DNI = rs.getString("DNI");
 				sol.apellidos = rs.getString("Apellidos");
 				sol.telefono = rs.getInt("Telefono");
-				sol.PosicionPerito = rs.getInt("PosicionPerito");
+				sol.posicionPerito = rs.getInt("PosicionPerito");
 				solList.add(sol);}
 				catch(Exception e) {}
 			}

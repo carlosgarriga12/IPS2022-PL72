@@ -1,7 +1,10 @@
 package ui.model;
 
+import java.awt.Component;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -29,12 +32,14 @@ public class ColegiadoModel extends DefaultTableModel {
 
 	public TableModel getColegiadoModel(final boolean showAllFields) throws BusinessException {
 		DefaultTableModel model = new DefaultTableModel() {
+
 			private static final long serialVersionUID = 360537344960895264L;
 
 			@Override
 			public boolean isCellEditable(int i, int i1) {
 				return false;
 			}
+
 		};
 
 		if (colegiados.size() == 0) {
@@ -56,6 +61,34 @@ public class ColegiadoModel extends DefaultTableModel {
 
 		return model;
 
+	}
+
+	public TableModel getPeritoModel() {
+		DefaultTableModel model = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		if (colegiados.size() == 0) {
+			model.addColumn("");
+			model.addRow(new Object[] { "NO HAY PERITOS EN LA LISTA DE PROFESIONALES" });
+
+		} else {
+
+			model.setColumnIdentifiers(
+					new Object[] { HEADER_COLUMN1, HEADER_COLUMN2, HEADER_COLUMN3, "Renovacion", "PosicionPerito" });
+
+			for (ColegiadoDto c : colegiados) {
+				model.addRow(new Object[] { createCustomCell(c.DNI), createCustomCell(c.nombre),
+						createCustomCell(c.apellidos), createCustomCell(c.perito),
+						createCustomCell(c.posicionPerito) });
+			}
+
+		}
+
+		return model;
 	}
 
 	/**
@@ -97,7 +130,40 @@ public class ColegiadoModel extends DefaultTableModel {
 
 	}
 
+	/**
+	 * 
+	 * 
+	 * Su finalidad es centrar el texto de una celda. Permitiendo personalizarla aún
+	 * 
+	 * 
+	 * más.
+	 *
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param content Heterogéneo String | Integer | Date
+	 * 
+	 * 
+	 * @return Contenido centrado
+	 * 
+	 * 
+	 */
+
+	private String createCustomCell(Object content) {
+
+		JLabel cell = new JLabel(String.valueOf(content));
+
+		cell.setHorizontalAlignment(SwingConstants.CENTER);
+
+		cell.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		return cell.getText();
+
+	}
+
 	@Override
+
 	public boolean isCellEditable(int i, int i1) {
 		return false;
 	}

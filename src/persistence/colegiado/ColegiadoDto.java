@@ -16,6 +16,12 @@ public class ColegiadoDto {
 	public LocalDate fechaSolicitud; // 03/10/2022
 	public String estado; // "PENDIENTE"
 	public String numeroColegiado; // 2022-0001
+
 	public String TipoColectivo;
-	public int PosicionPerito;
+
+	public enum Perito_estado {RENOVADO, SIN_RENOVAR};
+	public String perito;
+	public Integer posicionPerito;
+	
+
 }

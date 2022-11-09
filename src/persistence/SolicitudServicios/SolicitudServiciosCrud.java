@@ -127,7 +127,7 @@ private static final String SQL_ActualizaPosicionesLista = Conf.getInstance().ge
 			c = Jdbc.getConnection();
 
 			pst = c.prepareStatement(SQL_ActualizaPosicionesLista);
-			pst.setInt(1, colegiado.PosicionPerito);
+			pst.setInt(1, colegiado.posicionPerito);
 			
 			pst.execute();
 

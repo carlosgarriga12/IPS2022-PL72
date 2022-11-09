@@ -60,7 +60,12 @@ public class DtoAssembler {
 		c.numeroCuenta = rs.getString("numeroCuenta");
 		c.fechaSolicitud = LocalDate.parse(rs.getString("fechaSolicitud"));
 		c.numeroColegiado = rs.getString("numero");
+
 		c.TipoColectivo = rs.getString("TipoColectivo");
+
+
+		c.perito = rs.getString("perito");
+		c.posicionPerito = rs.getInt("posicionPerito");
 
 		return c;
 
@@ -129,11 +134,11 @@ public class DtoAssembler {
 			newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));
 		}
 
-		if (rs.getString("FechaCierre") != null) {
+		if (rs.getString("FechaCierre") != null && !rs.getString("FechaCierre").isEmpty()) {
 			newCursoDto.fechaCierre = LocalDate.parse(rs.getString("FechaCierre"));
 		}
 
-		if (rs.getString("FechaImpartir") != null) {
+		if (rs.getString("FechaImpartir") != null && !rs.getString("FechaImpartir").isEmpty()) {
 			newCursoDto.fechaInicio = LocalDate.parse(rs.getString("FechaImpartir"));
 		}
 

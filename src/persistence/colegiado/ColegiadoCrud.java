@@ -36,6 +36,7 @@ public class ColegiadoCrud {
 	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO = Conf.getInstance()
 			.getProperty("TCOLEGIADO_UPDATE_ESTADO");
 
+
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
