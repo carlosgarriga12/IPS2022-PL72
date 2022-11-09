@@ -13,8 +13,8 @@ import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
-import persistence.curso.profesorado.ProfesorDto;
 import persistence.curso.Precio_Colectivos;
+import persistence.curso.profesorado.ProfesorDto;
 
 public class DtoAssembler {
 	
@@ -89,7 +89,6 @@ public class DtoAssembler {
 				.map(t -> t.trim().strip())
 				.collect(Collectors.toList());
 	}
-
 	/**
 	 * Devuelve la lista de colegiados en forma de cadena separados por coma.
 	 * 
@@ -209,46 +208,6 @@ public class DtoAssembler {
 		
 		return p;
 	}
-
-	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
-		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
-		int i = 1;
-		d.colegiado = new ColegiadoDto();
-		d.colegiado.DNI = rs.getString(i++);
-		d.colegiado.nombre = rs.getString(i++);
-		d.colegiado.apellidos = rs.getString(i++);
-		d.cantidadPagada = rs.getDouble(i++);
-		String fechaTransferencia = rs.getString(i++);
-		d.codigoTransferencia = rs.getString(i++);
-		String fechaPreinscripcion = rs.getString(i++);
-		if (fechaTransferencia == null) {
-			d.fechaTransferencia = null;
-			d.fechaPreinscripcion = null;
-		} else {
-			d.fechaTransferencia = LocalDate.parse(fechaTransferencia);
-			d.fechaPreinscripcion = LocalDate.parse(fechaPreinscripcion);
-		}
-		d.precio = rs.getDouble(i++);
-		d.estado = rs.getString(i++);
-		d.incidencias = rs.getString(i++);
-		return d;
-	}
-
-	public static InscripcionColegiadoDto resultsetToIncripcionTransferenciaProcesar(ResultSet rs) throws SQLException {
-		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
-		int i = 1;
-		d.colegiado = new ColegiadoDto();
-		d.colegiado.DNI = rs.getString(i++);
-		d.colegiado.nombre = rs.getString(i++);
-		d.colegiado.apellidos = rs.getString(i++);
-		d.cantidadPagada = rs.getDouble(i++);
-		d.precio = rs.getDouble(i++);
-		d.estado = rs.getString(i++);
-		d.incidencias = rs.getString(i++);
-		d.devolver = rs.getString(i++);
-		return d;
-	}
-
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;

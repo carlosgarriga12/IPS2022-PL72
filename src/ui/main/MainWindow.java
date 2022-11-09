@@ -46,7 +46,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -2063,6 +2062,7 @@ public class MainWindow extends JFrame {
 		return pnCrearCursoButtons;
 	}
 
+
 	private DefaultButton getBtnCrearCursoCancelar() {
 		if (btnCrearCursoCancelar == null) {
 			btnCrearCursoCancelar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
@@ -2075,7 +2075,7 @@ public class MainWindow extends JFrame {
 		}
 		return btnCrearCursoCancelar;
 	}
-
+	
 	private JButton getBtnCrearCursoCrear() {
 		if (btnCrearCursoCrear == null) {
 			btnCrearCursoCrear = new DefaultButton("Crear curso", "ventana", "CrearCurso", 'c', ButtonColor.NORMAL);
@@ -2135,11 +2135,13 @@ public class MainWindow extends JFrame {
 					txtFechaSesion.setText("");
 					txtHoraInicio.setText("");
 					txtHoraFin.setText("");
-					txPrecioAñadirColectivo.setText("");
+					txPrecioAnadirColectivo.setText("");
 					modeloSesiones.removeAllElements();
+					}
 				}
 			});
 		}
+
 		return btnCrearCursoCrear;
 	}
 
@@ -5130,6 +5132,7 @@ public class MainWindow extends JFrame {
 		}
 		return listSesiones;
 	}
+
 	private JButton getBtnBorrarSesion() {
 		if (btnBorrarSesion == null) {
 			btnBorrarSesion = new JButton("Borrar sesion");
