@@ -181,9 +181,10 @@ public class DtoAssembler {
 
 		c.nombre = rs.getString("nombre");
 		c.apellidos = rs.getString("apellidos");
-		I.cantidadPagada = rs.getDouble("CantidadPagar");
+		I.precio = rs.getDouble("CantidadPagar");
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
+		I.cantidadPagada = rs.getDouble("CantidadAbonada");
 
 		return new Colegiado_Inscripcion(c, I);
 

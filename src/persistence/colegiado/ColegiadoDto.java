@@ -17,4 +17,5 @@ public class ColegiadoDto {
 	public String estado; // "PENDIENTE"
 	public String numeroColegiado; // 2022-0001
 	public String TipoColectivo;
+	public int PosicionPerito;
 }

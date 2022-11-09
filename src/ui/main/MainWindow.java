@@ -22,10 +22,12 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -55,7 +58,9 @@ import com.toedter.calendar.JCalendar;
 
 import business.BusinessException;
 import business.InscripcionColegiado.InscripcionColegiado;
+import business.SolicitudServicios.SolicitudServicios;
 import business.colegiado.Colegiado;
+import business.colegiado.Perito;
 import business.curso.Curso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.CSVLoteSolicitudesColegiacion;
@@ -63,6 +68,7 @@ import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.SolicitudServicios.SolicitudServiciosDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -80,6 +86,8 @@ import ui.model.CursoModel;
 import ui.model.InscripcionColegiadoModel;
 import ui.model.ModeloCurso;
 import ui.model.ModeloInscripcion;
+import ui.model.ModeloPeritos;
+import ui.model.ModeloSolicitudServicios;
 import ui.util.TimeFormatter;
 
 public class MainWindow extends JFrame {
@@ -100,6 +108,8 @@ public class MainWindow extends JFrame {
 	private static final String INSCRIPCION_CURSO_TRANSFERENCIAS = "incripcionColegiadoTransferencias";
 	private static final String INSCRIPCION_CURSO_TRANSFERENCIAS_PROCESADAS = "inscripcionColegiadoTransferenciasProcesadas";
 	protected static final String RECEPCION_LOTES_COLEGIACION_PANEL = "recepcionLotesColegiacion";
+	private static final String SOLICITUD_SERVICIOS = "SolicitudServicios";
+	private static final String ASIGNACION_SOLICITUD_SERVICIOS = "AsignacionSolicitudServicios";
 
 	private static final int ALL_MINUS_ID = 1;
 	private static final int ALL_CURSO = 0;
@@ -359,6 +369,87 @@ public class MainWindow extends JFrame {
 	private JButton btVolverHomeRecepcionLote;
 	private JScrollPane spRecepcionLoteTablaDatos;
 	private JTable tbListadoNuevosColegiadosRecepcionLote;
+	private JPanel pnColectivosCuotasSeleccionadas;
+	private JLabel lblNewLabel_1;
+	private JLabel lblNewLabel_2;
+
+	private JPanel pnSolicitudServicios;
+
+	private JPanel pnTituloSolicitud;
+
+	private JLabel lbTituloSolicitud;
+
+	private JPanel pnCenterSolicitud;
+
+	private JPanel pnSolicitudDni;
+
+	private JLabel lbSolicitudDni;
+
+	private JTextField txSolicitudDni;
+
+	private JPanel pnSolicitudCorreo;
+
+	private JLabel lbSolicitudCorreo;
+
+	private JTextField txSolicitudCorreo;
+
+	private JPanel pnSolicitudDescripcion;
+
+	private JLabel lbSolicitudDescripcion;
+
+	private JScrollPane scrollPane;
+
+	private JTextField txSolicitudDescripcion;
+
+	private JPanel pnSolicitudUrgente;
+
+	private JLabel lbSolicitudUrgente;
+
+	private JPanel pnSolicitudRadioButton;
+
+	private JRadioButton rbSolicitudNormal;
+
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+
+	private JRadioButton rbSolicitudUrgente;
+
+	private JPanel pnSouthSolicitud;
+
+	private DefaultButton btnRegistrarSolicitud;
+
+	private DefaultButton btnInscripcionToInicio_1_1;
+
+	private JPanel pnAsignacionSolicitudesServicios;
+
+	private JPanel pnAsignacionSolicitudesTitulo;
+
+	private JLabel lbAsignacionSolicitudTitulo;
+
+	private JPanel pnAsignacionSolicitudesCenter;
+
+	private JPanel pnAsignacionSolicitudes;
+
+	private JLabel lbAsignacionSolicitudes;
+
+	private JScrollPane spAsignacionSolicitudes;
+
+	private JTable tbAsignacionSolicitudes;
+
+	private JPanel pnAsignacionSolicitudesPeritos;
+
+	private JLabel lbAsignacionSolicitudesPeritos;
+
+	private JScrollPane spAsignacionSolicitudesPeritos;
+
+	private JTable tbAsignacionSolicitudesPeritos;
+
+	private JPanel pnAsignacionSolicitudesButton;
+
+	private DefaultButton btAsignarSolicitud;
+
+	private DefaultButton btnInscripcionToInicio_1;
+
+
 
 	public MainWindow() {
 		setTitle("COIIPA : Gestión de servicios");
@@ -390,6 +481,8 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnTransferencias(), INSCRIPCION_CURSO_TRANSFERENCIAS);
 		mainPanel.add(getPnTransferenciasProcesadas(), INSCRIPCION_CURSO_TRANSFERENCIAS_PROCESADAS);
 		mainPanel.add(getPnRecepcionLoteResultado(), RECEPCION_LOTES_COLEGIACION_PANEL);
+		mainPanel.add(getPnSolicitudServicios(), SOLICITUD_SERVICIOS);
+		mainPanel.add(getPnAsignacionSolicitudesServicios(), ASIGNACION_SOLICITUD_SERVICIOS);
 
 		// Centrar la ventana
 		this.setLocationRelativeTo(null);
@@ -2006,6 +2099,7 @@ public class MainWindow extends JFrame {
 					JOptionPane.showMessageDialog(pnCrearCurso, "Curso creado correctamente");
 
 					colectivos_Precios = new Precio_Colectivos();
+					
 				}
 			});
 		}
@@ -2022,6 +2116,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
 			pnHomeAccionesColegiado.add(getBtHomePagarInscripcion());
+			pnHomeAccionesColegiado.add(getBtHomeSolicitudServicios());
 		}
 		return pnHomeAccionesColegiado;
 	}
@@ -2031,13 +2126,14 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria = new JPanel();
 			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesSecretaria.setOpaque(false);
-			pnHomeAccionesSecretaria.setLayout(new GridLayout(6, 1, 0, 10));
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(7, 1, 0, 10));
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAddCurso());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaListadoInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaTransferencias());
+			pnHomeAccionesSecretaria.add(getBtHomeAsignacionSolicitudServicios());
 
 		}
 		return pnHomeAccionesSecretaria;
@@ -2335,6 +2431,7 @@ public class MainWindow extends JFrame {
 			btnListadoInscripcionesToInicio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					tbCursosInscripciones = null;
 				}
 			});
 			btnListadoInscripcionesToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -3373,9 +3470,31 @@ public class MainWindow extends JFrame {
 		if (pnColectivosCenter == null) {
 			pnColectivosCenter = new JPanel();
 			pnColectivosCenter.setBounds(new Rectangle(0, 0, 500, 0));
-			pnColectivosCenter.setLayout(new BorderLayout(50, 25));
-			pnColectivosCenter.add(getPnColectivosAnadir(), BorderLayout.NORTH);
-			pnColectivosCenter.add(getPnColectivosEliminar());
+			GridBagLayout gbl_pnColectivosCenter = new GridBagLayout();
+			gbl_pnColectivosCenter.columnWidths = new int[]{520, 0};
+			gbl_pnColectivosCenter.rowHeights = new int[] {50, 30, 50, 30, 0};
+			gbl_pnColectivosCenter.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+			gbl_pnColectivosCenter.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+			pnColectivosCenter.setLayout(gbl_pnColectivosCenter);
+			GridBagConstraints gbc_pnColectivosAnadir = new GridBagConstraints();
+			gbc_pnColectivosAnadir.anchor = GridBagConstraints.NORTH;
+			gbc_pnColectivosAnadir.fill = GridBagConstraints.HORIZONTAL;
+			gbc_pnColectivosAnadir.insets = new Insets(0, 0, 5, 0);
+			gbc_pnColectivosAnadir.gridx = 0;
+			gbc_pnColectivosAnadir.gridy = 0;
+			pnColectivosCenter.add(getPnColectivosAnadir(), gbc_pnColectivosAnadir);
+			GridBagConstraints gbc_pnColectivosCuotasSeleccionadas = new GridBagConstraints();
+			gbc_pnColectivosCuotasSeleccionadas.fill = GridBagConstraints.BOTH;
+			gbc_pnColectivosCuotasSeleccionadas.insets = new Insets(0, 0, 5, 0);
+			gbc_pnColectivosCuotasSeleccionadas.gridx = 0;
+			gbc_pnColectivosCuotasSeleccionadas.gridy = 1;
+			pnColectivosCenter.add(getPnColectivosCuotasSeleccionadas(), gbc_pnColectivosCuotasSeleccionadas);
+			GridBagConstraints gbc_pnColectivosEliminar = new GridBagConstraints();
+			gbc_pnColectivosEliminar.anchor = GridBagConstraints.NORTH;
+			gbc_pnColectivosEliminar.fill = GridBagConstraints.HORIZONTAL;
+			gbc_pnColectivosEliminar.gridx = 0;
+			gbc_pnColectivosEliminar.gridy = 2;
+			pnColectivosCenter.add(getPnColectivosEliminar(), gbc_pnColectivosEliminar);
 		}
 		return pnColectivosCenter;
 	}
@@ -4217,5 +4336,568 @@ public class MainWindow extends JFrame {
 
 		}
 		return tbListadoNuevosColegiadosRecepcionLote;
+	}
+	private JPanel getPnColectivosCuotasSeleccionadas() {
+		if (pnColectivosCuotasSeleccionadas == null) {
+			pnColectivosCuotasSeleccionadas = new JPanel();
+			GridBagLayout gbl_pnColectivosCuotasSeleccionadas = new GridBagLayout();
+			gbl_pnColectivosCuotasSeleccionadas.columnWidths = new int[]{0, 0};
+			gbl_pnColectivosCuotasSeleccionadas.rowHeights = new int[]{0, 0, 0};
+			gbl_pnColectivosCuotasSeleccionadas.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+			gbl_pnColectivosCuotasSeleccionadas.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			pnColectivosCuotasSeleccionadas.setLayout(gbl_pnColectivosCuotasSeleccionadas);
+			GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+			gbc_lblNewLabel_1.anchor = GridBagConstraints.WEST;
+			gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
+			gbc_lblNewLabel_1.gridx = 0;
+			gbc_lblNewLabel_1.gridy = 0;
+			pnColectivosCuotasSeleccionadas.add(getLblNewLabel_1(), gbc_lblNewLabel_1);
+			GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+			gbc_lblNewLabel_2.gridx = 0;
+			gbc_lblNewLabel_2.gridy = 1;
+			pnColectivosCuotasSeleccionadas.add(getLblNewLabel_2(), gbc_lblNewLabel_2);
+		}
+		return pnColectivosCuotasSeleccionadas;
+	}
+	private JLabel getLblNewLabel_1() {
+		if (lblNewLabel_1 == null) {
+			lblNewLabel_1 = new JLabel("Colectivos A\u00F1adidos:");
+			lblNewLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
+			lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lblNewLabel_1;
+	}
+	private JLabel getLblNewLabel_2() {
+		if (lblNewLabel_2 == null) {
+			lblNewLabel_2 = new JLabel("Se mostraran los precios para cada colectivo en el desplegable");
+			lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		}
+		return lblNewLabel_2;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private JPanel getPnSolicitudServicios() {
+		if (pnSolicitudServicios == null) {
+			pnSolicitudServicios = new JPanel();
+			pnSolicitudServicios.setLayout(new BorderLayout(0, 0));
+			pnSolicitudServicios.add(getPnTituloSolicitud(), BorderLayout.NORTH);
+			pnSolicitudServicios.add(getPnCenterSolicitud(), BorderLayout.WEST);
+			pnSolicitudServicios.add(getPnSouthSolicitud(), BorderLayout.SOUTH);
+		}
+		return pnSolicitudServicios;
+	}
+	
+	private JPanel getPnTituloSolicitud() {
+		if (pnTituloSolicitud == null) {
+			pnTituloSolicitud = new JPanel();
+			pnTituloSolicitud.add(getLbTituloSolicitud());
+		}
+		return pnTituloSolicitud;
+	}
+	
+	
+	private JLabel getLbTituloSolicitud() {
+		if (lbTituloSolicitud == null) {
+			lbTituloSolicitud = new JLabel("Registro de solicitudes de Servicios");
+			lbTituloSolicitud.setFont(new Font("Tahoma", Font.BOLD, 18));
+		}
+		return lbTituloSolicitud;
+	}
+	
+	
+	private JPanel getPnCenterSolicitud() {
+		if (pnCenterSolicitud == null) {
+			pnCenterSolicitud = new JPanel();
+			pnCenterSolicitud.setLayout(new GridLayout(6, 1, 0, 50));
+			pnCenterSolicitud.add(getPnSolicitudDni());
+			pnCenterSolicitud.add(getPnSolicitudCorreo());
+			pnCenterSolicitud.add(getPnSolicitudDescripcion());
+			pnCenterSolicitud.add(getPnSolicitudUrgente());
+		}
+		return pnCenterSolicitud;
+	}
+	
+	
+	private JPanel getPnSolicitudDni() {
+		if (pnSolicitudDni == null) {
+			pnSolicitudDni = new JPanel();
+			pnSolicitudDni.setLayout(new GridLayout(2, 1, 0, 0));
+			pnSolicitudDni.add(getLbSolicitudDni());
+			pnSolicitudDni.add(getTextField_3());
+		}
+		return pnSolicitudDni;
+	}
+	
+	
+	private JLabel getLbSolicitudDni() {
+		if (lbSolicitudDni == null) {
+			lbSolicitudDni = new JLabel("Introduzca su DNI:");
+			lbSolicitudDni.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbSolicitudDni;
+	}
+	
+	private JTextField getTextField_3() {
+		if (txSolicitudDni == null) {
+			txSolicitudDni = new JTextField();
+			txSolicitudDni.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txSolicitudDni.setColumns(10);
+		}
+		return txSolicitudDni;
+	}
+	
+	
+	private JPanel getPnSolicitudCorreo() {
+		if (pnSolicitudCorreo == null) {
+			pnSolicitudCorreo = new JPanel();
+			pnSolicitudCorreo.setLayout(new GridLayout(2, 1, 0, 0));
+			pnSolicitudCorreo.add(getLbSolicitudCorreo());
+			pnSolicitudCorreo.add(getTextField_1_1());
+		}
+		return pnSolicitudCorreo;
+	}
+	
+	private JLabel getLbSolicitudCorreo() {
+		if (lbSolicitudCorreo == null) {
+			lbSolicitudCorreo = new JLabel("Introduzca su correo electronico:");
+			lbSolicitudCorreo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbSolicitudCorreo;
+	}
+	
+	private JTextField getTextField_1_1() {
+		if (txSolicitudCorreo == null) {
+			txSolicitudCorreo = new JTextField();
+			txSolicitudCorreo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txSolicitudCorreo.setColumns(10);
+		}
+		return txSolicitudCorreo;
+	}
+	
+	
+	private JPanel getPnSolicitudDescripcion() {
+		if (pnSolicitudDescripcion == null) {
+			pnSolicitudDescripcion = new JPanel();
+			pnSolicitudDescripcion.setLayout(new GridLayout(2, 1, 0, 0));
+			pnSolicitudDescripcion.add(getLbSolicitudDescripcion());
+			pnSolicitudDescripcion.add(getScrollPane());
+		}
+		return pnSolicitudDescripcion;
+	}
+	
+	private JLabel getLbSolicitudDescripcion() {
+		if (lbSolicitudDescripcion == null) {
+			lbSolicitudDescripcion = new JLabel("Introduzca una descripci\u00F3n de lo que desea:");
+			lbSolicitudDescripcion.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbSolicitudDescripcion;
+	}
+	
+	private JScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new JScrollPane();
+			scrollPane.setViewportView(getTextField_2_1());
+		}
+		return scrollPane;
+	}
+	
+	
+	private JTextField getTextField_2_1() {
+		if (txSolicitudDescripcion == null) {
+			txSolicitudDescripcion = new JTextField();
+			txSolicitudDescripcion.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txSolicitudDescripcion.setColumns(10);
+		}
+		return txSolicitudDescripcion;
+	}
+	
+	private JPanel getPnSolicitudUrgente() {
+		if (pnSolicitudUrgente == null) {
+			pnSolicitudUrgente = new JPanel();
+			pnSolicitudUrgente.setLayout(new GridLayout(2, 1, 0, 0));
+			pnSolicitudUrgente.add(getLbSolicitudUrgente());
+			pnSolicitudUrgente.add(getPnSolicitudRadioButton());
+		}
+		return pnSolicitudUrgente;
+	}
+	
+	private JLabel getLbSolicitudUrgente() {
+		if (lbSolicitudUrgente == null) {
+			lbSolicitudUrgente = new JLabel("Seleccione la urgencia de la solicitud:");
+			lbSolicitudUrgente.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbSolicitudUrgente;
+	}
+	
+	private JPanel getPnSolicitudRadioButton() {
+		if (pnSolicitudRadioButton == null) {
+			pnSolicitudRadioButton = new JPanel();
+			pnSolicitudRadioButton.add(getRbSolicitudNormal());
+			pnSolicitudRadioButton.add(getRbSolicitudUrgente());
+		}
+		return pnSolicitudRadioButton;
+	}
+	
+	private JRadioButton getRbSolicitudNormal() {
+		if (rbSolicitudNormal == null) {
+			rbSolicitudNormal = new JRadioButton("Normal");
+			rbSolicitudNormal.setSelected(true);
+			rbSolicitudNormal.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			buttonGroup.add(rbSolicitudNormal);
+		}
+		return rbSolicitudNormal;
+	}
+	
+	private JRadioButton getRbSolicitudUrgente() {
+		if (rbSolicitudUrgente == null) {
+			rbSolicitudUrgente = new JRadioButton("Urgente");
+			rbSolicitudUrgente.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			buttonGroup.add(rbSolicitudUrgente);
+		}
+		return rbSolicitudUrgente;
+	}
+	
+	private JPanel getPnSouthSolicitud() {
+		if (pnSouthSolicitud == null) {
+			pnSouthSolicitud = new JPanel();
+			pnSouthSolicitud.setLayout(new GridLayout(0, 4, 5, 0));
+			pnSouthSolicitud.add(getBtnRegistrarSolicitud());
+			pnSouthSolicitud.add(getBtnInscripcionToInicio_1_1());
+		}
+		return pnSouthSolicitud;
+	}
+	
+	private DefaultButton getBtnRegistrarSolicitud() {
+		if (btnRegistrarSolicitud == null) {
+			btnRegistrarSolicitud = new DefaultButton("Registrar Solicitud");
+			btnRegistrarSolicitud.setPreferredSize(new Dimension(250, 59));
+			btnRegistrarSolicitud.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String dni = txSolicitudDni.getText().trim();
+					String correo = txSolicitudCorreo.getText().trim();
+					String descripcion = txSolicitudDescripcion.getText().trim();
+					int urgencia = rbSolicitudUrgente.isSelected() ? 1:0;
+					
+					if(dni.length()!=9) {
+						JOptionPane.showMessageDialog(pnSolicitudServicios, "Introduzca un formato de dni valido");
+						return;
+					}
+					if(correo.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudServicios, "Es necesario introducir un correo electronico");
+						return;
+					}
+					if(descripcion.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudServicios, "Es necesario incluir una descripcion");
+						return;
+					}
+					
+					SolicitudServiciosDto s = new SolicitudServiciosDto();
+					s.CorreoElectronico = correo;
+					s.DNI = dni;
+					s.Descripcion = descripcion;
+					s.Urgente = urgencia;
+					
+					SolicitudServicios.insertSolicitudServicios(s);
+					
+					JOptionPane.showMessageDialog(pnSolicitudServicios, "Se ha registrado la solicitud correctamente");
+					
+					
+				}
+			});
+			btnRegistrarSolicitud.setHorizontalAlignment(SwingConstants.LEFT);
+			btnRegistrarSolicitud.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btnRegistrarSolicitud;
+	}
+	
+	private DefaultButton getBtnInscripcionToInicio_1_1() {
+		if (btnInscripcionToInicio_1_1 == null) {
+			btnInscripcionToInicio_1_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btnInscripcionToInicio_1_1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
+			btnInscripcionToInicio_1_1.setPreferredSize(new Dimension(250, 59));
+			btnInscripcionToInicio_1_1.setMinimumSize(new Dimension(245, 59));
+			btnInscripcionToInicio_1_1.setMaximumSize(new Dimension(245, 59));
+			btnInscripcionToInicio_1_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btnInscripcionToInicio_1_1;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private JPanel getPnAsignacionSolicitudesServicios() {
+		if (pnAsignacionSolicitudesServicios == null) {
+			pnAsignacionSolicitudesServicios = new JPanel();
+			pnAsignacionSolicitudesServicios.setLayout(new BorderLayout(0, 20));
+			pnAsignacionSolicitudesServicios.add(getPnAsignacionSolicitudesTitulo(), BorderLayout.NORTH);
+			pnAsignacionSolicitudesServicios.add(getPnAsignacionSolicitudesCenter(), BorderLayout.CENTER);
+			pnAsignacionSolicitudesServicios.add(getPnAsignacionSolicitudesButton(), BorderLayout.SOUTH);
+		}
+		return pnAsignacionSolicitudesServicios;
+	}
+	
+	private JPanel getPnAsignacionSolicitudesTitulo() {
+		if (pnAsignacionSolicitudesTitulo == null) {
+			pnAsignacionSolicitudesTitulo = new JPanel();
+			pnAsignacionSolicitudesTitulo.add(getLbAsignacionSolicitudTitulo());
+		}
+		return pnAsignacionSolicitudesTitulo;
+	}
+	
+	private JLabel getLbAsignacionSolicitudTitulo() {
+		if (lbAsignacionSolicitudTitulo == null) {
+			lbAsignacionSolicitudTitulo = new JLabel("Asignacion de Solicitudes de Servicios");
+			lbAsignacionSolicitudTitulo.setFont(new Font("Tahoma", Font.BOLD, 20));
+		}
+		return lbAsignacionSolicitudTitulo;
+	}
+	
+	private JPanel getPnAsignacionSolicitudesCenter() {
+		if (pnAsignacionSolicitudesCenter == null) {
+			pnAsignacionSolicitudesCenter = new JPanel();
+			pnAsignacionSolicitudesCenter.setLayout(new GridLayout(0, 2, 0, 0));
+			pnAsignacionSolicitudesCenter.add(getPnAsignacionSolicitudes());
+			pnAsignacionSolicitudesCenter.add(getPnAsignacionSolicitudesPeritos());
+		}
+		return pnAsignacionSolicitudesCenter;
+	}
+	
+	private JPanel getPnAsignacionSolicitudes() {
+		if (pnAsignacionSolicitudes == null) {
+			pnAsignacionSolicitudes = new JPanel();
+			pnAsignacionSolicitudes.setLayout(new BorderLayout(0, 0));
+			pnAsignacionSolicitudes.add(getLbAsignacionSolicitudes(), BorderLayout.NORTH);
+			pnAsignacionSolicitudes.add(getSpAsignacionSolicitudes());
+		}
+		return pnAsignacionSolicitudes;
+	}
+	
+	
+	private JLabel getLbAsignacionSolicitudes() {
+		if (lbAsignacionSolicitudes == null) {
+			lbAsignacionSolicitudes = new JLabel("Solicitudes de Servicios:");
+			lbAsignacionSolicitudes.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbAsignacionSolicitudes;
+	}
+	
+	private JScrollPane getSpAsignacionSolicitudes() {
+		if (spAsignacionSolicitudes == null) {
+			spAsignacionSolicitudes = new JScrollPane();
+			spAsignacionSolicitudes.setViewportView(getTbAsignacionSolicitudes());
+		}
+		return spAsignacionSolicitudes;
+	}
+	
+	private JTable getTbAsignacionSolicitudes() {
+		if (tbAsignacionSolicitudes == null) {
+			tbAsignacionSolicitudes = new JTable();
+			tbAsignacionSolicitudes.setIntercellSpacing(new Dimension(0, 0));
+			tbAsignacionSolicitudes.setShowGrid(false);
+			tbAsignacionSolicitudes.setRowMargin(0);
+			tbAsignacionSolicitudes.setRequestFocusEnabled(false);
+			tbAsignacionSolicitudes.setFocusable(false);
+			tbAsignacionSolicitudes.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbAsignacionSolicitudes.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbAsignacionSolicitudes.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbAsignacionSolicitudes.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbAsignacionSolicitudes.setShowVerticalLines(false);
+			tbAsignacionSolicitudes.setOpaque(false);
+
+			tbAsignacionSolicitudes.setRowHeight(80);
+			tbAsignacionSolicitudes.setGridColor(new Color(255, 255, 255));
+
+			tbAsignacionSolicitudes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return tbAsignacionSolicitudes;
+	}
+	
+	
+	private JPanel getPnAsignacionSolicitudesPeritos() {
+		if (pnAsignacionSolicitudesPeritos == null) {
+			pnAsignacionSolicitudesPeritos = new JPanel();
+			pnAsignacionSolicitudesPeritos.setLayout(new BorderLayout(0, 0));
+			pnAsignacionSolicitudesPeritos.add(getLbAsignacionSolicitudesPeritos(), BorderLayout.NORTH);
+			pnAsignacionSolicitudesPeritos.add(getSpAsignacionSolicitudesPeritos());
+		}
+		return pnAsignacionSolicitudesPeritos;
+	}
+	
+	private JLabel getLbAsignacionSolicitudesPeritos() {
+		if (lbAsignacionSolicitudesPeritos == null) {
+			lbAsignacionSolicitudesPeritos = new JLabel("Lista de Peritos:");
+			lbAsignacionSolicitudesPeritos.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return lbAsignacionSolicitudesPeritos;
+	}
+	
+	private JScrollPane getSpAsignacionSolicitudesPeritos() {
+		if (spAsignacionSolicitudesPeritos == null) {
+			spAsignacionSolicitudesPeritos = new JScrollPane();
+			spAsignacionSolicitudesPeritos.setViewportView(getTbAsignacionSolicitudesPeritos());
+		}
+		return spAsignacionSolicitudesPeritos;
+	}
+	
+	private JTable getTbAsignacionSolicitudesPeritos() {
+		if (tbAsignacionSolicitudesPeritos == null) {
+			tbAsignacionSolicitudesPeritos = new JTable();
+			tbAsignacionSolicitudesPeritos.setIntercellSpacing(new Dimension(0, 0));
+			tbAsignacionSolicitudesPeritos.setShowGrid(false);
+			tbAsignacionSolicitudesPeritos.setRowMargin(0);
+			tbAsignacionSolicitudesPeritos.setRequestFocusEnabled(false);
+			tbAsignacionSolicitudesPeritos.setFocusable(false);
+			tbAsignacionSolicitudesPeritos.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbAsignacionSolicitudesPeritos.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbAsignacionSolicitudesPeritos.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbAsignacionSolicitudesPeritos.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbAsignacionSolicitudesPeritos.setShowVerticalLines(false);
+			tbAsignacionSolicitudesPeritos.setOpaque(false);
+
+			tbAsignacionSolicitudesPeritos.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbAsignacionSolicitudesPeritos.setGridColor(new Color(255, 255, 255));
+
+			tbAsignacionSolicitudesPeritos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			
+
+		}
+		return tbAsignacionSolicitudesPeritos;
+	}
+	
+	private JPanel getPnAsignacionSolicitudesButton() {
+		if (pnAsignacionSolicitudesButton == null) {
+			pnAsignacionSolicitudesButton = new JPanel();
+			pnAsignacionSolicitudesButton.add(getBtAsignarSolicitud());
+			pnAsignacionSolicitudesButton.add(getBtnInscripcionToInicio_1());
+		}
+		return pnAsignacionSolicitudesButton;
+	}
+	
+	private DefaultButton getBtAsignarSolicitud() {
+		if (btAsignarSolicitud == null) {
+			btAsignarSolicitud = new DefaultButton("Asignar Solicitud");
+			btAsignarSolicitud.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int indexSolicitudes = getTbAsignacionSolicitudes().getSelectedRow();
+					int indexPeritos = getTbAsignacionSolicitudesPeritos().getSelectedRow();
+					
+					SolicitudServiciosDto solicitud = listaSolicitudesServicios.get(indexSolicitudes);
+					ColegiadoDto perito = listaPeritosOrdenada.get(indexPeritos);
+					
+					SolicitudServicios.AsociaSolicitudServicio(solicitud, perito);
+					
+					
+					ActualizaTablasSolicitudesServicios();
+				}
+			});
+			btAsignarSolicitud.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btAsignarSolicitud;
+	}
+	
+	private DefaultButton getBtnInscripcionToInicio_1() {
+		if (btnInscripcionToInicio_1 == null) {
+			btnInscripcionToInicio_1 = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v', ButtonColor.NORMAL);
+			btnInscripcionToInicio_1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
+			btnInscripcionToInicio_1.setPreferredSize(new Dimension(250, 59));
+			btnInscripcionToInicio_1.setMinimumSize(new Dimension(245, 59));
+			btnInscripcionToInicio_1.setMaximumSize(new Dimension(245, 59));
+			btnInscripcionToInicio_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		}
+		return btnInscripcionToInicio_1;
+	}
+	
+	private ArrayList<SolicitudServiciosDto> listaSolicitudesServicios;
+	private ArrayList<ColegiadoDto> listaPeritosOrdenada;
+	private DefaultButton btHomeSolicitudServicios;
+	private DefaultButton btHomeAsignacionSolicitudServicios;
+	
+	private void ActualizaTablasSolicitudesServicios() {
+		listaSolicitudesServicios = SolicitudServicios.listarSolicitudesServicios();
+		listaPeritosOrdenada = Perito.listarPeritosOrdenados();
+		getBtAsignarSolicitud().setEnabled(true);
+		
+		TableModel tableModelSolicitudes = new ModeloSolicitudServicios(listaSolicitudesServicios).getSolicitudModel();
+		TableModel tableModelPeritos = new ModeloPeritos(listaPeritosOrdenada).getPeritoModel();
+		getTbAsignacionSolicitudes().setModel(tableModelSolicitudes);
+		getTbAsignacionSolicitudesPeritos().setModel(tableModelPeritos);
+		
+		if(listaSolicitudesServicios.isEmpty() || listaPeritosOrdenada.isEmpty()) {
+			getBtAsignarSolicitud().setEnabled(false);
+		}
+		else {
+			getTbAsignacionSolicitudes().setRowSelectionInterval(0, 0);
+			getTbAsignacionSolicitudesPeritos().setRowSelectionInterval(0, 0);
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private DefaultButton getBtHomeSolicitudServicios() {
+		if (btHomeSolicitudServicios == null) {
+			btHomeSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l', ButtonColor.NORMAL);
+			btHomeSolicitudServicios.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, SOLICITUD_SERVICIOS);
+				}
+			});
+			btHomeSolicitudServicios.setText("Solicitud de Servicios");
+		}
+		return btHomeSolicitudServicios;
+	}
+	private DefaultButton getBtHomeAsignacionSolicitudServicios() {
+		if (btHomeAsignacionSolicitudServicios == null) {
+			btHomeAsignacionSolicitudServicios = new DefaultButton("Darse de alta", "ventana", "AltaColegiado", 'l', ButtonColor.NORMAL);
+			btHomeAsignacionSolicitudServicios.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, ASIGNACION_SOLICITUD_SERVICIOS);
+					ActualizaTablasSolicitudesServicios();
+				}
+			});
+			btHomeAsignacionSolicitudServicios.setText("Asignacion Solicitud de Servicios");
+		}
+		return btHomeAsignacionSolicitudServicios;
 	}
 }
