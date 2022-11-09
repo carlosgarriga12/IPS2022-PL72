@@ -57,7 +57,7 @@ public class InscripcionColegiado {
 		}
 		return fecha;
 	}
-
+	
 	public static void pagarCursoColegiado(String dni, int curso, String estado, String formaDePago)
 			throws BusinessException {
 		// paga un curso, establece el m�todo y el estado del pago

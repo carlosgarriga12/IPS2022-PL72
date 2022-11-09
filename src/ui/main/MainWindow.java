@@ -2693,13 +2693,17 @@ public class MainWindow extends JFrame {
 	private JScrollPane getSpnCursos() {
 		if (spnCursos == null) {
 			spnCursos = new JScrollPane();
-			spnCursos.setBounds(67, 99, 481, 417);
+			spnCursos.setBounds(77, 99, 481, 417);
 			spnCursos.add(getTbCursosInscripciones());
 			getTbCursosInscripciones().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
 					getLbAlertaListadoInscripciones().setVisible(false);
+					int selectedRow = tbCursosInscripciones.getSelectedRow();
+					 if (selectedRow == -1) {
+                         selectedRow = 0;
+                     }
 					List<Colegiado_Inscripcion> listInscripciones = InscripcionColegiado.Lista_Inscritos_Curso(
-							cursosAbiertosPnInscripcion.get(tbCursosInscripciones.getSelectedRow()));
+							cursosAbiertosPnInscripcion.get(selectedRow));
 					if (listInscripciones.isEmpty()) {
 						getLbAlertaListadoInscripciones().setVisible(true);
 						getLbAlertaListadoInscripciones()
