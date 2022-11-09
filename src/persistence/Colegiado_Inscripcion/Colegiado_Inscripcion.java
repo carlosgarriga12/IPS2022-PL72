@@ -21,7 +21,7 @@ public class Colegiado_Inscripcion {
 	}
 	
 	public double cantidadPagada() {
-		return I.cantidadAbonada;
+		return I.cantidadPagada;
 	}
 
 	@Override

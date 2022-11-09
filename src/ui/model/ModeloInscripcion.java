@@ -42,7 +42,7 @@ public class ModeloInscripcion {
 			
 			for (Colegiado_Inscripcion i : inscripciones) {
 				model.addRow(
-						new Object[] {i.getC().apellidos, i.getC().nombre, i.getI().fechaSolicitud, i.cantidadPagada() });
+						new Object[] {i.getC().apellidos, i.getC().nombre, i.getI().fechaSolicitud, i.getI().estado, i.cantidadPagada() });
 			}
 
 		}

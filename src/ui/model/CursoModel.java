@@ -2,7 +2,6 @@ package ui.model;
 
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -16,7 +15,7 @@ import persistence.curso.CursoDto;
  * @version v1.0.0
  *
  */
-public class CursoModel{
+public class CursoModel {
 
 	public static final String HEADER_COLUMN6 = "CÓDIGO";
 	public static final String HEADER_COLUMN1 = "TITULO";
@@ -34,10 +33,13 @@ public class CursoModel{
 		this.cursos = cursos;
 	}
 
-	public TableModel getCursoModel(final boolean showAllFields) throws BusinessException {
-
-		// Listado de cursos actualmente planificados
-
+	/**
+	 * Modelo para el listado de cursos planificados.
+	 * 
+	 * @since HU. 19062
+	 * @return
+	 */
+	public TableModel getCursosPlanificadosModel() {
 		DefaultTableModel model = new DefaultTableModel();
 
 		if (cursos.size() == 0) {
@@ -50,38 +52,96 @@ public class CursoModel{
 			model.addColumn(HEADER_COLUMN1);
 			model.addColumn(HEADER_COLUMN2);
 			model.addColumn(HEADER_COLUMN3);
-			model.addColumn(HEADER_COLUMN4);
-	
 
-			if (showAllFields) {
-				model.addColumn(HEADER_COLUMN7);
-				model.addColumn(HEADER_COLUMN8);
-				model.addColumn(HEADER_COLUMN9);
-
-				for (CursoDto c : cursos) {
-					if(c.estado == CursoDto.CURSO_PLANIFICADO){
-						model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,
-								" - ", " - ", c.estado });
-					}else {
-						model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio,
-								c.fechaApertura, c.fechaCierre, c.estado });
-					}
-					
-				}
-
-			} else {
-				for (CursoDto c : cursos) {
-					model.addRow(
-							new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio });
-				}
+			for (CursoDto c : cursos) {
+				model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles });
 			}
 
 		}
 
 		return model;
 	}
-	
+
+	/**
+	 * @since Segundo Sprint Miguel.
+	 * @param showAllFields <code>
+	 * 				<ul>
+	 * 					<li>0 Todos los cursos</li>
+	 * 					<li>1 Todos los cursos menos id</li>
+	 * 				</ul>
+	 * 			</code>
+	 * @return
+	 * @throws BusinessException
+	 */
+	public TableModel getCursoModel(final int showAllFields) throws BusinessException {
+
+		// 0 -> todos
+		// 1 -> todos menos id
+		// Listado de cursos actualmente planificados
+		DefaultTableModel model = new DefaultTableModel() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		if (cursos.size() == 0) {
+			model.addColumn("");
+			model.addRow(new Object[] { "NO HAY CURSOS PLANIFICADOS ACTUALMENTE" });
+
+		} else {
+			if (showAllFields == 1) {
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
+
+				model.addColumn(HEADER_COLUMN7);
+				model.addColumn(HEADER_COLUMN8);
+				model.addColumn(HEADER_COLUMN9);
+
+				model.addColumn(HEADER_COLUMN6);
+
+				for (CursoDto c : cursos) {
+					model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.fechaApertura,
+							c.fechaCierre, c.estado, c.codigoCurso });
+				}
+
+			} else {
+				model.addColumn(HEADER_COLUMN6);
+				model.addColumn(HEADER_COLUMN1);
+				model.addColumn(HEADER_COLUMN2);
+				model.addColumn(HEADER_COLUMN3);
+				model.addColumn(HEADER_COLUMN4);
+
+				model.addColumn(HEADER_COLUMN7);
+				model.addColumn(HEADER_COLUMN8);
+				model.addColumn(HEADER_COLUMN9);
+
+				for (CursoDto c : cursos) {
+					if (c.estado == CursoDto.CURSO_PLANIFICADO) {
+						model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles,
+								c.precio, " - ", " - ", c.estado });
+					} else {
+						model.addRow(new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles,
+								c.precio, c.fechaApertura, c.fechaCierre, c.estado });
+					}
+
+				}
+
+				for (CursoDto c : cursos) {
+					model.addRow(
+							new Object[] { c.codigoCurso, c.titulo, c.fechaInicio, c.plazasDisponibles, c.precio });
+				}
+			}
+		}
+
+		return model;
+
+	}
+
 	public boolean isCellEditable(int i, int i1) {
-        return false; //To change body of generated methods, choose Tools | Templates.
-    }
+		return false; // To change body of generated methods, choose Tools | Templates.
+	}
 }

@@ -27,5 +27,4 @@ public class CursoDto {
 	public String toString() {
 		return "titulo= " +titulo+ ", fechaInicio= "+fechaInicio+", precio "+precio;
 	}
-
 }

@@ -33,6 +33,9 @@ public class ColegiadoCrud {
 
 	private static final String SQL_NUMERO_MAXIMO_COLEGIADO = Conf.getInstance().getProperty("TCOLEGIADO_LASTNUMBER");
 
+	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO = Conf.getInstance()
+			.getProperty("TCOLEGIADO_UPDATE_ESTADO");
+
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
@@ -85,13 +88,17 @@ public class ColegiadoCrud {
 			pst.setString(3, colegiado.apellidos);
 			pst.setString(4, colegiado.poblacion);
 			pst.setInt(5, colegiado.telefono);
-			pst.setString(6, colegiado.titulacion);
+
+			// EL colegiado
+			pst.setString(6, DtoAssembler.listaTitulacionesColegiadoToString(colegiado.titulacion));
+
 			pst.setString(7, colegiado.centro);
 			pst.setInt(8, colegiado.annio);
 			pst.setString(9, colegiado.numeroCuenta);
 			pst.setString(10, LocalDate.now().toString());
 			pst.setString(11, ESTADO_PENDIENTE);
 			pst.setString(12, "");
+
 			pst.executeUpdate();
 
 		} catch (SQLException e) {
@@ -114,7 +121,7 @@ public class ColegiadoCrud {
 			rs = st.executeQuery(SQL_FIND_ALL_COLEGIADOS);
 
 			return DtoAssembler.toColegiadoList(rs);
-			
+
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		} finally {
@@ -173,11 +180,39 @@ public class ColegiadoCrud {
 
 		} catch (SQLException sqle) {
 			throw new PersistenceException(sqle);
-			
+
 		} finally {
 			Jdbc.close(pst);
 		}
 
+	}
+
+	/**
+	 * Actualiza el estado del colegiado indicado con el nuevo estado.
+	 * 
+	 * @param colegiado
+	 * @param estado
+	 */
+	public static void updateEstadoColegiado(final ColegiadoDto colegiado, String estado) {
+		Connection con = null;
+		PreparedStatement pst = null;
+
+		try {
+			con = Jdbc.getConnection();
+
+			pst = con.prepareStatement(SQL_ACTUALIZAR_ESTADO_COLEGIADO);
+
+			pst.setString(1, estado);
+			pst.setString(2, colegiado.numeroColegiado);
+
+			pst.executeUpdate();
+
+		} catch (SQLException sqle) {
+			throw new PersistenceException(sqle);
+
+		} finally {
+			Jdbc.close(pst);
+		}
 	}
 
 	/**
@@ -220,7 +255,7 @@ public class ColegiadoCrud {
 
 			rs = pst.executeQuery();
 			rs.next();
-			
+
 			maxNumber = rs.getString("MAX_NUM");
 
 		} catch (SQLException e) {

@@ -62,12 +62,14 @@ public class Precio_Colectivos {
 	public Double getPrecio(String colectivo) {
 		int index = indiceColectivo(colectivo);
 		if(index == -1) {
-			return null;
+			index = 0;
 		}
 		String colectivo_precio = colectivos_precios.get(index);
 		double precio = Double.valueOf(colectivo_precio.split(":")[1]);
 		return precio;
 	}
+	
+	
 	
 	public ArrayList<String> getColectivos_precios() {
 		return colectivos_precios;
