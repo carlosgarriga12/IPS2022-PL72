@@ -1935,6 +1935,7 @@ public class MainWindow extends JFrame {
 								getTbCursosAbiertos().setModel(tableModel);
 
 								btnInscribete.setEnabled(true);
+								lbAlerta.setVisible(false);
 							}
 						}
 					} catch (BusinessException e1) {
