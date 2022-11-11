@@ -130,7 +130,7 @@ public class DtoAssembler {
 		newCursoDto.codigoCurso = rs.getInt("IdCurso");
 		newCursoDto.titulo = rs.getString("Titulo");
 
-		if (rs.getString("FechaApertura") != null) {
+		if (rs.getString("FechaApertura") != null && !rs.getString("FechaApertura").isEmpty()) {
 			newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));
 		}
 
