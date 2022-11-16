@@ -2544,6 +2544,7 @@ public class MainWindow extends JFrame {
 			pnConsultarTitulacionCenter.setLayout(new BorderLayout(0, 0));
 			pnConsultarTitulacionCenter.add(getSpListadoAltaSolicitudesColegiado());
 			pnConsultarTitulacionCenter.add(getPnListadoAltaSolicitudesColegiadoActualizarLista(), BorderLayout.SOUTH);
+			pnConsultarTitulacionCenter.add(getSpRecepcionLoteSolicitudes(), BorderLayout.NORTH);
 		}
 		return pnConsultarTitulacionCenter;
 	}
@@ -2603,9 +2604,9 @@ public class MainWindow extends JFrame {
 		if (pnConsultarTitulacionSouth == null) {
 			pnConsultarTitulacionSouth = new JPanel();
 			pnConsultarTitulacionSouth.setOpaque(false);
-			pnConsultarTitulacionSouth.setLayout(new BorderLayout(0, 10));
-			pnConsultarTitulacionSouth.add(getPnConsultarTitulacionSouthButtons());
-			pnConsultarTitulacionSouth.add(getPnConsultarColegiadoDatosColegiadoSeleccionado(), BorderLayout.NORTH);
+			pnConsultarTitulacionSouth.setLayout(new BorderLayout(10, 10));
+			pnConsultarTitulacionSouth.add(getPnConsultarTitulacionSouthButtons(), BorderLayout.EAST);
+			pnConsultarTitulacionSouth.add(getPnConsultarColegiadoDatosColegiadoSeleccionado(), BorderLayout.CENTER);
 		}
 		return pnConsultarTitulacionSouth;
 	}
@@ -4827,6 +4828,8 @@ public class MainWindow extends JFrame {
 	private DefaultButton btHomeSolicitudServicios;
 	private DefaultButton btHomeAsignacionSolicitudServicios;
 	private DefaultButton btListasProfesionales;
+	private JScrollPane spRecepcionLoteSolicitudes;
+	private JTable tbListadoRecepcionSolicitudes;
 
 	private void ActualizaTablasSolicitudesServicios() {
 		listaSolicitudesServicios = SolicitudServicios.listarSolicitudesServicios();
@@ -5325,6 +5328,19 @@ public class MainWindow extends JFrame {
 			btListasProfesionales.setText("Listas Profesionales");
 		}
 		return btListasProfesionales;
+	}
+	private JScrollPane getSpRecepcionLoteSolicitudes() {
+		if (spRecepcionLoteSolicitudes == null) {
+			spRecepcionLoteSolicitudes = new JScrollPane(getTbListadoRecepcionSolicitudes());
+			spRecepcionLoteSolicitudes.setBorder(null);
+		}
+		return spRecepcionLoteSolicitudes;
+	}
+	private JTable getTbListadoRecepcionSolicitudes() {
+		if (tbListadoRecepcionSolicitudes == null) {
+			tbListadoRecepcionSolicitudes = new JTable();
+		}
+		return tbListadoRecepcionSolicitudes;
 	}
 }
 
