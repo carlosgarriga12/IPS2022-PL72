@@ -193,7 +193,8 @@ public class Colegiado {
 
 						ColegiadoDto colegiadoAllData = ColegiadoCrud.findColegiadoDni(col.DNI);
 
-						updateNumColegiado(col.DNI);
+						String num = updateNumColegiado(col.DNI);
+						colegiadoAllData.numeroColegiado = num;
 						colegiadosAdmitidos.add(colegiadoAllData);
 						titulacionAdmitida = true;
 
