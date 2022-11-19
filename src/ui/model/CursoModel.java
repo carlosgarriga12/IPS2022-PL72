@@ -79,7 +79,8 @@ public class CursoModel {
 		// 1 -> todos menos id
 		// Listado de cursos actualmente planificados
 		DefaultTableModel model = new DefaultTableModel() {
-			private static final long serialVersionUID = 1L;
+
+			private static final long serialVersionUID = 4438277548587975019L;
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -139,6 +140,41 @@ public class CursoModel {
 
 		return model;
 
+	}
+
+	public TableModel getCursosAbiertosInscripcionCurso() {
+		DefaultTableModel model = new DefaultTableModel() {
+
+			private static final long serialVersionUID = -3053373842241847716L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		if (cursos.size() == 0) {
+			model.addColumn("");
+			model.addRow(new Object[] { "NO HAY CURSOS ABIERTOS" });
+
+		} else {
+			model.addColumn(HEADER_COLUMN1);
+			model.addColumn(HEADER_COLUMN2);
+			model.addColumn(HEADER_COLUMN3);
+
+			model.addColumn(HEADER_COLUMN7);
+			model.addColumn(HEADER_COLUMN8);
+
+			model.addColumn(HEADER_COLUMN6);
+
+			for (CursoDto c : cursos) {
+				model.addRow(new Object[] { c.titulo, c.fechaInicio, c.plazasDisponibles, c.fechaApertura,
+						c.fechaCierre, c.codigoCurso });
+			}
+
+		}
+
+		return model;
 	}
 
 	public boolean isCellEditable(int i, int i1) {

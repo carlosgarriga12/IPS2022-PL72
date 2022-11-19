@@ -23,4 +23,15 @@ public class StringUtils {
 		return Normalizer.normalize(cadenaOriginal, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toLowerCase()
 				.trim();
 	}
+
+	/**
+	 * Capitaliza una cadena pasada como paremetro. Por ejemplo, dada la cadena JOHN
+	 * --> John Esta función únicamente capitaliza una palabra.
+	 * 
+	 * @param text Cadena a capitalizar.
+	 * @return Cadena capitalizada.
+	 */
+	public static String capitalize(String text) {
+		return text.length() < 2 ? text : text.substring(0, 1).toUpperCase().concat(text.substring(1).toLowerCase());
+	}
 }
