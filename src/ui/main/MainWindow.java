@@ -69,12 +69,14 @@ import business.SolicitudServicios.SolicitudServicios;
 import business.colegiado.Colegiado;
 import business.colegiado.Perito;
 import business.curso.Curso;
+import business.curso.listaEspera.ListaEsperaCurso;
 import business.inscripcion.InscripcionCursoFormativo;
 import business.util.CSVLoteSolicitudesColegiacion;
 import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoDto;
 import persistence.SolicitudServicios.SolicitudServiciosDto;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
@@ -97,6 +99,7 @@ import ui.components.placeholder.TextPlaceHolderCustom;
 import ui.model.ColegiadoModel;
 import ui.model.CursoModel;
 import ui.model.InscripcionColegiadoModel;
+import ui.model.ListaEsperaCursoModel;
 import ui.model.ModeloCurso;
 import ui.model.ModeloInscripcion;
 import ui.model.ModeloPeritos;
@@ -1775,18 +1778,69 @@ public class MainWindow extends JFrame {
 			tbCursosAbiertosInscripcionCurso.setGridColor(new Color(255, 255, 255));
 
 			tbCursosAbiertosInscripcionCurso.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			
-			
-			try {
-				TableModel tableModelCursosAbiertosInsCurso = new CursoModel(Curso.listarCursosAbiertos()).getCursosAbiertosInscripcionCurso();
-				tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
-				
-			} catch (BusinessException e) {
-				
-				e.printStackTrace();
-			}
-			
-			tbCursosAbiertosInscripcionCurso.setVisible(false);
+
+			TableModel tableModelCursosAbiertosInsCurso = new CursoModel(List.of()).getCursosAbiertosInscripcionCurso();
+			tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
+
+			tbCursosAbiertosInscripcionCurso.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+				public void valueChanged(ListSelectionEvent event) {
+
+					if (event.getValueIsAdjusting())
+						return;
+
+					cursoSeleccionado = new CursoDto();
+
+					try {
+
+						int selectedRow = tbCourses.getSelectedRow();
+
+						if (selectedRow == -1) {
+							selectedRow = 0;
+							cursoSeleccionado = null;
+						}
+
+						if (cursoSeleccionado != null) {
+							cursoSeleccionado.titulo = tbCourses.getValueAt(selectedRow, 0).toString();
+
+							cursoSeleccionado.plazasDisponibles = Integer
+									.parseInt(tbCourses.getValueAt(selectedRow, 2).toString());
+
+							cursoSeleccionado.codigoCurso = Integer
+									.parseInt(tbCourses.getValueAt(selectedRow, 6).toString());
+
+							Curso.setSelectedCourse(cursoSeleccionado);
+
+							try {
+								if (!InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
+									List<ListaEsperaInscripcionCursoDto> listaEspera = ListaEsperaCurso
+											.findByCursoId(cursoSeleccionado.codigoCurso);
+
+									listaEspera.forEach(System.out::println);
+
+									if (listaEspera.size() > 0) {
+										toogleListaEsperaCursoSeleccionadoInscripcionCurso(true);
+
+										TableModel model1 = new ListaEsperaCursoModel(listaEspera)
+												.getListaEsperaSummaryModel();
+										tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model1);
+										tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
+									}
+
+								}
+							} catch (BusinessException e) {
+								System.err.println(e.getMessage());
+								e.printStackTrace();
+							}
+
+						}
+
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
+					}
+
+				}
+
+			});
 
 		}
 		return tbCursosAbiertosInscripcionCurso;
@@ -1844,7 +1898,7 @@ public class MainWindow extends JFrame {
 							lbAlerta.setVisible(true);
 						} else {
 							if (!InscripcionColegiado.isInscrito(colegiado, cursoSeleccionado)) {
-								if (InscripcionCursoFormativo.PlazasLibres(cursoSeleccionado)) {
+								if (InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
 
 									InscripcionColegiado.InscribirColegiado(cursoSeleccionado, colegiado);
 									InscripcionColegiado.EmitirJustificante(colegiado, cursoSeleccionado);
@@ -4929,7 +4983,7 @@ public class MainWindow extends JFrame {
 	private JLabel lbTablaCursosAbiertosInscripcionCursoTitulo;
 	private JScrollPane spCursosAbiertosInscripcionCurso;
 	private JLabel lbTablaListaEsperaInscripcionCursoTitulo;
-	private JScrollPane spCursosAbiertosInscripcionCurso_1;
+	private JScrollPane spListaEsperaCursoInscripcionCurso;
 	private JTable tbListaEsperaCursoSeleccionadoInscripcionCurso;
 	private JPanel pnInscripcionCursoDatosColegiadoColectivo;
 	private JPanel pnInscripcionCursoDatosColegiadoDni;
@@ -5574,9 +5628,9 @@ public class MainWindow extends JFrame {
 		if (pnInscripcionCursoCenter == null) {
 			pnInscripcionCursoCenter = new JPanel();
 			pnInscripcionCursoCenter.setOpaque(false);
-			pnInscripcionCursoCenter.setLayout(new GridLayout(0, 2, 10, 0));
+			pnInscripcionCursoCenter.setLayout(new GridLayout(0, 1, 10, 0));
 			pnInscripcionCursoCenter.add(getPnInscripcionCursoCursosAbiertos());
-			pnInscripcionCursoCenter.add(getPnInscripcionCursoListaEspera());
+//			pnInscripcionCursoCenter.add(getPnInscripcionCursoListaEspera());
 		}
 		return pnInscripcionCursoCenter;
 	}
@@ -5651,6 +5705,7 @@ public class MainWindow extends JFrame {
 			btVolverInicioInscripcionCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					toogleListaEsperaCursoSeleccionadoInscripcionCurso(false);
 				}
 			});
 		}
@@ -5673,34 +5728,63 @@ public class MainWindow extends JFrame {
 							: cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
 					try {
 						if (cursoSeleccionado == null) {
-							lbInscripcionCursoMensaje.setText("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
+							lbInscripcionCursoMensaje
+									.setText("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
 							pnInscripcionCursoSouthMessage.setVisible(true);
 						} else {
 							if (!InscripcionColegiado.isInscrito(colegiado, cursoSeleccionado)) {
-								if (InscripcionCursoFormativo.PlazasLibres(cursoSeleccionado)) {
+								try {
+									if (!InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
 
-									InscripcionColegiado.InscribirColegiado(cursoSeleccionado, colegiado);
-									InscripcionColegiado.EmitirJustificante(colegiado, cursoSeleccionado);
-									lbConfirmacionInscripcion.setText(
-											"La inscripcion en el curso seleccionado se ha realizado correctamente");
-									lbConfirmacionInscripcion.setForeground(Color.green);
-									lbConfirmacionInscripcion.setVisible(true);
+										// TODO: Mostrar tabla con la lista de espera
+										toogleListaEsperaCursoSeleccionadoInscripcionCurso(true);
 
-								} else {
+										TableModel model = new ListaEsperaCursoModel(
+												ListaEsperaCurso.findByCursoId(cursoSeleccionado.codigoCurso))
+														.getListaEsperaSummaryModel();
 
-									int selectedOpt = JOptionPane.showConfirmDialog(null,
-											"El curso está completo ¿Desea unirse a la lista de espera del curso?",
-											"Inscripción a un curso: Unirse a la lista de espera",
-											JOptionPane.INFORMATION_MESSAGE);
-									
-									if(selectedOpt == JOptionPane.OK_OPTION) {
-										// TODO: Añadir a lista de espera.
+										tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
+										tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
+
+										int opt = JOptionPane.showConfirmDialog(null,
+												"El curso está tiene todas las plazas cubiertas ¿Quiere apuntarse a la lista de espera?",
+												"Inscripción curso: Apuntarse a la lista de espera.",
+												JOptionPane.YES_NO_OPTION);
+
+										if (opt == JOptionPane.YES_OPTION) {
+											System.out.println("por aqui...");
+											ListaEsperaCurso.apuntarListaEspera(
+													txDniColegiadoInscripcionCurso.getText(),
+													cursoSeleccionado.codigoCurso);
+
+											// TODO: Actualizar lista de espera con el nuevo usuario
+											ListaEsperaCurso.apuntarListaEspera(
+													txDniColegiadoInscripcionCurso.getText(),
+													cursoSeleccionado.codigoCurso);
+
+											// TODO: Mostrar mensaje de confirmación de unión a la lista.
+											JOptionPane.showMessageDialog(null, "Inscripcion curso seleccionado",
+													"Información acerca de su inscripción",
+													JOptionPane.INFORMATION_MESSAGE);
+
+											// Actualizar tabla de la lista de espera
+											TableModel modelUpdated = new ListaEsperaCursoModel(
+													ListaEsperaCurso.findByCursoId(cursoSeleccionado.codigoCurso))
+															.getListaEsperaSummaryModel();
+
+											tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(modelUpdated);
+											tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
+										}
+
 									}
+								} catch (BusinessException e1) {
+
+									e1.printStackTrace();
 								}
 							} else {
 								lbInscripcionCursoMensaje.setText(
 										"La inscripciÃ³n no se ha realizado porque ya estÃ¡ inscrito en este curso");
-								
+
 								pnInscripcionCursoSouthMessage.setVisible(true);
 							}
 						}
@@ -5745,7 +5829,7 @@ public class MainWindow extends JFrame {
 			pnInscripcionCursoListaEspera = new JPanel();
 			pnInscripcionCursoListaEspera.setLayout(new BorderLayout(0, 0));
 			pnInscripcionCursoListaEspera.add(getLbTablaListaEsperaInscripcionCursoTitulo(), BorderLayout.NORTH);
-			pnInscripcionCursoListaEspera.add(getSpCursosAbiertosInscripcionCurso_1(), BorderLayout.CENTER);
+			pnInscripcionCursoListaEspera.add(getSpListaEsperaCursoInscripcionCurso(), BorderLayout.CENTER);
 		}
 		return pnInscripcionCursoListaEspera;
 	}
@@ -5782,19 +5866,59 @@ public class MainWindow extends JFrame {
 		return lbTablaListaEsperaInscripcionCursoTitulo;
 	}
 
-	private JScrollPane getSpCursosAbiertosInscripcionCurso_1() {
-		if (spCursosAbiertosInscripcionCurso_1 == null) {
-			spCursosAbiertosInscripcionCurso_1 = new JScrollPane(getTbListaEsperaCursoSeleccionadoInscripcionCurso());
-			spCursosAbiertosInscripcionCurso_1.setToolTipText("Lista de espera para el curso seleccionado (Si la hay)");
+	private JScrollPane getSpListaEsperaCursoInscripcionCurso() {
+		if (spListaEsperaCursoInscripcionCurso == null) {
+			spListaEsperaCursoInscripcionCurso = new JScrollPane(getTbListaEsperaCursoSeleccionadoInscripcionCurso());
+			spListaEsperaCursoInscripcionCurso.setToolTipText("Lista de espera para el curso seleccionado (Si la hay)");
 		}
-		return spCursosAbiertosInscripcionCurso_1;
+		return spListaEsperaCursoInscripcionCurso;
 	}
 
 	private JTable getTbListaEsperaCursoSeleccionadoInscripcionCurso() {
 		if (tbListaEsperaCursoSeleccionadoInscripcionCurso == null) {
 			tbListaEsperaCursoSeleccionadoInscripcionCurso = new JTable();
+
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setIntercellSpacing(new Dimension(0, 0));
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setShowGrid(false);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setRowMargin(0);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setRequestFocusEnabled(false);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setFocusable(false);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setShowVerticalLines(false);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setOpaque(false);
+
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setRowHeight(LookAndFeel.ROW_HEIGHT);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setGridColor(new Color(255, 255, 255));
+
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			TableModel model = new ListaEsperaCursoModel(List.of()).getListaEsperaSummaryModel();
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
+
 		}
 		return tbListaEsperaCursoSeleccionadoInscripcionCurso;
+	}
+
+	/**
+	 * Muestra u oculta el panel de la lista de espera del curso seleccionado.
+	 * 
+	 * @since HU. 19733
+	 * @param sinPlazas true si el curso no tiene plazas y false en caso contrario.
+	 */
+	private void toogleListaEsperaCursoSeleccionadoInscripcionCurso(boolean sinPlazas) {
+		if (sinPlazas) {
+			pnInscripcionCursoCenter.setLayout(new GridLayout(0, 2, 10, 0));
+			pnInscripcionCursoCenter.add(getPnInscripcionCursoListaEspera());
+
+		} else {
+			pnInscripcionCursoCenter.setLayout(new GridLayout(0, 1, 10, 0));
+			pnInscripcionCursoCenter.remove(getPnInscripcionCursoListaEspera());
+		}
+
+		this.repaint();
 	}
 
 	private JPanel getPnInscripcionCursoDatosColegiadoColectivo() {
@@ -5890,6 +6014,7 @@ public class MainWindow extends JFrame {
 							colegiado = c;
 
 							cursosAbiertosPnInscripcion = InscripcionCursoFormativo.getCursosAbiertos();
+
 							cursosAbiertosPnInscripcion = cursosAbiertosPnInscripcion.stream()
 									.filter(curso -> Precio_Colectivos
 											.StringToPrecio_Colectivos(curso.CantidadPagarColectivo)
@@ -5899,18 +6024,21 @@ public class MainWindow extends JFrame {
 							if (cursosAbiertosPnInscripcion.isEmpty()) {
 								lbInscripcionCursoMensaje.setVisible(true);
 								lbInscripcionCursoMensaje.setText(
-										"Lo sentimos, No hay cursos Disponibles para el colectivo seleccionado");
+										"Lo sentimos, No hay cursos disponibles para el colectivo seleccionado");
 								return;
 							} else {
-								
-								TableModel tableModelCursosAbiertosInsCurso = new CursoModel(Curso.listarCursosAbiertos()).getCursosAbiertosInscripcionCurso();
-								tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
-								
+
 								btInscrirseInscripcionCurso.setEnabled(true);
 								pnInscripcionCursoSouthMessage.setVisible(false);
-								
-								tbCursosAbiertosInscripcionCurso.setVisible(true);
+
+								// tbCursosAbiertosInscripcionCurso.setVisible(true);
+								tbCursosAbiertosInscripcionCurso.repaint();
 							}
+
+							TableModel tableModelCursosAbiertosInsCurso = new CursoModel(cursosAbiertosPnInscripcion)
+									.getCursosAbiertosInscripcionCurso();
+							tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
+
 						}
 					} catch (BusinessException e1) {
 						e1.printStackTrace();

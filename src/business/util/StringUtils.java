@@ -34,4 +34,19 @@ public class StringUtils {
 	public static String capitalize(String text) {
 		return text.length() < 2 ? text : text.substring(0, 1).toUpperCase().concat(text.substring(1).toLowerCase());
 	}
+
+	/**
+	 * Anonimiza un DNI pasado como parámetro.
+	 * <p>
+	 * Válido para DNIs españoles. Dada la entrada 12345678N, retorna ***456**N
+	 * 
+	 * 
+	 * @param dni DNI a anonimizar.
+	 * @return DNI anonimizado en formato ***XXX**Y, siendo 'Y' la letra del DNI.
+	 */
+	public static String anonimizeDni(String dni) {
+		// 12345678N --> ***456**N
+		return "***".concat(dni.substring(3, 8)).concat("**").concat(dni.substring(8));
+
+	}
 }

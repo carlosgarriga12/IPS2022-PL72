@@ -64,12 +64,14 @@ public class CursoModel {
 
 	/**
 	 * @since Segundo Sprint Miguel.
-	 * @param showAllFields <code>
-	 * 				<ul>
-	 * 					<li>0 Todos los cursos</li>
-	 * 					<li>1 Todos los cursos menos id</li>
-	 * 				</ul>
-	 * 			</code>
+	 * @param showAllFields
+	 * 
+	 *                      <code>
+	 * 			<ul>
+	 * 				<li>0 Todos los cursos</li>
+	 * 				<li>1 Todos los cursos menos id</li>
+	 * 			</ul>
+	 * 		</code>
 	 * @return
 	 * @throws BusinessException
 	 */

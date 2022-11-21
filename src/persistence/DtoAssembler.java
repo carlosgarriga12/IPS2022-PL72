@@ -8,8 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import business.util.StringUtils;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -17,7 +19,7 @@ import persistence.curso.Precio_Colectivos;
 import persistence.curso.profesorado.ProfesorDto;
 
 public class DtoAssembler {
-	
+
 	public static final String SEPARADOR_TITULACIONES = ",";
 	public static final String SPECIAL_CHARACTERS_REGEX = "[!@#$%&*()^:[-].;_+=|<>?{}/]";
 
@@ -63,7 +65,6 @@ public class DtoAssembler {
 
 		c.TipoColectivo = rs.getString("TipoColectivo");
 
-
 		c.perito = rs.getString("perito");
 		c.posicionPerito = rs.getInt("posicionPerito");
 
@@ -87,13 +88,13 @@ public class DtoAssembler {
 		if (titulaciones == null || titulaciones.isEmpty()) {
 			return new ArrayList<>();
 		}
-		
-		// Nota: Se introduce un filtro para el caso en el que se introduzcan dos comas seguidas
-		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream()
-				.filter(t -> !t.isEmpty())
-				.map(t -> t.trim().strip())
-				.collect(Collectors.toList());
+
+		// Nota: Se introduce un filtro para el caso en el que se introduzcan dos comas
+		// seguidas
+		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream().filter(t -> !t.isEmpty())
+				.map(t -> t.trim().strip()).collect(Collectors.toList());
 	}
+
 	/**
 	 * Devuelve la lista de colegiados en forma de cadena separados por coma.
 	 * 
@@ -145,9 +146,9 @@ public class DtoAssembler {
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
 
 		// TODO: Cantidad a pagar colegiado
-		if(rs.getString("CantidadPagarColectivo") != null) {
+		if (rs.getString("CantidadPagarColectivo") != null) {
 			newCursoDto.precio = Precio_Colectivos.StringToPrecio_Colectivos(rs.getString("CantidadPagarColectivo"))
-					.getPrecio("Colegiado");			
+					.getPrecio("Colegiado");
 		}
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
@@ -190,8 +191,6 @@ public class DtoAssembler {
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
 		I.cantidadPagada = rs.getDouble("CantidadAbonada");
-		
-		
 
 		return new Colegiado_Inscripcion(c, I);
 
@@ -212,9 +211,10 @@ public class DtoAssembler {
 		p.nombre = rs.getString("nombre");
 		p.apellidos = rs.getString("apellidos");
 		p.idCurso = rs.getInt("idCurso");
-		
+
 		return p;
 	}
+
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;
@@ -252,6 +252,45 @@ public class DtoAssembler {
 		d.incidencias = rs.getString(i++);
 		d.devolver = rs.getString(i++);
 		return d;
+	}
+
+	/**
+	 * 
+	 * @since HU. 19733
+	 * @param rs Resultset con el contenido de la lista de espera.
+	 * @return
+	 * @throws SQLException
+	 */
+	public static ListaEsperaInscripcionCursoDto toListaEsperaInscripcionCursoDto(ResultSet rs) throws SQLException {
+		ListaEsperaInscripcionCursoDto res = new ListaEsperaInscripcionCursoDto();
+
+		String dniOriginal = rs.getString(ListaEsperaInscripcionCursoDto.DNI_USUARIO);
+		res.dniUsuario = StringUtils.anonimizeDni(dniOriginal);
+		
+		res.nombreUsuario = rs.getString(ListaEsperaInscripcionCursoDto.NOMBRE_USUARIO);
+		res.idCurso = rs.getString(ListaEsperaInscripcionCursoDto.ID_CURSO);
+		res.posicionUsuarioLista = rs.getInt(ListaEsperaInscripcionCursoDto.POS_USUARIO);
+
+		return res;
+
+	}
+
+	/**
+	 * 
+	 * @since HU. 19733
+	 * @param rs Resultset con el la lista de espera para el curso.
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<ListaEsperaInscripcionCursoDto> toListaEsperaInscripcionCursoDtoList(ResultSet rs)
+			throws SQLException {
+		List<ListaEsperaInscripcionCursoDto> res = new ArrayList<>();
+
+		while (rs.next()) {
+			res.add(toListaEsperaInscripcionCursoDto(rs));
+		}
+
+		return res;
 	}
 
 }

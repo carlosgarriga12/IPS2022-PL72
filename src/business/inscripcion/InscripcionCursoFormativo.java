@@ -7,7 +7,6 @@ import java.util.List;
 import business.BusinessException;
 import business.curso.Curso;
 import business.util.DateUtils;
-import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
@@ -99,8 +98,8 @@ public class InscripcionCursoFormativo {
 
 	}
 
-	public static boolean PlazasLibres(CursoDto curso) throws BusinessException {
-		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
+	public static boolean hayPlazasLibres(CursoDto curso) throws BusinessException {
+		return InscripcionCursoFormacionCRUD.hayPlazasLibres(curso);
 	}
 
 }
