@@ -25,12 +25,18 @@ public class ListaEsperaCurso {
 	 * Apunta a la lista de espera del curso al colegiado indicado.
 	 * 
 	 * @since HU. 19733
-	 * @param dniColegiado DNI del Colegiado a apuntar a la lista de espera.
+	 * @param dniUsuario DNI del usuario a apuntar a la lista de espera.
+	 * @throws BusinessException 
 	 */
-	public static void apuntarListaEspera(final String dniColegiado, final int codigoCurso) {
-//		Optional<ListaEsperaInscripcionCursoDto> 
-		
-		ListaEsperaInscripcionCursoCrud.addColegiadoListaEsperaCursoSeleccionado(dniColegiado, codigoCurso);
+	public static void apuntarListaEspera(final String dniUsuario, final int codigoCurso) throws BusinessException {
+		Optional<ListaEsperaInscripcionCursoDto> colegiadoListaEspera = ListaEsperaInscripcionCursoCrud
+				.findByDni(dniUsuario, codigoCurso);
+
+		if (colegiadoListaEspera.isPresent()) {
+			throw new BusinessException("El usuario ya se encuentra apuntado en la lista de espera del curso.");
+		}
+
+		ListaEsperaInscripcionCursoCrud.addColegiadoListaEsperaCursoSeleccionado(dniUsuario, codigoCurso);
 	}
 
 	/**

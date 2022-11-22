@@ -29,6 +29,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.swing.ButtonGroup;
@@ -50,6 +51,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -58,6 +61,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.OceanTheme;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -106,10 +112,6 @@ import ui.model.ModeloPeritos;
 import ui.model.ModeloSolicitudServicios;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
-import javax.swing.BoxLayout;
-import java.util.Locale;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.ScrollPaneConstants;
 
 public class MainWindow extends JFrame {
 
@@ -500,13 +502,9 @@ public class MainWindow extends JFrame {
 	private JTable tbListadoPeritosProfesionales;
 
 	public MainWindow() {
-		setTitle("COIIPA : Gestión de servicios");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		initLookAndFeel();
 
 		// Configuraciones globales del programa
-
-		this.setFont(LookAndFeel.PRIMARY_FONT);
-		setBounds(100, 100, 1126, 804);
 
 		mainPanel = new JPanel();
 		mainPanel.setName("");
@@ -543,6 +541,89 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 		inicializarCampos();
+	}
+
+	/**
+	 * Inicializa todos los aspectos relacionados con el Look & Feel de la
+	 * aplicación.
+	 * 
+	 * @see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available
+	 */
+	private void initLookAndFeel() {
+		setTitle("COIIPA : Gestión de servicios");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setFont(LookAndFeel.PRIMARY_FONT);
+		setBounds(100, 100, 1126, 804);
+
+		String lookAndFeel = null;
+
+		if (LookAndFeel.DEFAULT_LOOK_AND_FEEL != null) {
+			if (LookAndFeel.DEFAULT_LOOK_AND_FEEL.equals(LookAndFeel.AVAILABLE_LOOK_AND_FEELS[0])) {
+				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+			}
+
+			// System
+			else if (LookAndFeel.DEFAULT_LOOK_AND_FEEL.equals(LookAndFeel.AVAILABLE_LOOK_AND_FEELS[1])) {
+				lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+			}
+
+			// Motif
+			else if (LookAndFeel.DEFAULT_LOOK_AND_FEEL.equals(LookAndFeel.AVAILABLE_LOOK_AND_FEELS[2])) {
+				lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+			}
+
+			// Gtk
+			else if (LookAndFeel.DEFAULT_LOOK_AND_FEEL.equals(LookAndFeel.AVAILABLE_LOOK_AND_FEELS[3])) {
+				lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+			}
+
+			// Otro
+			else {
+				System.err.println("Unexpected value of LOOKANDFEEL specified: " + LookAndFeel.DEFAULT_LOOK_AND_FEEL);
+				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+			}
+
+			// Metal
+			try {
+
+				UIManager.setLookAndFeel(lookAndFeel);
+
+				// Metal
+				if (LookAndFeel.DEFAULT_LOOK_AND_FEEL.equals(LookAndFeel.AVAILABLE_LOOK_AND_FEELS[0])) {
+
+					if (LookAndFeel.METAL_THEME.equals(LookAndFeel.AVAILABLE_METAL_THEMES[0])) {
+						MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
+
+					} else if (LookAndFeel.METAL_THEME.equals(LookAndFeel.AVAILABLE_METAL_THEMES[1])) {
+						MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+
+					} else {
+						// Theme personalizado.
+					}
+
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+				}
+
+			}
+
+			catch (ClassNotFoundException e) {
+				System.err.println("Couldn't find class for specified look and feel:" + lookAndFeel);
+				System.err.println("Did you include the L&F library in the class path?");
+				System.err.println("Using the default look and feel.");
+			}
+
+			catch (UnsupportedLookAndFeelException e) {
+				System.err.println("Can't use the specified look and feel (" + lookAndFeel + ") on this platform.");
+				System.err.println("Using the default look and feel.");
+			}
+
+			catch (Exception e) {
+				System.err.println("Couldn't get specified look and feel (" + lookAndFeel + "), for some reason.");
+				System.err.println("Using the default look and feel.");
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void inicializarCampos() {
@@ -5778,12 +5859,12 @@ public class MainWindow extends JFrame {
 
 									}
 								} catch (BusinessException e1) {
-
+									lbInscripcionCursoMensaje.setText(e1.getMessage());
 									e1.printStackTrace();
 								}
 							} else {
 								lbInscripcionCursoMensaje.setText(
-										"La inscripciÃ³n no se ha realizado porque ya estÃ¡ inscrito en este curso");
+										"La inscripción no se ha realizado porque ya está inscrito en este curso");
 
 								pnInscripcionCursoSouthMessage.setVisible(true);
 							}
@@ -5795,7 +5876,7 @@ public class MainWindow extends JFrame {
 						e1.printStackTrace();
 					}
 
-					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+					// mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
 					btInscrirseInscripcionCurso.setEnabled(false);
 				}
 			});
