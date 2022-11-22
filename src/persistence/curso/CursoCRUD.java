@@ -28,6 +28,7 @@ public class CursoCRUD {
 	private static final String SQL_LISTA_INSCRIPCIONES = Conf.getInstance().getProperty("LISTA_INSCRIPCIONES");
 	private static final String SQL_LIST_ALL_OPENED_COURSES = Conf.getInstance()
 			.getProperty("TCURSO_LIST_OPENED_COURSES");
+
 	private static final String SQL_CANCELAR_CURSO = Conf.getInstance()
 			.getProperty("TCURSO_CANCELAR_ID");
 	private static final String SQL_LIST_ALL_OPENED_PLANIF_COURSES = Conf.getInstance()
@@ -311,6 +312,5 @@ public class CursoCRUD {
 			Jdbc.close(pst);
 		}
 	}
-
 
 }

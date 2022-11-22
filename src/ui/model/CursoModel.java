@@ -131,6 +131,7 @@ public class CursoModel {
 				for (CursoDto c : cursos) {
 					model.addRow(new Object[] { c.titulo, c.plazasDisponibles, c.numeroInscritos, c.precio,
 							c.estado, c.isCancelable == true ? "CANCELABLE" : "NO CANCELABLE", c.fechaInicio, c.codigoCurso });
+
 				}
 
 			} else {

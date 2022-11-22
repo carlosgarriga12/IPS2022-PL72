@@ -95,12 +95,10 @@ public class ColegiadoModel extends DefaultTableModel {
 
 		return model;
 	}
-
+	
 	/**
 	 * Modelo de tabla para Colegiado destina de mostrar los datos de las
 	 * solicitudes aceptadas del lote recepcionado.
-	 * 
-	 * @since HU. 19062
 	 * @return TableModel con el listado de solicitantes a colegiado admitidos.
 	 * @throws BusinessException
 	 */

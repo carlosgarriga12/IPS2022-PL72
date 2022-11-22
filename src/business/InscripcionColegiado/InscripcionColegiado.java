@@ -261,5 +261,4 @@ public class InscripcionColegiado {
 		return l;
 	}
 
-
 }

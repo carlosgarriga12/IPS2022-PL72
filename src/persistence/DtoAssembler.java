@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import business.BusinessException;
 import business.InscripcionColegiado.InscripcionColegiado;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
@@ -296,7 +297,9 @@ public class DtoAssembler {
 		d.incidencias = rs.getString("incidencias");
 		d.devolver = rs.getString("Devolver");
 		d.formaDePago = rs.getString("formaDePago");
+		
 		return d;
+		
 	}
 
 }

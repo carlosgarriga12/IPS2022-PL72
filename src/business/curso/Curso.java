@@ -65,7 +65,7 @@ public class Curso {
 	public static List<CursoDto> listarCursosAbiertos() throws BusinessException {
 		return CursoCRUD.listarCursosActualmenteAbiertos();
 	}
-
+	
 	public static void cancelarCursoCOIIPA(CursoDto cursoSeleccionado) {
 		CursoCRUD.cancelarCursoCOIIPA(cursoSeleccionado.codigoCurso);
 	}
@@ -77,7 +77,5 @@ public class Curso {
 	public static List<CursoDto> listarCursosIsInscrito(String dni) throws BusinessException {
 		return CursoCRUD.listarCursosIsInscrito(dni);
 	}
-	
-	
-	
+
 }

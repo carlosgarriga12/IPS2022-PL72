@@ -23,6 +23,7 @@ public class CursoDto {
 	public LocalDate fechaCierre;
 	public LocalDate fechaApertura;
 	public String CantidadPagarColectivo;
+
 	public boolean isCancelable;
 	public double porcentaje_devolucion;
 	public int numeroInscritos;

@@ -31,6 +31,7 @@ public class InscripcionColegiadoCRUD {
 	private static final String SQL_INSCRIPCION_TRANSFERENCIA_BANCO_PROCESADAS = Conf.getInstance().getProperty("TINSCRIPCION_FIND_DATOS_TRANSFERENCIA_PROCESADA");
 	private static final String SQL_INSCRIPCION_BANCO_TRANSFERENCIA = Conf.getInstance().getProperty("TINSCRIPCION_BANCO_PAGAR");
 	private static final String SQL_INSCRIPCION_BANCO_PROCESAR_TRANSFERENCIA = Conf.getInstance().getProperty("TINSCRIPCION_PROCESAR_TRANSFERENCIAS");
+
 	private static final String SQL_TOTAL_INSCRITOS_CURSO = Conf.getInstance().getProperty("TINSCRIPCION_FIND_ALL_COURSE");
 	private static final String SQL_INSCRIPCION_FIND_ID = Conf.getInstance().getProperty("TINSCRIPCION_FIND_ALL");
 	private static final String SQL_INSCRIPCION_CANCELAR_PREINSCRITO_PENDIENTE = Conf.getInstance().getProperty("TINSCRIPCION_CANCELAR_PREINSCRITO_PENDIENTE");
@@ -474,6 +475,5 @@ public class InscripcionColegiadoCRUD {
 			Jdbc.close(stmt);
 		}
 	}
-	
 	
 }

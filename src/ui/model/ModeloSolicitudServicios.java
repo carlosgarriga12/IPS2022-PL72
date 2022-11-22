@@ -1,10 +1,10 @@
 package ui.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+
 import persistence.SolicitudServicios.SolicitudServiciosDto;
 
 public class ModeloSolicitudServicios {
@@ -44,8 +44,6 @@ public class ModeloSolicitudServicios {
 	}
 	
 	private String stringSaltoLinea(String s) {
-		@SuppressWarnings("unused")
-		ArrayList<Integer> espacios = new ArrayList<Integer>();
 		String[] other = s.split(" ");
 		String nuevoString = "";
 		int sizeLinea = 0;
