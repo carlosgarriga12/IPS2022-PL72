@@ -6,6 +6,7 @@ import java.util.Optional;
 import business.BusinessException;
 import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoCrud;
 import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoDto;
+import persistence.colegiado.ColegiadoCrud;
 
 /**
  * Lista de espera de un curso.
@@ -26,17 +27,22 @@ public class ListaEsperaCurso {
 	 * 
 	 * @since HU. 19733
 	 * @param dniUsuario DNI del usuario a apuntar a la lista de espera.
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public static void apuntarListaEspera(final String dniUsuario, final int codigoCurso) throws BusinessException {
 		Optional<ListaEsperaInscripcionCursoDto> colegiadoListaEspera = ListaEsperaInscripcionCursoCrud
 				.findByDni(dniUsuario, codigoCurso);
 
-		if (colegiadoListaEspera.isPresent()) {
+		if (colegiadoListaEspera.isPresent() && colegiadoListaEspera.get().dniUsuario != null) {
 			throw new BusinessException("El usuario ya se encuentra apuntado en la lista de espera del curso.");
 		}
 
-		ListaEsperaInscripcionCursoCrud.addColegiadoListaEsperaCursoSeleccionado(dniUsuario, codigoCurso);
+		boolean actualizado = ListaEsperaInscripcionCursoCrud.addColegiadoListaEsperaCursoSeleccionado(dniUsuario,
+				codigoCurso);
+		
+		if (actualizado) {
+			ColegiadoCrud.updateEstadoColegiadoByDni("EN_ESPERA", dniUsuario);
+		}
 	}
 
 	/**

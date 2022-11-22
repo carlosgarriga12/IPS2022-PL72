@@ -11,6 +11,6 @@ public class ListaEsperaInscripcionCursoDto {
 	public String nombreUsuario;
 	public int posicionUsuarioLista; // Posición que ostenta el usuario en la lista.
 
-	public String idCurso;
+	public int idCurso;
 
 }

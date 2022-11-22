@@ -72,15 +72,17 @@ public class ListaEsperaInscripcionCursoCrud {
 	 * @param dniColegiado Dni del usuario.
 	 * @param codigoCurso  Id del curso.
 	 */
-	public static void addColegiadoListaEsperaCursoSeleccionado(final String dniColegiado, final int codigoCurso) {
+	public static boolean addColegiadoListaEsperaCursoSeleccionado(final String dniColegiado, final int codigoCurso) {
 		PreparedStatement pst = null;
 		Connection con = null;
+		boolean success = false;
 
 		PreparedStatement pst2 = null;
 		ResultSet rs2 = null;
 
 		try {
 			con = Jdbc.getConnection();
+
 			con.setAutoCommit(false);
 
 			// La posicion en la lista será consecutiva al último usuario añadido a dicha
@@ -91,20 +93,18 @@ public class ListaEsperaInscripcionCursoCrud {
 			rs2.next();
 			int maxPosicion = rs2.getInt("MAX_POSITION") + 1;
 
-			System.out.println(maxPosicion);
-
 			pst = con.prepareStatement(SQL_COLEGIADO_ADD_LISTA_ESPERA_CURSO);
 
 			pst.setInt(1, codigoCurso);
 			pst.setString(2, dniColegiado);
 			pst.setInt(3, maxPosicion);
 
-			pst.executeUpdate();
+			success = pst.executeUpdate() == 1 ? true : false;
 
 			con.commit();
 
 		} catch (SQLException sqle) {
-			System.err.println(sqle.getMessage());
+			sqle.printStackTrace();
 			try {
 				con.rollback();
 			} catch (SQLException e) {
@@ -117,6 +117,8 @@ public class ListaEsperaInscripcionCursoCrud {
 			Jdbc.close(pst);
 			Jdbc.close(con);
 		}
+
+		return success;
 
 	}
 
@@ -133,7 +135,7 @@ public class ListaEsperaInscripcionCursoCrud {
 	 * @return Registro de la lista de espera si lo hay, empty en caso contrario.
 	 */
 	public static Optional<ListaEsperaInscripcionCursoDto> findByDni(final String dniUsuario, final int idCurso) {
-		Optional<ListaEsperaInscripcionCursoDto> res = Optional.empty();
+		ListaEsperaInscripcionCursoDto res = null;
 
 		PreparedStatement pst = null;
 		Connection con = null;
@@ -147,18 +149,19 @@ public class ListaEsperaInscripcionCursoCrud {
 			pst.setInt(2, idCurso);
 
 			rs = pst.executeQuery();
+
 			rs.next();
 
-			res = Optional.ofNullable(DtoAssembler.toListaEsperaInscripcionCursoDto(rs));
+			res = DtoAssembler.toListaEsperaInscripcionCursoDto(rs, false);
 
 		} catch (SQLException sqle) {
+			sqle.printStackTrace();
 			throw new PersistenceException(sqle.getMessage());
 
 		} finally {
 			Jdbc.close(rs, pst);
-			Jdbc.close(con);
 		}
 
-		return res;
+		return Optional.ofNullable(res);
 	}
 }

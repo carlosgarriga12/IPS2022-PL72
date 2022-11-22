@@ -45,8 +45,7 @@ public class StringUtils {
 	 * @return DNI anonimizado en formato ***XXX**Y, siendo 'Y' la letra del DNI.
 	 */
 	public static String anonimizeDni(String dni) {
-		// 12345678N --> ***456**N
-		return "***".concat(dni.substring(3, 8)).concat("**").concat(dni.substring(8));
+		return dni == null || dni.isBlank() ? "" : "***".concat(dni.substring(3, 6)).concat("**").concat(dni.substring(8));
 
 	}
 }

@@ -257,18 +257,20 @@ public class DtoAssembler {
 	/**
 	 * 
 	 * @since HU. 19733
-	 * @param rs Resultset con el contenido de la lista de espera.
+	 * @param rs           Resultset con el contenido de la lista de espera.
+	 * @param anonimizeDni true si se requiere anonimizar el DNI del usuario.
 	 * @return
 	 * @throws SQLException
 	 */
-	public static ListaEsperaInscripcionCursoDto toListaEsperaInscripcionCursoDto(ResultSet rs) throws SQLException {
+	public static ListaEsperaInscripcionCursoDto toListaEsperaInscripcionCursoDto(ResultSet rs, boolean anonimizeDni)
+			throws SQLException {
 		ListaEsperaInscripcionCursoDto res = new ListaEsperaInscripcionCursoDto();
 
 		String dniOriginal = rs.getString(ListaEsperaInscripcionCursoDto.DNI_USUARIO);
-		res.dniUsuario = StringUtils.anonimizeDni(dniOriginal);
-		
+		res.dniUsuario = anonimizeDni ? StringUtils.anonimizeDni(dniOriginal) : dniOriginal;
+
 		res.nombreUsuario = rs.getString(ListaEsperaInscripcionCursoDto.NOMBRE_USUARIO);
-		res.idCurso = rs.getString(ListaEsperaInscripcionCursoDto.ID_CURSO);
+		res.idCurso = rs.getInt(ListaEsperaInscripcionCursoDto.ID_CURSO);
 		res.posicionUsuarioLista = rs.getInt(ListaEsperaInscripcionCursoDto.POS_USUARIO);
 
 		return res;
@@ -287,7 +289,7 @@ public class DtoAssembler {
 		List<ListaEsperaInscripcionCursoDto> res = new ArrayList<>();
 
 		while (rs.next()) {
-			res.add(toListaEsperaInscripcionCursoDto(rs));
+			res.add(toListaEsperaInscripcionCursoDto(rs, true));
 		}
 
 		return res;

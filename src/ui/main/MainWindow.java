@@ -82,7 +82,6 @@ import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
-import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoDto;
 import persistence.SolicitudServicios.SolicitudServiciosDto;
 import persistence.colegiado.ColegiadoCrud;
 import persistence.colegiado.ColegiadoDto;
@@ -330,10 +329,10 @@ public class MainWindow extends JFrame {
 	private JTable tbInscripciones;
 	private JPanel pnColectivosCenter;
 	private JPanel pnColectivosEliminar;
-	private JComboBox<Integer> cbColectivosEliminar;
+	private JComboBox<String> cbColectivosEliminar;
 	private JButton btnEliminarColectivo;
 	private JPanel pnColectivosAnadir;
-	private JComboBox<Integer> cbColectivosAnadir;
+	private JComboBox<String> cbColectivosAnadir;
 	private JButton btnAnadirColectivo;
 	private JPanel panel;
 	private Precio_Colectivos colectivos_Precios;
@@ -359,9 +358,9 @@ public class MainWindow extends JFrame {
 
 	List<SesionDto> fechasCurso = new ArrayList<>();
 	private JScrollPane spListaSesiones;
-	private JList listSesiones;
+	private JList<SesionDto> listSesiones;
 
-	private DefaultListModel modeloSesiones = null;
+	private DefaultListModel<SesionDto> modeloSesiones = null;
 	private JButton btnBorrarSesion;
 	private JPanel pnTransferencias;
 	private JPanel pnTransferenciasCentro;
@@ -503,6 +502,8 @@ public class MainWindow extends JFrame {
 
 	public MainWindow() {
 		initLookAndFeel();
+
+		cursoSeleccionado = new CursoDto();
 
 		// Configuraciones globales del programa
 
@@ -698,8 +699,6 @@ public class MainWindow extends JFrame {
 					if (event.getValueIsAdjusting())
 						return;
 
-					CursoDto cursoSeleccionado = new CursoDto();
-
 					try {
 
 						int selectedRow = tbCoursesList.getSelectedRow();
@@ -726,8 +725,6 @@ public class MainWindow extends JFrame {
 
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
 					}
-
-					Curso.setSelectedCourse(cursoSeleccionado);
 
 					lbTituloCursoSeleccionadoTabla.setText(cursoSeleccionado.titulo);
 					spNumeroPlazasCursoSeleccionado.setValue(cursoSeleccionado.plazasDisponibles);
@@ -839,10 +836,6 @@ public class MainWindow extends JFrame {
 			pnCursoSeleccionadoFechaApertura.setLayout(new GridLayout(0, 2, 0, 0));
 			pnCursoSeleccionadoFechaApertura.add(getLbFechaAperturaAperturaCurso());
 			pnCursoSeleccionadoFechaApertura.add(getFTxFechaInicioInscripcionesCursoSeleccionado());
-
-			// Calendario para seleccionar la fecha de apertura del curso seleccionado
-			// TODO:
-			// pnCursoSeleccionadoFechaApertura.add(getCalAbrirInscripcionFechaApertura());
 		}
 		return pnCursoSeleccionadoFechaApertura;
 	}
@@ -902,7 +895,6 @@ public class MainWindow extends JFrame {
 	}
 
 	private JFormattedTextField getFTxFechaInicioInscripcionesCursoSeleccionado() {
-		// TODO: Reemplazar por JCalendar
 		if (fTxFechaInicioInscripcionesCursoSeleccionado == null) {
 			fTxFechaInicioInscripcionesCursoSeleccionado = new JFormattedTextField(new TimeFormatter());
 			fTxFechaInicioInscripcionesCursoSeleccionado
@@ -1029,28 +1021,28 @@ public class MainWindow extends JFrame {
 
 					try {
 
-						CursoDto selectedCourse = Curso.getSelectedCourse();
+//						CursoDto selectedCourse = Curso.getSelectedCourse();
 
-						if (selectedCourse == null) {
+						if (cursoSeleccionado == null) {
 							throw new BusinessException("Por favor, seleccione un curso.");
 						}
 						int input = JOptionPane.showConfirmDialog(null,
 								"<html><p>Â¿Confirma que desea abrir las inscripciones para el curso <b>"
-										+ selectedCourse.titulo + "</b> ?</p></html>");
+										+ cursoSeleccionado.titulo + "</b> ?</p></html>");
 
 						if (input == JOptionPane.OK_OPTION) {
 							// Si el curso estÃ¡ abierto, mostrar mensaje de error
 
 							CursoDto newCurso = new CursoDto();
-							newCurso.codigoCurso = selectedCourse.codigoCurso;
-							newCurso.titulo = selectedCourse.titulo;
-							newCurso.fechaInicio = selectedCourse.fechaInicio;
+							newCurso.codigoCurso = cursoSeleccionado.codigoCurso;
+							newCurso.titulo = cursoSeleccionado.titulo;
+							newCurso.fechaInicio = cursoSeleccionado.fechaInicio;
 							newCurso.fechaApertura = fechaApertura;
 							newCurso.fechaCierre = fechaCierre;
-							newCurso.precio = selectedCourse.precio;
+							newCurso.precio = cursoSeleccionado.precio;
 							newCurso.plazasDisponibles = Integer.parseInt(plazas);
 
-							InscripcionCursoFormativo.abrirCursoFormacion(newCurso);
+							InscripcionCursoFormativo.abrirCursoFormacion(newCurso, cursoSeleccionado);
 
 							((DefaultMessage) pnListCoursesSouthMessages).setMessageColor(MessageType.SUCCESS);
 							((DefaultMessage) pnListCoursesSouthMessages)
@@ -1820,8 +1812,8 @@ public class MainWindow extends JFrame {
 
 	private JComboBox<String> getCbSeleccionarColectivo() {
 		if (cbSeleccionarColectivo == null) {
-			cbSeleccionarColectivo = new JComboBox();
-			cbSeleccionarColectivo.setModel(new DefaultComboBoxModel(
+			cbSeleccionarColectivo = new JComboBox<String>();
+			cbSeleccionarColectivo.setModel(new DefaultComboBoxModel<String>(
 					new String[] { "Colegiado", "Precolegiado", "Estudiante", "Desempleado", "Otros" }));
 			cbSeleccionarColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			cbSeleccionarColectivo.setAlignmentX(0.0f);
@@ -1870,50 +1862,31 @@ public class MainWindow extends JFrame {
 					if (event.getValueIsAdjusting())
 						return;
 
-					cursoSeleccionado = new CursoDto();
-
 					try {
 
-						int selectedRow = tbCourses.getSelectedRow();
+						int selectedRow = tbCursosAbiertosInscripcionCurso.getSelectedRow();
 
 						if (selectedRow == -1) {
 							selectedRow = 0;
-							cursoSeleccionado = null;
 						}
 
-						if (cursoSeleccionado != null) {
-							cursoSeleccionado.titulo = tbCourses.getValueAt(selectedRow, 0).toString();
+						/* Al seleccionar un curso, se habita el botón de inscripción */
+						btInscrirseInscripcionCurso.setEnabled(true);
 
-							cursoSeleccionado.plazasDisponibles = Integer
-									.parseInt(tbCourses.getValueAt(selectedRow, 2).toString());
+						cursoSeleccionado.titulo = tbCursosAbiertosInscripcionCurso.getValueAt(selectedRow, 0).toString();
 
-							cursoSeleccionado.codigoCurso = Integer
-									.parseInt(tbCourses.getValueAt(selectedRow, 6).toString());
+						cursoSeleccionado.plazasDisponibles = Integer
+								.parseInt(tbCursosAbiertosInscripcionCurso.getValueAt(selectedRow, 2).toString());
 
-							Curso.setSelectedCourse(cursoSeleccionado);
+						cursoSeleccionado.codigoCurso = Integer
+								.parseInt(tbCursosAbiertosInscripcionCurso.getValueAt(selectedRow, 5).toString());
 
-							try {
-								if (!InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
-									List<ListaEsperaInscripcionCursoDto> listaEspera = ListaEsperaCurso
-											.findByCursoId(cursoSeleccionado.codigoCurso);
+						try {
+							refrescarListaEspera(cursoSeleccionado);
 
-									listaEspera.forEach(System.out::println);
+						} catch (BusinessException e) {
 
-									if (listaEspera.size() > 0) {
-										toogleListaEsperaCursoSeleccionadoInscripcionCurso(true);
-
-										TableModel model1 = new ListaEsperaCursoModel(listaEspera)
-												.getListaEsperaSummaryModel();
-										tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model1);
-										tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
-									}
-
-								}
-							} catch (BusinessException e) {
-								System.err.println(e.getMessage());
-								e.printStackTrace();
-							}
-
+							e.printStackTrace();
 						}
 
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
@@ -2002,10 +1975,8 @@ public class MainWindow extends JFrame {
 							}
 						}
 					} catch (PersistenceException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (BusinessException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -2268,7 +2239,6 @@ public class MainWindow extends JFrame {
 			btnCrearCursoCrear = new DefaultButton("Crear curso", "ventana", "CrearCurso", 'c', ButtonColor.NORMAL);
 			btnCrearCursoCrear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					// TODO: Pasar comprobaciones a business. Aqui solo imprimir y mostrar mensajes.
 					double precio = 0.0;
 					if (txtTituloCurso.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(pnCrearCurso, "El titulo del curso esta vacio");
@@ -2290,7 +2260,6 @@ public class MainWindow extends JFrame {
 								"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
-					System.out.println("LLegue");
 					CursoDto curso = new CursoDto();
 					curso.titulo = txtTituloCurso.getText();
 					curso.precio = precio;
@@ -2426,7 +2395,6 @@ public class MainWindow extends JFrame {
 					try {
 						refreshScheduledCoursesList();
 					} catch (BusinessException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					mainCardLayout.show(mainPanel, APERTURA_INSCRIPCIONES_PANEL_NAME);
@@ -2508,59 +2476,6 @@ public class MainWindow extends JFrame {
 			pnListadoCursos.setLayout(new BorderLayout(0, 0));
 		}
 		return pnListadoCursos;
-	}
-
-	private JPanel getPnPagarInscripcion() {
-		if (pnPagarInscripcion == null) {
-			pnPagarInscripcion = new JPanel();
-			pnPagarInscripcion.setLayout(new BorderLayout(0, 0));
-			pnListadoCursos.add(getPnListadoCursosSouth(), BorderLayout.SOUTH);
-			pnListadoCursos.add(getSpListadoCursosCenter(), BorderLayout.CENTER);
-		}
-		return pnPagarInscripcion;
-	}
-
-	private JPanel getPnListadoCursosSouth() {
-		if (pnListadoCursosSouth == null) {
-			pnListadoCursosSouth = new JPanel();
-			FlowLayout flowLayout = (FlowLayout) pnListadoCursosSouth.getLayout();
-			flowLayout.setAlignment(FlowLayout.RIGHT);
-			pnListadoCursosSouth.setOpaque(false);
-			pnListadoCursosSouth.add(getPnListadoCursosSouthButtons());
-		}
-		return pnListadoCursosSouth;
-	}
-
-	private JPanel getPnListadoCursosSouthButtons() {
-		if (pnListadoCursosSouthButtons == null) {
-			pnListadoCursosSouthButtons = new JPanel();
-			pnListadoCursosSouthButtons.setOpaque(false);
-			pnListadoCursosSouthButtons.setLayout(new BorderLayout(0, 0));
-			pnListadoCursosSouthButtons.add(getBtListadoCursosVolver());
-		}
-		return pnListadoCursosSouthButtons;
-	}
-
-	private DefaultButton getBtListadoCursosVolver() {
-		if (btListadoCursosVolver == null) {
-			btListadoCursosVolver = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
-					ButtonColor.NORMAL);
-			btListadoCursosVolver.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
-				}
-			});
-
-		}
-		return btListadoCursosVolver;
-	}
-
-	private JScrollPane getSpListadoCursosCenter() {
-		if (spListadoCursosCenter == null) {
-			spListadoCursosCenter = new JScrollPane(getTbListadoTodosCursos());
-			spListadoCursosCenter.setBorder(null);
-		}
-		return spListadoCursosCenter;
 	}
 
 	private JTable getTbListadoTodosCursos() {
@@ -3134,15 +3049,6 @@ public class MainWindow extends JFrame {
 	}
 
 	private boolean comprobarCampos() {
-
-		try {
-			int numeroTarjeta = Integer.parseInt(textFieldNumeroTarjetaColegiado.getText());
-
-		} catch (NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(null, "El número de tarjeta no es válido. Por favor, revíselo.",
-					"Datos no válidos", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
 
 		if (textFieldDNIColegiado.getText().isEmpty() || textFieldDNIColegiado.getText().length() != 9
 				|| textFieldNumeroTarjetaColegiado.getText().isEmpty()
@@ -3743,9 +3649,9 @@ public class MainWindow extends JFrame {
 		return pnColectivosEliminar;
 	}
 
-	private JComboBox<Integer> getCbColectivosEliminar() {
+	private JComboBox<String> getCbColectivosEliminar() {
 		if (cbColectivosEliminar == null) {
-			cbColectivosEliminar = new JComboBox();
+			cbColectivosEliminar = new JComboBox<String>();
 		}
 		return cbColectivosEliminar;
 	}
@@ -3784,11 +3690,11 @@ public class MainWindow extends JFrame {
 		return pnColectivosAnadir;
 	}
 
-	private JComboBox<Integer> getCbColectivosAnadir() {
+	private JComboBox<String> getCbColectivosAnadir() {
 		if (cbColectivosAnadir == null) {
-			cbColectivosAnadir = new JComboBox();
+			cbColectivosAnadir = new JComboBox<String>();
 			cbColectivosAnadir.setFont(new Font("Tahoma", Font.PLAIN, 16));
-			cbColectivosAnadir.setModel(new DefaultComboBoxModel(
+			cbColectivosAnadir.setModel(new DefaultComboBoxModel<String>(
 					new String[] { "Colegiado", "Precolegiado", "Estudiante", "Desempleado", "Otros", "Todos" }));
 			cbColectivosAnadir.setAlignmentX(0.0f);
 		}
@@ -4195,8 +4101,6 @@ public class MainWindow extends JFrame {
 					if (event.getValueIsAdjusting())
 						return;
 
-					cursoSeleccionado = new CursoDto();
-
 					try {
 
 						int selectedRow = tbCourses.getSelectedRow();
@@ -4227,7 +4131,7 @@ public class MainWindow extends JFrame {
 					} catch (NumberFormatException | ArrayIndexOutOfBoundsException nfe) {
 					}
 
-					Curso.setSelectedCourse(cursoSeleccionado);
+//					Curso.setSelectedCourse(cursoSeleccionado);
 				}
 
 			});
@@ -5391,10 +5295,10 @@ public class MainWindow extends JFrame {
 		return spListaSesiones;
 	}
 
-	private JList getListSesiones() {
+	private JList<SesionDto> getListSesiones() {
 		if (listSesiones == null) {
-			listSesiones = new JList();
-			modeloSesiones = new DefaultListModel();
+			listSesiones = new JList<SesionDto>();
+			modeloSesiones = new DefaultListModel<SesionDto>();
 			listSesiones.setModel(modeloSesiones);
 
 		}
@@ -5817,7 +5721,6 @@ public class MainWindow extends JFrame {
 								try {
 									if (!InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
 
-										// TODO: Mostrar tabla con la lista de espera
 										toogleListaEsperaCursoSeleccionadoInscripcionCurso(true);
 
 										TableModel model = new ListaEsperaCursoModel(
@@ -5825,7 +5728,8 @@ public class MainWindow extends JFrame {
 														.getListaEsperaSummaryModel();
 
 										tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
-										tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
+
+										mainPanel.repaint();
 
 										int opt = JOptionPane.showConfirmDialog(null,
 												"El curso está tiene todas las plazas cubiertas ¿Quiere apuntarse a la lista de espera?",
@@ -5833,31 +5737,42 @@ public class MainWindow extends JFrame {
 												JOptionPane.YES_NO_OPTION);
 
 										if (opt == JOptionPane.YES_OPTION) {
-											System.out.println("por aqui...");
-											ListaEsperaCurso.apuntarListaEspera(
-													txDniColegiadoInscripcionCurso.getText(),
-													cursoSeleccionado.codigoCurso);
+											/* Actualizar lista de espera con el nuevo usuario */
+											try {
+												ListaEsperaCurso.apuntarListaEspera(
+														txDniColegiadoInscripcionCurso.getText(),
+														cursoSeleccionado.codigoCurso);
 
-											// TODO: Actualizar lista de espera con el nuevo usuario
-											ListaEsperaCurso.apuntarListaEspera(
-													txDniColegiadoInscripcionCurso.getText(),
-													cursoSeleccionado.codigoCurso);
+												/* Mostrar mensaje de confirmación de unión a la lista. */
+												JOptionPane.showMessageDialog(null, "Inscripcion curso seleccionado",
+														"Información acerca de su inscripción",
+														JOptionPane.INFORMATION_MESSAGE);
 
-											// TODO: Mostrar mensaje de confirmación de unión a la lista.
-											JOptionPane.showMessageDialog(null, "Inscripcion curso seleccionado",
-													"Información acerca de su inscripción",
-													JOptionPane.INFORMATION_MESSAGE);
+												/* Actualizar tabla de la lista de espera */
+												TableModel modelUpdated = new ListaEsperaCursoModel(
+														ListaEsperaCurso.findByCursoId(cursoSeleccionado.codigoCurso))
+																.getListaEsperaSummaryModel();
 
-											// Actualizar tabla de la lista de espera
-											TableModel modelUpdated = new ListaEsperaCursoModel(
-													ListaEsperaCurso.findByCursoId(cursoSeleccionado.codigoCurso))
-															.getListaEsperaSummaryModel();
+												tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(modelUpdated);
+												tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
 
-											tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(modelUpdated);
-											tbListaEsperaCursoSeleccionadoInscripcionCurso.repaint();
+												pnInscripcionCursoSouthMessage.setVisible(false);
+
+											} catch (BusinessException be) {
+												lbInscripcionCursoMensaje.setText(be.getMessage());
+												pnInscripcionCursoSouthMessage.setVisible(true);
+											}
 										}
+									}else {
+										InscripcionColegiado.InscribirColegiado(cursoSeleccionado, colegiado);
+										InscripcionColegiado.EmitirJustificante(colegiado, cursoSeleccionado);
+										
+										lbInscripcionCursoMensaje.setText(
+												"La inscripcion en el curso seleccionado se ha realizado correctamente");
 
+										pnInscripcionCursoSouthMessage.setVisible(true);
 									}
+
 								} catch (BusinessException e1) {
 									lbInscripcionCursoMensaje.setText(e1.getMessage());
 									e1.printStackTrace();
@@ -5974,7 +5889,7 @@ public class MainWindow extends JFrame {
 			tbListaEsperaCursoSeleccionadoInscripcionCurso.setRowHeight(LookAndFeel.ROW_HEIGHT);
 			tbListaEsperaCursoSeleccionadoInscripcionCurso.setGridColor(new Color(255, 255, 255));
 
-			tbListaEsperaCursoSeleccionadoInscripcionCurso.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			tbListaEsperaCursoSeleccionadoInscripcionCurso.setRowSelectionAllowed(false);
 
 			TableModel model = new ListaEsperaCursoModel(List.of()).getListaEsperaSummaryModel();
 			tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
@@ -6085,40 +6000,27 @@ public class MainWindow extends JFrame {
 
 						} else {
 
-							if (!c.TipoColectivo
-									.equalsIgnoreCase(String.valueOf(cbSeleccionarColectivo.getSelectedItem()))) {
-								lbInscripcionCursoMensaje.setText(
-										"El colectivo seleccionado no se corresponde con el colectivo asociado al DNI");
-								pnInscripcionCursoSouthMessage.setVisible(true);
-								return;
+							if (checkCoincideDniConColectivo()) {
+								colegiado = c;
+
+								cursosAbiertosPnInscripcion = InscripcionCursoFormativo.getCursosAbiertos();
+
+								cursosAbiertosPnInscripcion = cursosAbiertosPnInscripcion.stream()
+										.filter(curso -> Precio_Colectivos
+												.StringToPrecio_Colectivos(curso.CantidadPagarColectivo)
+												.containsAlgunColectivo(c.TipoColectivo, "Todos"))
+										.collect(Collectors.toList());
+
+								if (cursosAbiertosPnInscripcion.isEmpty()) {
+									lbInscripcionCursoMensaje.setText(
+											"Lo sentimos, No hay cursos disponibles para el colectivo seleccionado");
+									pnInscripcionCursoSouthMessage.setVisible(true);
+								}
+
+								TableModel tableModelCursosAbiertosInsCurso = new CursoModel(
+										cursosAbiertosPnInscripcion).getCursosAbiertosInscripcionCurso();
+								tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
 							}
-							colegiado = c;
-
-							cursosAbiertosPnInscripcion = InscripcionCursoFormativo.getCursosAbiertos();
-
-							cursosAbiertosPnInscripcion = cursosAbiertosPnInscripcion.stream()
-									.filter(curso -> Precio_Colectivos
-											.StringToPrecio_Colectivos(curso.CantidadPagarColectivo)
-											.containsAlgunColectivo(c.TipoColectivo, "Todos"))
-									.collect(Collectors.toList());
-
-							if (cursosAbiertosPnInscripcion.isEmpty()) {
-								lbInscripcionCursoMensaje.setVisible(true);
-								lbInscripcionCursoMensaje.setText(
-										"Lo sentimos, No hay cursos disponibles para el colectivo seleccionado");
-								return;
-							} else {
-
-								btInscrirseInscripcionCurso.setEnabled(true);
-								pnInscripcionCursoSouthMessage.setVisible(false);
-
-								// tbCursosAbiertosInscripcionCurso.setVisible(true);
-								tbCursosAbiertosInscripcionCurso.repaint();
-							}
-
-							TableModel tableModelCursosAbiertosInsCurso = new CursoModel(cursosAbiertosPnInscripcion)
-									.getCursosAbiertosInscripcionCurso();
-							tbCursosAbiertosInscripcionCurso.setModel(tableModelCursosAbiertosInsCurso);
 
 						}
 					} catch (BusinessException e1) {
@@ -6129,6 +6031,28 @@ public class MainWindow extends JFrame {
 			btMostrarCursosAbiertosInscripcionCurso.setText("Ver cursos");
 		}
 		return btMostrarCursosAbiertosInscripcionCurso;
+	}
+
+	/**
+	 * Método auxiliar al método
+	 * {@link #getBtMostrarCursosAbiertosInscripcionCurso()}
+	 * 
+	 * Comprueba que el dni del usuario coincide con el colectivo seleccionado.
+	 */
+	private boolean checkCoincideDniConColectivo() {
+		String dni = txDniColegiadoInscripcionCurso.getText();
+		String colectivoSeleccionado = cbSeleccionarColectivoInscripcionCurso.getSelectedItem().toString();
+
+		try {
+			Colegiado.coincideDniConColectivo(dni, colectivoSeleccionado);
+		} catch (BusinessException e) {
+			lbInscripcionCursoMensaje.setText(e.getMessage());
+			pnInscripcionCursoSouthMessage.setVisible(true);
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private JLabel getLbInscripcionCursoDniColegiadoTitulo() {
@@ -6154,5 +6078,22 @@ public class MainWindow extends JFrame {
 
 		}
 		return txDniColegiadoInscripcionCurso;
+	}
+
+	/**
+	 * 
+	 * @throws BusinessException
+	 * @see #toogleListaEsperaCursoSeleccionadoInscripcionCurso
+	 * @since HU. 19733
+	 */
+	private void refrescarListaEspera(CursoDto seleccionado) throws BusinessException {
+
+		toogleListaEsperaCursoSeleccionadoInscripcionCurso(seleccionado.plazasDisponibles > 0);
+
+		TableModel model = new ListaEsperaCursoModel(ListaEsperaCurso.findByCursoId(seleccionado.codigoCurso))
+				.getListaEsperaSummaryModel();
+		tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
+
+		this.repaint();
 	}
 }

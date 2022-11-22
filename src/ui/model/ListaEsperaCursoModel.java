@@ -40,7 +40,7 @@ public class ListaEsperaCursoModel {
 
 		if (listaEspera.isEmpty()) {
 			model.addColumn("");
-			model.addRow(new Object[] { "NO HAY USUARIOS EN LA LISTA DE ESPERA." });
+			model.addRow(new Object[] { "EL CURSO SELECCIONADO TIENE PLAZAS DISPONIBLES" });
 		
 		}else {
 			
