@@ -43,8 +43,7 @@ public class Curso {
 		return selectedCourse;
 	}
 
-	public static void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException {
-		Argument.isNotNull(selectedCourse);
+	public void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException {
 		Curso.selectedCourse = selectedCourse;
 	}
 

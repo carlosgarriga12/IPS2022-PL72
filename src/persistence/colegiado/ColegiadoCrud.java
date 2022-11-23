@@ -36,6 +36,8 @@ public class ColegiadoCrud {
 	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO = Conf.getInstance()
 			.getProperty("TCOLEGIADO_UPDATE_ESTADO");
 
+	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO_BYDNI = Conf.getInstance()
+			.getProperty("TCOLEGIADO_UPDATE_ESTADO_BYDNI");
 
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
@@ -213,6 +215,37 @@ public class ColegiadoCrud {
 
 		} finally {
 			Jdbc.close(pst);
+			Jdbc.close(con);
+		}
+	}
+
+	/**
+	 * Actualiza el estado del colegiado al estado indicado como parámetro.
+	 * 
+	 * @since HU. 19733
+	 * @param dni         DNI del colegiado.
+	 * @param nuevoEstado Nuevo estado para el colegiado.
+	 */
+	public static void updateEstadoColegiadoByDni(final String dni, String nuevoEstado) {
+		Connection con = null;
+		PreparedStatement pst = null;
+
+		try {
+			con = Jdbc.getConnection();
+
+			pst = con.prepareStatement(SQL_ACTUALIZAR_ESTADO_COLEGIADO_BYDNI);
+
+			pst.setString(1, nuevoEstado);
+			pst.setString(2, dni);
+
+			pst.executeUpdate();
+
+		} catch (SQLException sqle) {
+			throw new PersistenceException(sqle);
+
+		} finally {
+			Jdbc.close(pst);
+			Jdbc.close(con);
 		}
 	}
 

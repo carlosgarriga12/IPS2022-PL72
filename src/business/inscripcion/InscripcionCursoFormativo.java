@@ -18,7 +18,7 @@ import persistence.inscripcionCursoFormacion.InscripcionCursoFormacionCRUD;
  *
  */
 public class InscripcionCursoFormativo {
-
+	
 	/**
 	 * Realización de la apertura de inscripciones a un curso formativo.
 	 * 
@@ -30,9 +30,9 @@ public class InscripcionCursoFormativo {
 	 * @throws BusinessException Si la fecha de inscripcion no es válida.
 	 * @throws SQLException
 	 */
-	public static void abrirCursoFormacion(final CursoDto curso) throws BusinessException, SQLException {
+	public static void abrirCursoFormacion(final CursoDto curso, CursoDto cursoSeleccionado) throws BusinessException, SQLException {
 
-		checkCamposAperturaCurso(curso);
+		checkCamposAperturaCurso(curso, cursoSeleccionado);
 
 		curso.plazasDisponibles = curso.plazasDisponibles;
 
@@ -46,8 +46,8 @@ public class InscripcionCursoFormativo {
 	 * @throws BusinessException Si alguno de los atributos del curso indicado no es
 	 *                           valido.
 	 */
-	public static void checkCamposAperturaCurso(final CursoDto curso) throws BusinessException {
-		if (curso == null || Curso.getSelectedCourse() == null) {
+	public static void checkCamposAperturaCurso(final CursoDto curso, CursoDto cursoSeleccionado) throws BusinessException {
+		if (curso == null || cursoSeleccionado == null) {
 			throw new BusinessException("Por favor, seleccione un curso de la lista.");
 
 			// Fecha inscripciones anterior a fecha actual
@@ -98,8 +98,8 @@ public class InscripcionCursoFormativo {
 
 	}
 
-	public static boolean PlazasLibres(CursoDto curso) throws BusinessException {
-		return InscripcionCursoFormacionCRUD.PlazasLibres(curso);
+	public static boolean hayPlazasLibres(CursoDto curso) throws BusinessException {
+		return InscripcionCursoFormacionCRUD.hayPlazasLibres(curso);
 	}
 
 }
