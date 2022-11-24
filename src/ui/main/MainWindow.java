@@ -99,7 +99,6 @@ import persistence.perito.PeritoCRUD;
 import persistence.recibo.ReciboCRUD;
 import persistence.solicitudVisados.SolicitudVisadoDto;
 import persistence.solicitudVisados.SolicitudVisadosCRUD;
-import ui.model.ModeloSolicitudesVisados;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -113,7 +112,9 @@ import ui.model.ListaEsperaCursoModel;
 import ui.model.ModeloCurso;
 import ui.model.ModeloInscripcion;
 import ui.model.ModeloPeritos;
+import ui.model.ModeloPeritosDisponiblesParaVisado;
 import ui.model.ModeloSolicitudServicios;
+import ui.model.ModeloSolicitudesVisados;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
 
@@ -627,12 +628,13 @@ public class MainWindow extends JFrame {
 	private JPanel pnCenterAsignarVisados;
 	private JPanel pnVisadosARevisar;
 	private JPanel pnPeritosDisponibles;
-	private JTable tbPeritosDisponibles;
 	private JLabel lblSolicitudesDeVisado;
 	private JLabel lblPeritosDisponibles;
 	private JScrollPane spVisados;
 	private JTable tbVisados;
 	private JButton btnAsignarVisado;
+	private JScrollPane spPeritosDisponibles;
+	private JTable tbPeritosDisponibles;
 
 
 	public MainWindow() {
@@ -6990,6 +6992,11 @@ public class MainWindow extends JFrame {
 	private JButton getBtnVolverAlInicio() {
 		if (btnVolverAlInicio == null) {
 			btnVolverAlInicio = new JButton("Volver al inicio");
+			btnVolverAlInicio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
 			btnVolverAlInicio.setBackground(Color.RED);
 			btnVolverAlInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
@@ -7016,16 +7023,11 @@ public class MainWindow extends JFrame {
 	private JPanel getPnPeritosDisponibles() {
 		if (pnPeritosDisponibles == null) {
 			pnPeritosDisponibles = new JPanel();
-			pnPeritosDisponibles.add(getTbPeritosDisponibles());
-			pnPeritosDisponibles.add(getLblPeritosDisponibles());
+			pnPeritosDisponibles.setLayout(new BorderLayout(0, 0));
+			pnPeritosDisponibles.add(getLblPeritosDisponibles(), BorderLayout.NORTH);
+			pnPeritosDisponibles.add(getSpPeritosDisponibles(), BorderLayout.CENTER);
 		}
 		return pnPeritosDisponibles;
-	}
-	private JTable getTbPeritosDisponibles() {
-		if (tbPeritosDisponibles == null) {
-			tbPeritosDisponibles = new JTable();
-		}
-		return tbPeritosDisponibles;
 	}
 	private JLabel getLblSolicitudesDeVisado() {
 		if (lblSolicitudesDeVisado == null) {
@@ -7037,6 +7039,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLblPeritosDisponibles() {
 		if (lblPeritosDisponibles == null) {
 			lblPeritosDisponibles = new JLabel("Peritos disponibles:");
+			lblPeritosDisponibles.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return lblPeritosDisponibles;
 	}
@@ -7073,9 +7076,71 @@ public class MainWindow extends JFrame {
 	private JButton getBtnAsignarVisado() {
 		if (btnAsignarVisado == null) {
 			btnAsignarVisado = new JButton("Asignar visado");
+			btnAsignarVisado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					List<SolicitudVisadoDto> visados = SolicitudVisadosCRUD.findAllSolicitudesVisado();
+					List<ColegiadoDto> peritosDisponibles = PeritoCRUD.findPeritosDisponiblesParaVisado();
+					
+					int visadoIndex = getTbVisados().getSelectedRow();
+					int peritoIndex = getTbPeritosDisponibles().getSelectedRow();
+					
+					SolicitudVisadoDto s = visados.get(visadoIndex);
+					ColegiadoDto c = peritosDisponibles.get(peritoIndex);
+					
+					if (s.dniPerito.equals(c.DNI)) {
+						JOptionPane.showMessageDialog(pnAsignarVisados, "No puede asignar su visado a sí mismo");
+						return;
+					}
+					
+					if (s.estado.equals("ASIGNADA")) {
+						JOptionPane.showMessageDialog(pnAsignarVisados, "Este visado ya ha sido asignado previamente");
+						return;
+					}
+					
+					SolicitudVisadosCRUD.asignarVisadoAPerito(s, c);
+					JOptionPane.showMessageDialog(pnAsignarVisados, "Visado asignado correctamente");
+					TableModel peritosModel = new ModeloPeritosDisponiblesParaVisado(PeritoCRUD.findPeritosDisponiblesParaVisado()).getSolicitudModel();
+					tbPeritosDisponibles.setModel(peritosModel);
+					
+					TableModel visadosModel = new ModeloSolicitudesVisados(SolicitudVisadosCRUD.findAllSolicitudesVisado()).getSolicitudModel();
+					tbVisados.setModel(visadosModel);
+					
+				}
+			});
 			btnAsignarVisado.setBackground(Color.GREEN);
 			btnAsignarVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnAsignarVisado;
+	}
+	private JScrollPane getSpPeritosDisponibles() {
+		if (spPeritosDisponibles == null) {
+			spPeritosDisponibles = new JScrollPane();
+			spPeritosDisponibles.setViewportView(getTbPeritosDisponibles());
+		}
+		return spPeritosDisponibles;
+	}
+	private JTable getTbPeritosDisponibles() {
+		if (tbPeritosDisponibles == null) {
+			tbPeritosDisponibles = new JTable();
+			tbPeritosDisponibles.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			TableModel peritosModel = new ModeloPeritosDisponiblesParaVisado(PeritoCRUD.findPeritosDisponiblesParaVisado()).getSolicitudModel();
+			tbPeritosDisponibles.setModel(peritosModel);
+			tbPeritosDisponibles.setIntercellSpacing(new Dimension(0, 0));
+			tbPeritosDisponibles.setShowGrid(false);
+			tbPeritosDisponibles.setRowMargin(0);
+			tbPeritosDisponibles.setRequestFocusEnabled(false);
+			tbPeritosDisponibles.setFocusable(false);
+			tbPeritosDisponibles.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbPeritosDisponibles.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbPeritosDisponibles.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbPeritosDisponibles.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbPeritosDisponibles.setShowVerticalLines(false);
+			tbPeritosDisponibles.setOpaque(false);
+
+			tbPeritosDisponibles.setRowHeight(80);
+			tbPeritosDisponibles.setGridColor(new Color(255, 255, 255));
+			
+		}
+		return tbPeritosDisponibles;
 	}
 }

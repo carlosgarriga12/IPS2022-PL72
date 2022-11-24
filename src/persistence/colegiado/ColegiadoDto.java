@@ -22,6 +22,7 @@ public class ColegiadoDto {
 	public enum Perito_estado {RENOVADO, SIN_RENOVAR};
 	public String perito;
 	public Integer posicionPerito;
+	public boolean visado;
 	
 
 }

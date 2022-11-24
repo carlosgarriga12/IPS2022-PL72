@@ -69,7 +69,8 @@ public class DtoAssembler {
 
 		c.perito = rs.getString("perito");
 		c.posicionPerito = rs.getInt("posicionPerito");
-
+		c.visado = rs.getBoolean("visado");
+		
 		return c;
 
 	}

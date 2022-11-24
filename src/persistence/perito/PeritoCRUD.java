@@ -29,6 +29,9 @@ public class PeritoCRUD {
 	private static final String SQL_FIND_PERITO_BY_DNI = Conf.getInstance()
 			.getProperty("TCOLEGIADO_FIND_PERITO_BY_DNI");
 	
+	private static final String SQL_FIND_PERITOS_DISPONIBLES_VISADO = Conf.getInstance()
+			.getProperty("TPERITO_FIND_DISPONIBLES_PARA_VISADO");
+	
 	public static void addPerito(String dni) {
 		Connection c = null;
 		PreparedStatement pst = null;
@@ -133,6 +136,27 @@ public class PeritoCRUD {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, pst, c);
+		}
+	}
+	
+	public static List<ColegiadoDto> findPeritosDisponiblesParaVisado() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			c = Jdbc.getConnection();
+			
+			st = c.createStatement();
+			
+			rs = st.executeQuery(SQL_FIND_PERITOS_DISPONIBLES_VISADO);
+			
+			return DtoAssembler.toColegiadoList(rs);
+			
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(rs, st, c);
 		}
 	}
 }
