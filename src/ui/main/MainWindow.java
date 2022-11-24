@@ -96,6 +96,8 @@ import persistence.curso.sesion.SesionDto;
 import persistence.jdbc.PersistenceException;
 import persistence.perito.PeritoCRUD;
 import persistence.recibo.ReciboCRUD;
+import persistence.solicitudVisados.SolicitudVisadoDto;
+import persistence.solicitudVisados.SolicitudVisadosCRUD;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -112,6 +114,7 @@ import ui.model.ModeloPeritos;
 import ui.model.ModeloSolicitudServicios;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
+import javax.swing.JTextArea;
 
 public class MainWindow extends JFrame {
 
@@ -137,6 +140,7 @@ public class MainWindow extends JFrame {
 	private static final String LISTAS_PROFESIONALES = "ListasProfesionales";
 	private static final String CANCELAR_CURSO = "cancelaCursoCOIIPA";
 	protected static final String CANCELAR_INSCRIPCION = "cancelaInscripcionCurso";
+	protected static final String CREAR_SOLICITUD_VISADOS = "crearSolicitudVisados";
 
 	private static final int ALL_MINUS_ID = 1;
 
@@ -596,6 +600,22 @@ public class MainWindow extends JFrame {
 	private JLabel lbInscripcionCursoDniColegiadoTitulo;
 	private JTextField txDniColegiadoInscripcionCurso;
 	private DefaultButton btSolicitudVisados;
+	private JPanel pnSolicitudVisados;
+	private JPanel pnNorthSolicitudVisados;
+	private JPanel pnTituloCrearSolicitudVisado;
+	private JPanel pnIntroducirDNIdePeritoParaVisado;
+	private JLabel lblTituloCrearSolicitudVisado;
+	private JLabel lblIntroduzcaSuDniParaVisado;
+	private JTextField txtIntroduzcaSuDniParaVisado;
+	private JPanel pnCenterSolicitudVisados;
+	private JPanel pnSouthSolicitudVisados;
+	private JButton btnEnviarSolicitudVisado;
+	private JButton btnVolverInicio;
+	private JTextArea txtDescripcionVisado;
+	private JLabel lblDescripcion;
+	private JButton btnComprobarDNI;
+	private JLabel lblTextoInfo;
+	private JButton btnVisadosVolverAlInicio;
 
 
 	public MainWindow() {
@@ -636,6 +656,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnCancelarCursoCOIIPA(), CANCELAR_CURSO);
 		mainPanel.add(getPnCancelarInscripcionCurso(), CANCELAR_INSCRIPCION);
 		mainPanel.add(getPnInscripcionCurso(), INSCRIPCION_CURSO_PANEL_NAME);
+		mainPanel.add(getPnSolicitudVisados(), CREAR_SOLICITUD_VISADOS);
 		
 		frame = new RegisterWindow(this);
 		frame.setVisible(false);
@@ -6718,9 +6739,188 @@ public class MainWindow extends JFrame {
 	private DefaultButton getBtSolicitudVisados() {
 		if (btSolicitudVisados == null) {
 			btSolicitudVisados = new DefaultButton("Cancelar inscripción", "ventana", "CancelarInscripción", 'l', ButtonColor.NORMAL);
+			btSolicitudVisados.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, CREAR_SOLICITUD_VISADOS);
+				}
+			});
 			btSolicitudVisados.setText("Solicitud Visados");
 			btSolicitudVisados.setMnemonic('N');
 		}
 		return btSolicitudVisados;
+	}
+	private JPanel getPnSolicitudVisados() {
+		if (pnSolicitudVisados == null) {
+			pnSolicitudVisados = new JPanel();
+			pnSolicitudVisados.setLayout(new BorderLayout(0, 0));
+			pnSolicitudVisados.add(getPnNorthSolicitudVisados(), BorderLayout.NORTH);
+			pnSolicitudVisados.add(getPnCenterSolicitudVisados(), BorderLayout.CENTER);
+			pnSolicitudVisados.add(getPnSouthSolicitudVisados(), BorderLayout.SOUTH);
+		}
+		return pnSolicitudVisados;
+	}
+	private JPanel getPnNorthSolicitudVisados() {
+		if (pnNorthSolicitudVisados == null) {
+			pnNorthSolicitudVisados = new JPanel();
+			pnNorthSolicitudVisados.setLayout(new BorderLayout(0, 0));
+			pnNorthSolicitudVisados.add(getPnTituloCrearSolicitudVisado(), BorderLayout.NORTH);
+			pnNorthSolicitudVisados.add(getPnIntroducirDNIdePeritoParaVisado(), BorderLayout.SOUTH);
+		}
+		return pnNorthSolicitudVisados;
+	}
+	private JPanel getPnTituloCrearSolicitudVisado() {
+		if (pnTituloCrearSolicitudVisado == null) {
+			pnTituloCrearSolicitudVisado = new JPanel();
+			pnTituloCrearSolicitudVisado.add(getLblTituloCrearSolicitudVisado());
+		}
+		return pnTituloCrearSolicitudVisado;
+	}
+	private JPanel getPnIntroducirDNIdePeritoParaVisado() {
+		if (pnIntroducirDNIdePeritoParaVisado == null) {
+			pnIntroducirDNIdePeritoParaVisado = new JPanel();
+			pnIntroducirDNIdePeritoParaVisado.add(getLblIntroduzcaSuDniParaVisado());
+			pnIntroducirDNIdePeritoParaVisado.add(getTxtIntroduzcaSuDniParaVisado());
+			pnIntroducirDNIdePeritoParaVisado.add(getBtnComprobarDNI());
+		}
+		return pnIntroducirDNIdePeritoParaVisado;
+	}
+	private JLabel getLblTituloCrearSolicitudVisado() {
+		if (lblTituloCrearSolicitudVisado == null) {
+			lblTituloCrearSolicitudVisado = new JLabel("Crear solicitud para visado");
+			lblTituloCrearSolicitudVisado.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		}
+		return lblTituloCrearSolicitudVisado;
+	}
+	private JLabel getLblIntroduzcaSuDniParaVisado() {
+		if (lblIntroduzcaSuDniParaVisado == null) {
+			lblIntroduzcaSuDniParaVisado = new JLabel("Introduzca su DNI: ");
+			lblIntroduzcaSuDniParaVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return lblIntroduzcaSuDniParaVisado;
+	}
+	private JTextField getTxtIntroduzcaSuDniParaVisado() {
+		if (txtIntroduzcaSuDniParaVisado == null) {
+			txtIntroduzcaSuDniParaVisado = new JTextField();
+			txtIntroduzcaSuDniParaVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			txtIntroduzcaSuDniParaVisado.setColumns(10);
+		}
+		return txtIntroduzcaSuDniParaVisado;
+	}
+	private JPanel getPnCenterSolicitudVisados() {
+		if (pnCenterSolicitudVisados == null) {
+			pnCenterSolicitudVisados = new JPanel();
+			pnCenterSolicitudVisados.setLayout(null);
+			pnCenterSolicitudVisados.add(getTxtDescripcionVisado());
+			pnCenterSolicitudVisados.add(getLblDescripcion());
+			pnCenterSolicitudVisados.add(getLblTextoInfo());
+		}
+		return pnCenterSolicitudVisados;
+	}
+	private JPanel getPnSouthSolicitudVisados() {
+		if (pnSouthSolicitudVisados == null) {
+			pnSouthSolicitudVisados = new JPanel();
+			pnSouthSolicitudVisados.add(getBtnVisadosVolverAlInicio());
+			pnSouthSolicitudVisados.add(getBtnEnviarSolicitudVisado());
+		}
+		return pnSouthSolicitudVisados;
+	}
+	private JButton getBtnEnviarSolicitudVisado() {
+		if (btnEnviarSolicitudVisado == null) {
+			btnEnviarSolicitudVisado = new JButton("Enviar solicitud");
+			btnEnviarSolicitudVisado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String dniPerito = txtIntroduzcaSuDniParaVisado.getText();
+					if (dniPerito.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "Su DNI está vacío por favor introduzca uno");
+						return;
+					}
+					List<ColegiadoDto> peritos = PeritoCRUD.findPeritoByDNI(dniPerito);
+					if(peritos.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "No existe perito con tal DNI");
+						return;
+					}
+					String descripcion = txtDescripcionVisado.getText();
+					if(descripcion.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "Porfavor introduzca una descripción para su visado");
+						return;
+					}
+					SolicitudVisadoDto s = new SolicitudVisadoDto();
+					
+					s.dniPerito = dniPerito;
+					s.descripcion = descripcion;
+					s.estado = "NO_ASIGNADA";
+					
+					SolicitudVisadosCRUD.addSolicitudVisado(s);
+					JOptionPane.showMessageDialog(pnSolicitudVisados, "Perito con nombre: " + 
+						peritos.get(0).nombre + " y apellidos: " + peritos.get(0).apellidos + "\nha presentado una solicitud para visado correctamente");
+					
+					txtIntroduzcaSuDniParaVisado.setText("");
+					txtDescripcionVisado.setText("");
+				}
+			});
+			btnEnviarSolicitudVisado.setBackground(Color.GREEN);
+			btnEnviarSolicitudVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnEnviarSolicitudVisado;
+	}
+	private JTextArea getTxtDescripcionVisado() {
+		if (txtDescripcionVisado == null) {
+			txtDescripcionVisado = new JTextArea();
+			txtDescripcionVisado.setFont(new Font("Monospaced", Font.PLAIN, 15));
+			txtDescripcionVisado.setBounds(24, 125, 1055, 192);
+		}
+		return txtDescripcionVisado;
+	}
+	private JLabel getLblDescripcion() {
+		if (lblDescripcion == null) {
+			lblDescripcion = new JLabel("Descripción del visado: ");
+			lblDescripcion.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			lblDescripcion.setBounds(24, 85, 291, 30);
+		}
+		return lblDescripcion;
+	}
+	private JButton getBtnComprobarDNI() {
+		if (btnComprobarDNI == null) {
+			btnComprobarDNI = new JButton("Comprobar");
+			btnComprobarDNI.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(txtIntroduzcaSuDniParaVisado.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "Su DNI está vacío por favor introduzca uno");
+						return;
+					}
+					List<ColegiadoDto> peritos = PeritoCRUD.findPeritoByDNI(txtIntroduzcaSuDniParaVisado.getText());
+					if(peritos.isEmpty()) {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "No existe perito con tal DNI");
+					} else {
+						JOptionPane.showMessageDialog(pnSolicitudVisados, "Perito encontrado\nNombre: " + 
+								peritos.get(0).nombre + "\nApellidos: " + peritos.get(0).apellidos);
+					}
+					return;
+				}
+			});
+			btnComprobarDNI.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnComprobarDNI;
+	}
+	private JLabel getLblTextoInfo() {
+		if (lblTextoInfo == null) {
+			lblTextoInfo = new JLabel("Una vez que se envíe la solicitud de visado, el COIIPA la tendrá prensente para poder asignarle una persona que pueda visar la pericial");
+			lblTextoInfo.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			lblTextoInfo.setBounds(24, 327, 1026, 30);
+		}
+		return lblTextoInfo;
+	}
+	private JButton getBtnVisadosVolverAlInicio() {
+		if (btnVisadosVolverAlInicio == null) {
+			btnVisadosVolverAlInicio = new JButton("Volver al inicio");
+			btnVisadosVolverAlInicio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+				}
+			});
+			btnVisadosVolverAlInicio.setBackground(Color.RED);
+			btnVisadosVolverAlInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnVisadosVolverAlInicio;
 	}
 }
