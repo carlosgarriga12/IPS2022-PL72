@@ -112,6 +112,8 @@ import ui.model.ModeloPeritos;
 import ui.model.ModeloSolicitudServicios;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class MainWindow extends JFrame {
 
@@ -282,10 +284,6 @@ public class MainWindow extends JFrame {
 	private JButton btConsultarSolicitudColegiadoVolver;
 	private JPanel pnConsultarColegiadoDatosColegiadoSeleccionado;
 	private JLabel lbColegiadoSeleccionadoSolicitudRespuesta;
-	private JPanel pnListadoCursosSouth;
-	private JPanel pnListadoCursosSouthButtons;
-	private DefaultButton btListadoCursosVolver;
-	private JScrollPane spListadoCursosCenter;
 	private JTable tbListadoTodosCursos;
 	private JTable tbListadoSolicitudesColegiado;
 	private JPanel pnListadoAltaSolicitudesColegiadoActualizarLista;
@@ -568,10 +566,6 @@ public class MainWindow extends JFrame {
 	private TableModel tableModelF;
 	private JTable tbInscripcionCanceladaCurso;
 
-	private JScrollPane spRecepcionLoteSolicitudes;
-	private JTable tbListadoRecepcionSolicitudes;
-	private JLabel lbTTituloRecepcionLoteSolicitudesTabla;
-	private JPanel pnRecepcionLoteSolicitudesTablaWrapper;
 	private JPanel pnInscripcionCurso;
 	private JPanel pnInscripcionCursoNorth;
 	private JPanel pnInscripcionCursoCenter;
@@ -610,8 +604,10 @@ public class MainWindow extends JFrame {
 
 	private ButtonGroup buttonGroupCursoCancelable;
 	private JLabel lbSeleccionCursoCancelablePorcentajeDevolucion;
-	private JTextField txPorcentajeDevolucionCursoCancelable;
 	private JPanel pnSeleccionCursoCancelableRadios;
+	private JPanel pnTxPorcentajeDevolucionCursoCancelableWrapper;
+	private JLabel lbSimboloPorcentaje;
+	private JSpinner spPorcentajeDevolucionCursoCancelable;
 
 	public MainWindow() {
 		initLookAndFeel();
@@ -2299,7 +2295,7 @@ public class MainWindow extends JFrame {
 	private JLabel getLblCrearCurso() {
 		if (lblCrearCurso == null) {
 			lblCrearCurso = new JLabel("Crear curso");
-			lblCrearCurso.setFont(new Font("Tahoma", Font.BOLD, 24));
+			lblCrearCurso.setFont(LookAndFeel.HEADING_1_FONT);
 		}
 		return lblCrearCurso;
 	}
@@ -2345,6 +2341,7 @@ public class MainWindow extends JFrame {
 		if (btnCrearCursoCancelar == null) {
 			btnCrearCursoCancelar = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
 					ButtonColor.CANCEL);
+			btnCrearCursoCancelar.setToolTipText("Haz click aquí para volver a inicio");
 			btnCrearCursoCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
@@ -2357,8 +2354,12 @@ public class MainWindow extends JFrame {
 	private JButton getBtnCrearCursoCrear() {
 		if (btnCrearCursoCrear == null) {
 			btnCrearCursoCrear = new DefaultButton("Crear curso", "ventana", "CrearCurso", 'c', ButtonColor.NORMAL);
+			btnCrearCursoCrear.setToolTipText("Haz click aquí para crear el curso con los datos indicados");
 			btnCrearCursoCrear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+
+					System.out.println(((Double) spPorcentajeDevolucionCursoCancelable.getValue()).floatValue());
+
 					double precio = 0.0;
 					if (txtTituloCurso.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(pnCrearCurso, "El titulo del curso esta vacio");
@@ -2380,6 +2381,33 @@ public class MainWindow extends JFrame {
 								"Es necesario anadir precios de curso para algun colectivo");
 						return;
 					}
+
+					/*
+					 * Si el curso es cancelable, comprobar que el porcentaje a devolver es válido
+					 */
+					boolean cursoCancelable = rbSeleccionCursoCancelableSi.isSelected();
+					double porcentajeDevolucion = 0.0;
+
+					try {
+
+						porcentajeDevolucion = ((Double) spPorcentajeDevolucionCursoCancelable.getValue())
+								.doubleValue();
+
+					} catch (NumberFormatException nfe) {
+
+						spPorcentajeDevolucionCursoCancelable.setValue(0);
+
+						JOptionPane.showMessageDialog(pnCrearCurso,
+								"Por favor, seleccione un valor entero entre 0 y 100 para el porcentaje a devolver del curso cancelable.",
+								"Crear un nuevo curso: Error", JOptionPane.ERROR_MESSAGE);
+
+					}
+
+					if (cursoCancelable && porcentajeDevolucion < 0 || porcentajeDevolucion > 100) {
+						JOptionPane.showMessageDialog(pnCrearCurso,
+								"Por favor, seleccione un valor entero entre 0 y 100 para el porcentaje a devolver del curso cancelable.");
+					}
+
 					CursoDto curso = new CursoDto();
 					curso.titulo = txtTituloCurso.getText();
 					curso.precio = precio;
@@ -2387,6 +2415,15 @@ public class MainWindow extends JFrame {
 					curso.estado = CursoDto.CURSO_PLANIFICADO;
 					curso.codigoCurso = CursoCRUD.generarCodigoCurso();
 					curso.CantidadPagarColectivo = colectivos_Precios.toString();
+
+					/* Curso cancelable */
+					curso.isCancelable = cursoCancelable;
+
+					if (cursoCancelable) {
+						curso.porcentaje_devolucion = porcentajeDevolucion;
+					}
+
+//					System.out.println("POrcentaje dev: " + spPorcentajeDevolucionCursoCancelable.getValue());
 
 					Curso.add(curso);
 
@@ -2413,6 +2450,10 @@ public class MainWindow extends JFrame {
 					txtHoraFin.setText("");
 					txPrecioAnadirColectivo.setText("");
 					modeloSesiones.removeAllElements();
+
+					spPorcentajeDevolucionCursoCancelable.setValue(0);
+					rbSeleccionCursoCancelableSi.setSelected(false);
+					rbSeleccionCursoCancelableNo.setSelected(true);
 
 				}
 			});
@@ -3401,6 +3442,28 @@ public class MainWindow extends JFrame {
 	private JTextField getTextFieldDNIColegiado() {
 		if (textFieldDNIColegiado == null) {
 			textFieldDNIColegiado = new JTextField();
+			textFieldDNIColegiado.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					if(!textFieldDNIColegiado.getText().isEmpty()) {
+						
+						ColegiadoDto c = null;
+						
+						try {
+							c = Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText().toString());
+							if(c != null && c.estado != null && c.estado.equalsIgnoreCase("EN_ESPERA")) {
+								textFieldDNIColegiado.setText("");
+								JOptionPane.showMessageDialog(null, "El solicitante no puede pagar la inscripción ya que se encuentra en la lista de espera de un curso", "Pagar inscripcion: Solicitante en lista de espera", JOptionPane.ERROR_MESSAGE);
+								
+							}
+						} catch (BusinessException e1) {
+							
+							e1.printStackTrace();
+						}
+						
+					}
+				}
+			});
 			TextPlaceHolderCustom.setPlaceholder("71778880C", textFieldDNIColegiado);
 			textFieldDNIColegiado.setToolTipText("Introduce su DNI");
 			textFieldDNIColegiado.setHorizontalAlignment(SwingConstants.LEFT);
@@ -6791,7 +6854,7 @@ public class MainWindow extends JFrame {
 		TableModel model = new ListaEsperaCursoModel(ListaEsperaCurso.findByCursoId(seleccionado.codigoCurso))
 				.getListaEsperaSummaryModel();
 		tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(model);
-		
+
 		this.repaint();
 	}
 
@@ -6822,6 +6885,16 @@ public class MainWindow extends JFrame {
 	private JRadioButton getRbSeleccionCursoCancelableSi() {
 		if (rbSeleccionCursoCancelableSi == null) {
 			rbSeleccionCursoCancelableSi = new JRadioButton("Sí");
+
+			rbSeleccionCursoCancelableSi.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (spPorcentajeDevolucionCursoCancelable != null && rbSeleccionCursoCancelableSi.isSelected()) {
+						spPorcentajeDevolucionCursoCancelable.setEnabled(true);
+					}
+				}
+			});
+
+			rbSeleccionCursoCancelableSi.setFont(LookAndFeel.LABEL_FONT);
 			buttonGroupCursoCancelable.add(rbSeleccionCursoCancelableSi);
 		}
 		return rbSeleccionCursoCancelableSi;
@@ -6830,7 +6903,20 @@ public class MainWindow extends JFrame {
 	private JRadioButton getRbSeleccionCursoCancelableNo() {
 		if (rbSeleccionCursoCancelableNo == null) {
 			rbSeleccionCursoCancelableNo = new JRadioButton("No");
+			rbSeleccionCursoCancelableNo.setFont(LookAndFeel.LABEL_FONT);
+
+			rbSeleccionCursoCancelableNo.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if (spPorcentajeDevolucionCursoCancelable != null && rbSeleccionCursoCancelableNo.isSelected()) {
+						spPorcentajeDevolucionCursoCancelable.setEnabled(false);
+					}
+				}
+			});
+
 			buttonGroupCursoCancelable.add(rbSeleccionCursoCancelableNo);
+
+			/* Si el usuario no selecciona una opción, el curso será no cancelable */
+			rbSeleccionCursoCancelableNo.setSelected(true);
 		}
 		return rbSeleccionCursoCancelableNo;
 	}
@@ -6838,9 +6924,10 @@ public class MainWindow extends JFrame {
 	private JPanel getPnSeleccionCursoPorcentajeDevolucion() {
 		if (pnSeleccionCursoPorcentajeDevolucion == null) {
 			pnSeleccionCursoPorcentajeDevolucion = new JPanel();
+			pnSeleccionCursoPorcentajeDevolucion.setOpaque(false);
 			pnSeleccionCursoPorcentajeDevolucion.setLayout(new GridLayout(0, 2, 0, 0));
 			pnSeleccionCursoPorcentajeDevolucion.add(getLbSeleccionCursoCancelablePorcentajeDevolucion());
-			pnSeleccionCursoPorcentajeDevolucion.add(getTxPorcentajeDevolucionCursoCancelable());
+			pnSeleccionCursoPorcentajeDevolucion.add(getPnTxPorcentajeDevolucionCursoCancelableWrapper());
 
 		}
 		return pnSeleccionCursoPorcentajeDevolucion;
@@ -6868,17 +6955,8 @@ public class MainWindow extends JFrame {
 		if (lbSeleccionCursoCancelablePorcentajeDevolucion == null) {
 			lbSeleccionCursoCancelablePorcentajeDevolucion = new JLabel("Porcentaje devolución:");
 			lbSeleccionCursoCancelablePorcentajeDevolucion.setFont(LookAndFeel.LABEL_FONT);
-			lbSeleccionCursoCancelablePorcentajeDevolucion.setLabelFor(getTxPorcentajeDevolucionCursoCancelable());
 		}
 		return lbSeleccionCursoCancelablePorcentajeDevolucion;
-	}
-
-	private JTextField getTxPorcentajeDevolucionCursoCancelable() {
-		if (txPorcentajeDevolucionCursoCancelable == null) {
-			txPorcentajeDevolucionCursoCancelable = new JTextField();
-			txPorcentajeDevolucionCursoCancelable.setColumns(10);
-		}
-		return txPorcentajeDevolucionCursoCancelable;
 	}
 
 	private JPanel getPnSeleccionCursoCancelableRadios() {
@@ -6888,5 +6966,40 @@ public class MainWindow extends JFrame {
 			pnSeleccionCursoCancelableRadios.add(getRbSeleccionCursoCancelableNo());
 		}
 		return pnSeleccionCursoCancelableRadios;
+	}
+
+	private JPanel getPnTxPorcentajeDevolucionCursoCancelableWrapper() {
+		if (pnTxPorcentajeDevolucionCursoCancelableWrapper == null) {
+			pnTxPorcentajeDevolucionCursoCancelableWrapper = new JPanel();
+			pnTxPorcentajeDevolucionCursoCancelableWrapper.setLayout(new BorderLayout(10, 0));
+			pnTxPorcentajeDevolucionCursoCancelableWrapper.add(getLbSimboloPorcentaje(), BorderLayout.EAST);
+			pnTxPorcentajeDevolucionCursoCancelableWrapper.add(getSpPorcentajeDevolucionCursoCancelable());
+		}
+		return pnTxPorcentajeDevolucionCursoCancelableWrapper;
+	}
+
+	private JLabel getLbSimboloPorcentaje() {
+		if (lbSimboloPorcentaje == null) {
+			lbSimboloPorcentaje = new JLabel("%");
+			lbSimboloPorcentaje.setHorizontalAlignment(SwingConstants.CENTER);
+			lbSimboloPorcentaje.setFont(LookAndFeel.HEADING_2_FONT);
+		}
+		return lbSimboloPorcentaje;
+	}
+
+	private JSpinner getSpPorcentajeDevolucionCursoCancelable() {
+		if (spPorcentajeDevolucionCursoCancelable == null) {
+			spPorcentajeDevolucionCursoCancelable = new JSpinner();
+			spPorcentajeDevolucionCursoCancelable.setFont(LookAndFeel.LABEL_FONT);
+			spPorcentajeDevolucionCursoCancelable
+					.setToolTipText("Introduzca el porcentaje de devolución del curso (Entre 0 y 100)");
+			spPorcentajeDevolucionCursoCancelable.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.1));
+
+			spPorcentajeDevolucionCursoCancelable.setLocale(DateUtils.DEFAULT_LOCALE);
+
+			/* El campo se habilitará si se selecciona la opcion de cancelable */
+			spPorcentajeDevolucionCursoCancelable.setEnabled(false);
+		}
+		return spPorcentajeDevolucionCursoCancelable;
 	}
 }
