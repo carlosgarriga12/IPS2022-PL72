@@ -29,6 +29,13 @@ public class CursoCRUD {
 	private static final String SQL_LIST_ALL_OPENED_COURSES = Conf.getInstance()
 			.getProperty("TCURSO_LIST_OPENED_COURSES");
 
+	private static final String SQL_CANCELAR_CURSO = Conf.getInstance()
+			.getProperty("TCURSO_CANCELAR_ID");
+	private static final String SQL_LIST_ALL_OPENED_PLANIF_COURSES = Conf.getInstance()
+			.getProperty("TCURSO_SELECCIONAR_ABIERTOS_PLANIFICADOS");
+	private static final String SQL_LIST_ALL_INSC_COURSES = Conf.getInstance()
+			.getProperty("TCURSO_SELECCIONAR_CURSO_INSCRITO");
+
 	public static int generarCodigoCurso() {
 		Connection c = null;
 		Statement st = null;
@@ -242,6 +249,68 @@ public class CursoCRUD {
 		}
 
 		return res;
+	}
+	
+	public static List<CursoDto> listarCursosAbiertosPlanificados() {
+		Connection con = null;
+		PreparedStatement pst = null;
+		List<CursoDto> res = null;
+
+		try {
+
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_LIST_ALL_OPENED_PLANIF_COURSES);
+
+			res = DtoAssembler.toCursoList(pst.executeQuery());
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
+
+		return res;
+	}
+
+	public static void cancelarCursoCOIIPA(int codigoCurso) {
+		Connection con = null;
+		PreparedStatement pst = null;
+
+		try {
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_CANCELAR_CURSO);
+
+			pst.setInt(1, codigoCurso);
+			
+			pst.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(pst);
+		}
+	}
+
+	public static List<CursoDto> listarCursosIsInscrito(String dni) {
+		Connection con = null;
+		PreparedStatement pst = null;
+		try {
+
+			con = Jdbc.getConnection();
+			pst = con.prepareStatement(SQL_LIST_ALL_INSC_COURSES);
+			
+			pst.setString(1, dni);
+			
+			return DtoAssembler.toCursoList(pst.executeQuery());
+
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+
+		} finally {
+			Jdbc.close(pst);
+		}
 	}
 
 }

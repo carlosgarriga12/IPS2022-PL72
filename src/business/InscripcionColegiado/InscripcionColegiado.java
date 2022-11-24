@@ -3,6 +3,7 @@ package business.InscripcionColegiado;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -29,7 +30,7 @@ public class InscripcionColegiado {
 		// TODO Auto-generated method stub
 		return InscripcionColegiadoCRUD.isInscrito(colegiado, cursoSeleccionado);
 	}
-
+	
 	public static void EmitirJustificante(ColegiadoDto colegiado, CursoDto curso) throws BusinessException {
 		String contenido = "Nombre: " + colegiado.nombre + " " + colegiado.apellidos + "  Número Colegiado: "
 				+ colegiado.numeroColegiado + "  Fecha Solicitud: " + LocalDate.now().toString()
@@ -97,17 +98,18 @@ public class InscripcionColegiado {
 
 			if (numeroAleatorio == 0) {
 				precioPagar = 0;
-			} else if (numeroAleatorio == 1) {
-				InscripcionColegiadoCRUD.pagarBancoFechaIncorrecta(lista.get(i).colegiado.DNI, curso, precioPagar);
-				return;
+				InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
 			} else if (numeroAleatorio == 2) {
 				precioPagar -= 1;
+				InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
 			} else if (numeroAleatorio == 3) {
-			} else {
+				InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
+			} else if (numeroAleatorio == 4) {
 				precioPagar += 1;
+				InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
+			} else {
+				InscripcionColegiadoCRUD.pagarBancoFechaIncorrecta(lista.get(i).colegiado.DNI, curso, precioPagar);
 			}
-
-			InscripcionColegiadoCRUD.pagarBanco(lista.get(i).colegiado.DNI, curso, precioPagar);
 		}
 	}
 
@@ -132,35 +134,131 @@ public class InscripcionColegiado {
 				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA NO PAGADA", codigoCurso,
 						elemento.colegiado.DNI, "NADA");
 				i++;
-				break;
-			}
-			LocalDate fechaPreinscripcion = elemento.fechaPreinscripcion;
-			LocalDate fechaTransferencia = elemento.fechaTransferencia;
-			if (Duration.between(fechaPreinscripcion.atStartOfDay(), fechaTransferencia.atStartOfDay()).toDays() > 2
-					|| fechaTransferencia.isBefore(fechaPreinscripcion)) {
-				InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "PLAZO INVÁLIDO", codigoCurso,
-						elemento.colegiado.DNI, elemento.cantidadPagada + "€");
-				i++;
-				break;
 			} else {
-				if (elemento.cantidadPagada < elemento.precio) {
-					InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA INFERIOR", codigoCurso,
+				LocalDate fechaPreinscripcion = elemento.fechaPreinscripcion;
+				LocalDate fechaTransferencia = elemento.fechaTransferencia;
+				if (Duration.between(fechaPreinscripcion.atStartOfDay(), fechaTransferencia.atStartOfDay()).toDays() > 2
+						|| fechaTransferencia.isBefore(fechaPreinscripcion)) {
+					InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "PLAZO INVÁLIDO", codigoCurso,
 							elemento.colegiado.DNI, elemento.cantidadPagada + "€");
 					i++;
-					break;
-				} else if (elemento.cantidadPagada == elemento.precio) {
-					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA", codigoCurso,
-							elemento.colegiado.DNI, "NADA");
-					i++;
-					break;
 				} else {
-					InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA", codigoCurso,
-							elemento.colegiado.DNI, (elemento.cantidadPagada - elemento.precio) + "€");
-					i++;
-					break;
+					if (elemento.cantidadPagada < elemento.precio) {
+						InscripcionColegiadoCRUD.procesarTransferencia("CANCELADO", "CUOTA INFERIOR", codigoCurso,
+								elemento.colegiado.DNI, elemento.cantidadPagada + "€");
+						i++;
+					} else if (elemento.cantidadPagada == elemento.precio) {
+						InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA", codigoCurso,
+								elemento.colegiado.DNI, "NADA");
+						i++;
+					} else {
+						InscripcionColegiadoCRUD.procesarTransferencia("INSCRITO", "CUOTA CORRECTA", codigoCurso,
+								elemento.colegiado.DNI, (elemento.cantidadPagada - elemento.precio) + "€");
+						i++;
+					}
 				}
 			}
 		}
+	}
+	
+	public static int getTotalInscrito(CursoDto cursoSeleccionado) throws BusinessException {
+		// devuelve el total de inscritos en un curso
+		return InscripcionColegiadoCRUD.getTotalInscrito(cursoSeleccionado);
+	}
+	
+	public static List<InscripcionColegiadoDto> findInscripciones(CursoDto cursoSeleccionado) {
+		return InscripcionColegiadoCRUD.findInscripcionesCanceladas(cursoSeleccionado.codigoCurso);
+	}
+
+	public static void cancelarInscripciones(CursoDto cursoSeleccionado) {
+		// cancela todas las inscripciones de ese curso
+		List<InscripcionColegiadoDto> lista = InscripcionColegiadoCRUD.findInscripciones(cursoSeleccionado.codigoCurso);
+		int i = 0;
+		while (i < lista.size()) {
+			InscripcionColegiadoDto elemento = lista.get(i);
+			if (elemento.estado.equals("PREINSCRITO") || elemento.estado.equals("PENDIENTE")) {
+				InscripcionColegiadoCRUD.actualizarPreinscritoPendiente(elemento.curso.codigoCurso, 
+						elemento.colegiado.DNI,
+						"0€",
+						elemento.fechaCancelacion,
+						"CANCELADO", "CURSO CANCELADO");
+				i++;
+			} else {
+				if (elemento.formaDePago.equals("TARJETA")) {
+					InscripcionColegiadoCRUD.actualizarTarjeta(elemento.curso.codigoCurso,
+							elemento.colegiado.DNI, elemento.precio, elemento.precio + "€",
+							elemento.fechaCancelacion,
+							"CANCELADO", "CURSO CANCELADO");
+					i++;
+				} else {
+					if (elemento.precio==elemento.cantidadPagada) {
+						InscripcionColegiadoCRUD.actualizarTransf(elemento.curso.codigoCurso,
+								elemento.colegiado.DNI, elemento.precio + "€",
+								elemento.fechaCancelacion,
+								"CANCELADO", "CURSO CANCELADO");
+						i++;
+					} else {
+						InscripcionColegiadoCRUD.actualizarTransf(elemento.curso.codigoCurso,
+								elemento.colegiado.DNI, String.valueOf(elemento.precio+Double.parseDouble(elemento.devolver.substring(0, elemento.devolver.length()-1)) + "€"),
+								elemento.fechaCancelacion,
+								"CANCELADO", elemento.incidencias += ", CURSO CANCELADO");
+						i++;
+					}
+				}
+				
+			}
+			
+			
+		}
+	}
+	
+	public static void cancelarInscripcion(CursoDto cursoSeleccionado, String dni) {
+		// cancela todas las inscripciones de ese curso
+		InscripcionColegiadoDto elemento = InscripcionColegiadoCRUD.findInscripcion(cursoSeleccionado.codigoCurso, dni, true);
+		if (elemento==null) return;
+		if (elemento.estado.equals("PREINSCRITO") || elemento.estado.equals("PENDIENTE")) {
+			InscripcionColegiadoCRUD.actualizarPreinscritoPendiente(elemento.curso.codigoCurso, 
+					dni,
+					"0€",
+					elemento.fechaCancelacion,
+					"CANCELADO", "CURSO CANCELADO");
+		} else {
+			if (elemento.formaDePago.equals("TARJETA")) {
+				InscripcionColegiadoCRUD.actualizarTarjeta(elemento.curso.codigoCurso,
+						dni, elemento.precio,(elemento.precio*elemento.curso.porcentaje_devolucion) + "€",
+						elemento.fechaCancelacion,
+						"CANCELADO", "CURSO CANCELADO");
+			} else {
+				if (elemento.precio==elemento.cantidadPagada) {
+					InscripcionColegiadoCRUD.actualizarTransf(elemento.curso.codigoCurso,
+							dni, (elemento.precio*elemento.curso.porcentaje_devolucion) + "€",
+							elemento.fechaCancelacion,
+							"CANCELADO", "CURSO CANCELADO");
+				} else {
+					InscripcionColegiadoCRUD.actualizarTransf(elemento.curso.codigoCurso,
+							dni, String.valueOf((elemento.precio*elemento.curso.porcentaje_devolucion)+Double.parseDouble(elemento.devolver.substring(0, elemento.devolver.length()-1)) + "€"),
+							elemento.fechaCancelacion,
+							"CANCELADO", elemento.incidencias += ", CURSO CANCELADO");
+				}
+			}
+			
+		}
+	}
+
+	public static List<InscripcionColegiadoDto> findInscripcion(CursoDto cursoSeleccionado, String colegiadoDni) {
+		List<InscripcionColegiadoDto> l = new ArrayList<>();
+		InscripcionColegiadoDto i = InscripcionColegiadoCRUD.findInscripcion(cursoSeleccionado.codigoCurso, colegiadoDni, false);
+		if (i==null) return l;
+		l.add(i);
+		return l;
+	}
+	
+	public static List<InscripcionColegiadoDto> findInscripcion(String colegiadoDni) {
+		List<InscripcionColegiadoDto> l = new ArrayList<>();
+		InscripcionColegiadoDto i = InscripcionColegiadoCRUD.findInscripcion(colegiadoDni);
+		if (i==null) return l;
+		l.add(i);
+		return l;
 	}
 
 }

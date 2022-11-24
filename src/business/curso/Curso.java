@@ -43,8 +43,7 @@ public class Curso {
 		return selectedCourse;
 	}
 
-	public static void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException {
-		Argument.isNotNull(selectedCourse);
+	public void setSelectedCourse(final CursoDto selectedCourse) throws IllegalArgumentException {
 		Curso.selectedCourse = selectedCourse;
 	}
 
@@ -65,4 +64,17 @@ public class Curso {
 	public static List<CursoDto> listarCursosAbiertos() throws BusinessException {
 		return CursoCRUD.listarCursosActualmenteAbiertos();
 	}
+	
+	public static void cancelarCursoCOIIPA(CursoDto cursoSeleccionado) {
+		CursoCRUD.cancelarCursoCOIIPA(cursoSeleccionado.codigoCurso);
+	}
+	
+	public static List<CursoDto> listarCursosAbiertosPlanificados() throws BusinessException {
+		return CursoCRUD.listarCursosAbiertosPlanificados();
+	}
+	
+	public static List<CursoDto> listarCursosIsInscrito(String dni) throws BusinessException {
+		return CursoCRUD.listarCursosIsInscrito(dni);
+	}
+
 }

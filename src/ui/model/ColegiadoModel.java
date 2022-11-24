@@ -65,6 +65,11 @@ public class ColegiadoModel extends DefaultTableModel {
 
 	public TableModel getPeritoModel() {
 		DefaultTableModel model = new DefaultTableModel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -90,12 +95,10 @@ public class ColegiadoModel extends DefaultTableModel {
 
 		return model;
 	}
-
+	
 	/**
 	 * Modelo de tabla para Colegiado destina de mostrar los datos de las
 	 * solicitudes aceptadas del lote recepcionado.
-	 * 
-	 * @since HU. 19062
 	 * @return TableModel con el listado de solicitantes a colegiado admitidos.
 	 * @throws BusinessException
 	 */

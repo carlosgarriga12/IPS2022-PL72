@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import persistence.DtoAssembler;
-import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoDto;
 import persistence.jdbc.Jdbc;
 import persistence.jdbc.PersistenceException;
@@ -58,25 +57,22 @@ public class InscripcionCursoFormacionCRUD {
 
 	public static boolean isFechaDentro(LocalDate FechaInicio, LocalDate FechaFinal) {
 		LocalDate fAhora = LocalDate.now();
-		if (fAhora.isAfter(FechaInicio) && fAhora.isBefore(FechaFinal)) {
-			return true;
-		}
-		if (fAhora.isEqual(FechaInicio) || fAhora.isEqual(FechaFinal)) {
-			return true;
-		}
-		return false;
+
+		return (fAhora.isAfter(FechaInicio) || fAhora.isEqual(FechaInicio))
+				&& (fAhora.isBefore(FechaFinal) || fAhora.isEqual(FechaFinal));
 	}
 
 	public static List<CursoDto> listaCursosAbiertos() throws PersistenceException {
 		PreparedStatement stmt = null;
-		List<CursoDto> cursos = null;
+		List<CursoDto> cursos = new ArrayList<>();
 		try {
 			Connection cn = Jdbc.getConnection();
 
 			stmt = cn.prepareStatement(SQL_LISTA_INSCRIPCIONES);
 			List<CursoDto> respuesta = DtoAssembler.toInscripcionList(stmt.executeQuery());
-			cursos = new ArrayList<>();
+
 			for (CursoDto curso : respuesta) {
+
 				if (isFechaDentro(curso.fechaApertura, curso.fechaCierre)) {
 					cursos.add(curso);
 				}
@@ -90,7 +86,7 @@ public class InscripcionCursoFormacionCRUD {
 		return cursos;
 	}
 
-	public static boolean PlazasLibres(CursoDto curso) throws PersistenceException {
+	public static boolean hayPlazasLibres(CursoDto curso) throws PersistenceException {
 		PreparedStatement stmt = null;
 		try {
 			Connection cn = Jdbc.getConnection();

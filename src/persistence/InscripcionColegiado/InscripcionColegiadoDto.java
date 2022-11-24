@@ -18,6 +18,8 @@ public class InscripcionColegiadoDto {
 	public String incidencias;
 	public double precio;
 	public String devolver;
+
+	public LocalDate fechaCancelacion;
 	
 	@Override
 	public String toString() {

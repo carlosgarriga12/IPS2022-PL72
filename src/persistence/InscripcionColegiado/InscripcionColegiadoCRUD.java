@@ -32,6 +32,16 @@ public class InscripcionColegiadoCRUD {
 	private static final String SQL_INSCRIPCION_BANCO_TRANSFERENCIA = Conf.getInstance().getProperty("TINSCRIPCION_BANCO_PAGAR");
 	private static final String SQL_INSCRIPCION_BANCO_PROCESAR_TRANSFERENCIA = Conf.getInstance().getProperty("TINSCRIPCION_PROCESAR_TRANSFERENCIAS");
 
+	private static final String SQL_TOTAL_INSCRITOS_CURSO = Conf.getInstance().getProperty("TINSCRIPCION_FIND_ALL_COURSE");
+	private static final String SQL_INSCRIPCION_FIND_ID = Conf.getInstance().getProperty("TINSCRIPCION_FIND_ALL");
+	private static final String SQL_INSCRIPCION_CANCELAR_PREINSCRITO_PENDIENTE = Conf.getInstance().getProperty("TINSCRIPCION_CANCELAR_PREINSCRITO_PENDIENTE");
+	private static final String SQL_INSCRIPCION_CANCELAR_TARJETA = Conf.getInstance().getProperty("TINSCRIPCION_CANCELAR_TARJETA");
+	private static final String SQL_INSCRIPCION_CANCELAR_TRANSF = Conf.getInstance().getProperty("TINSCRIPCION_CANCELAR_TRANSF");
+	private static final String SQL_INSCRIPCION_FIND_CANCELADAS = Conf.getInstance().getProperty("TINSCRIPCION_FIND_CANCELADAS");
+	private static final String SQL_INSCRIPCION_FIND_CANCELADA = Conf.getInstance().getProperty("TINSCRIPCION_FIND_CANCELADA");
+	private static final String SQL_INSCRIPCION_FIND_CANCELAR = Conf.getInstance().getProperty("TINSCRIPCION_FIND_CANCELAR");
+	private static final String SQL_INSCRIPCION_FIND_BY_DNI = Conf.getInstance().getProperty("TINSCRIPCION_FIND_BY_DNI");
+
 	
 	public static void InscribirColegiado(CursoDto curso, ColegiadoDto colegiado) throws PersistenceException {
 		PreparedStatement stmt = null;
@@ -261,6 +271,202 @@ public class InscripcionColegiadoCRUD {
 			stmt.setInt(4, codigoCurso);
 			stmt.setString(5, dni);
 			stmt.executeUpdate();
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static int getTotalInscrito(CursoDto cursoSeleccionado) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_TOTAL_INSCRITOS_CURSO);
+			stmt.setInt(1, cursoSeleccionado.codigoCurso);
+			rs = stmt.executeQuery();
+			rs.next();
+			return rs.getInt(1);
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+	public static List<InscripcionColegiadoDto> findInscripciones(int codigoCurso) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<InscripcionColegiadoDto> res = new ArrayList<>();
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_ID);
+			stmt.setInt(1, codigoCurso);
+			
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				res.add(DtoAssembler.resultsetToIncripcion(rs));
+			}
+			
+			return res;
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static void actualizarPreinscritoPendiente(int codigoCurso, String dNI, String devolver, LocalDate fechaCancelacion, String estado,
+			String incidencias) {
+		PreparedStatement stmt = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_CANCELAR_PREINSCRITO_PENDIENTE);
+			stmt.setString(1, incidencias);
+			stmt.setString(2, fechaCancelacion.toString());
+			stmt.setString(3, estado);
+			stmt.setString(4, devolver);
+			stmt.setInt(5, codigoCurso);
+			stmt.setString(6, dNI);
+
+			stmt.executeUpdate();
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static void actualizarTarjeta(int codigoCurso, String dNI, double precio, String devolver,
+			LocalDate fechaCancelacion, String estado, String incidencias) {
+		PreparedStatement stmt = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_CANCELAR_TARJETA);
+			stmt.setString(1, incidencias);
+			stmt.setString(2, fechaCancelacion.toString());
+			stmt.setString(3, estado);
+			stmt.setDouble(4, precio);
+			stmt.setString(5, devolver);
+			stmt.setInt(6, codigoCurso);
+			stmt.setString(7, dNI);
+
+			stmt.executeUpdate();
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+		
+	}
+
+
+	public static void actualizarTransf(int codigoCurso, String dNI, String devolver, LocalDate fechaCancelacion,
+			String estado, String incidencias) {
+		PreparedStatement stmt = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_CANCELAR_TRANSF);
+			stmt.setString(1, incidencias);
+			stmt.setString(2, fechaCancelacion.toString());
+			stmt.setString(3, estado);
+			stmt.setString(4, devolver);
+			stmt.setInt(5, codigoCurso);
+			stmt.setString(6, dNI);
+
+			stmt.executeUpdate();
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static List<InscripcionColegiadoDto> findInscripcionesCanceladas(int codigoCurso) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<InscripcionColegiadoDto> res = new ArrayList<>();
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_CANCELADAS);
+			stmt.setInt(1, codigoCurso);
+			
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				res.add(DtoAssembler.resultsetToIncripcion(rs));
+			}
+			
+			return res;
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static InscripcionColegiadoDto findInscripcion(int codigoCurso, String dni, boolean elem) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			if (elem) {
+				stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_CANCELAR);
+			} else {
+				stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_CANCELADA);
+			}
+			stmt.setInt(1, codigoCurso);
+			stmt.setString(2, dni);
+			
+			rs = stmt.executeQuery();
+			if (rs.next()==true) {
+				return DtoAssembler.resultsetToIncripcion(rs);
+			}
+			
+			return null;
+		}
+		catch(SQLException e){
+			throw new PersistenceException(e);
+		}
+		finally {
+			Jdbc.close(stmt);
+		}
+	}
+
+
+	public static InscripcionColegiadoDto findInscripcion(String colegiadoDni) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			Connection cn = Jdbc.getConnection();
+			stmt = cn.prepareStatement(SQL_INSCRIPCION_FIND_BY_DNI);
+			stmt.setString(1, colegiadoDni);
+			
+			rs = stmt.executeQuery();
+			if (rs.next()==true) {
+				return DtoAssembler.resultsetToIncripcionDni(rs);
+			}
+			
+			return null;
 		}
 		catch(SQLException e){
 			throw new PersistenceException(e);

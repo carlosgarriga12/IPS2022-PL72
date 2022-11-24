@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import business.BusinessException;
+import business.InscripcionColegiado.InscripcionColegiado;
+import business.util.StringUtils;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
+import persistence.InscripcionColegiado.listaEsperaInscripcionCurso.ListaEsperaInscripcionCursoDto;
 import persistence.colegiado.ColegiadoDto;
 import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
@@ -17,7 +20,7 @@ import persistence.curso.Precio_Colectivos;
 import persistence.curso.profesorado.ProfesorDto;
 
 public class DtoAssembler {
-	
+
 	public static final String SEPARADOR_TITULACIONES = ",";
 	public static final String SPECIAL_CHARACTERS_REGEX = "[!@#$%&*()^:[-].;_+=|<>?{}/]";
 
@@ -63,7 +66,6 @@ public class DtoAssembler {
 
 		c.TipoColectivo = rs.getString("TipoColectivo");
 
-
 		c.perito = rs.getString("perito");
 		c.posicionPerito = rs.getInt("posicionPerito");
 
@@ -87,13 +89,13 @@ public class DtoAssembler {
 		if (titulaciones == null || titulaciones.isEmpty()) {
 			return new ArrayList<>();
 		}
-		
-		// Nota: Se introduce un filtro para el caso en el que se introduzcan dos comas seguidas
-		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream()
-				.filter(t -> !t.isEmpty())
-				.map(t -> t.trim().strip())
-				.collect(Collectors.toList());
+
+		// Nota: Se introduce un filtro para el caso en el que se introduzcan dos comas
+		// seguidas
+		return Arrays.asList(titulaciones.trim().split(SEPARADOR_TITULACIONES)).stream().filter(t -> !t.isEmpty())
+				.map(t -> t.trim().strip()).collect(Collectors.toList());
 	}
+
 	/**
 	 * Devuelve la lista de colegiados en forma de cadena separados por coma.
 	 * 
@@ -129,8 +131,14 @@ public class DtoAssembler {
 
 		newCursoDto.codigoCurso = rs.getInt("IdCurso");
 		newCursoDto.titulo = rs.getString("Titulo");
-
-		if (rs.getString("FechaApertura") != null) {
+		newCursoDto.isCancelable= rs.getBoolean("Is_Cancelable");
+		try {
+			newCursoDto.numeroInscritos = InscripcionColegiado.getTotalInscrito(newCursoDto);
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
+		
+		if (rs.getString("FechaApertura") != null && !rs.getString("FechaApertura").isEmpty()) {
 			newCursoDto.fechaApertura = LocalDate.parse(rs.getString("FechaApertura"));
 		}
 
@@ -145,13 +153,13 @@ public class DtoAssembler {
 		newCursoDto.plazasDisponibles = rs.getInt("Plazas");
 
 		// TODO: Cantidad a pagar colegiado
-		if(rs.getString("CantidadPagarColectivo") != null) {
+		if (rs.getString("CantidadPagarColectivo") != null) {
 			newCursoDto.precio = Precio_Colectivos.StringToPrecio_Colectivos(rs.getString("CantidadPagarColectivo"))
-					.getPrecio("Colegiado");			
+					.getPrecio("Colegiado");
 		}
 
 		boolean isCursoAbierto = CursoCRUD.isCursoAbierto(newCursoDto);
-
+		
 		newCursoDto.estado = isCursoAbierto ? CursoDto.CURSO_ABIERTO : CursoDto.CURSO_PLANIFICADO;
 
 		return newCursoDto;
@@ -190,8 +198,6 @@ public class DtoAssembler {
 		I.estado = rs.getString("ESTADO");
 		I.fechaSolicitud = LocalDate.parse(rs.getString("FechaPreInscripcion"));
 		I.cantidadPagada = rs.getDouble("CantidadAbonada");
-		
-		
 
 		return new Colegiado_Inscripcion(c, I);
 
@@ -212,9 +218,10 @@ public class DtoAssembler {
 		p.nombre = rs.getString("nombre");
 		p.apellidos = rs.getString("apellidos");
 		p.idCurso = rs.getInt("idCurso");
-		
+
 		return p;
 	}
+
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
 		int i = 1;
@@ -236,6 +243,9 @@ public class DtoAssembler {
 		d.precio = rs.getDouble(i++);
 		d.estado = rs.getString(i++);
 		d.incidencias = rs.getString(i++);
+		d.devolver = rs.getString(i++);
+		d.curso = new CursoDto();
+		d.curso.porcentaje_devolucion = rs.getDouble(i++);
 		return d;
 	}
 
@@ -252,6 +262,84 @@ public class DtoAssembler {
 		d.incidencias = rs.getString(i++);
 		d.devolver = rs.getString(i++);
 		return d;
+	}
+
+
+	public static InscripcionColegiadoDto resultsetToIncripcion(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString("ColegiadoDNI");
+		d.colegiado.nombre = rs.getString("nombre");
+		d.colegiado.apellidos = rs.getString("apellidos");
+		d.curso = new CursoDto();
+		d.curso.codigoCurso = rs.getInt("CursoId");
+		d.curso.titulo = rs.getString("Titulo");
+		d.cantidadPagada = rs.getDouble("CantidadAbonada");
+		d.precio = rs.getDouble("cantidadPagar");
+		d.fechaCancelacion = LocalDate.now();
+		d.estado = rs.getString("Estado");
+		d.incidencias = rs.getString("incidencias");
+		d.devolver = rs.getString("Devolver");
+		d.curso.porcentaje_devolucion = rs.getDouble("Porcentaje_devolucion");
+		d.formaDePago = rs.getString("formaDePago");
+		return d;
+	}
+
+	public static InscripcionColegiadoDto resultsetToIncripcionDni(ResultSet rs) throws SQLException {
+		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+		d.colegiado = new ColegiadoDto();
+		d.colegiado.DNI = rs.getString("ColegiadoDNI");
+		d.curso = new CursoDto();
+		d.curso.codigoCurso = rs.getInt("CursoId");
+		d.cantidadPagada = rs.getDouble("CantidadAbonada");
+		d.precio = rs.getDouble("cantidadPagar");
+		d.estado = rs.getString("Estado");
+		d.incidencias = rs.getString("incidencias");
+		d.devolver = rs.getString("Devolver");
+		d.formaDePago = rs.getString("formaDePago");
+		
+		return d;
+	}
+	
+	/**
+	 * 
+	 * @since HU. 19733
+	 * @param rs           Resultset con el contenido de la lista de espera.
+	 * @param anonimizeDni true si se requiere anonimizar el DNI del usuario.
+	 * @return
+	 * @throws SQLException
+	 */
+	public static ListaEsperaInscripcionCursoDto toListaEsperaInscripcionCursoDto(ResultSet rs, boolean anonimizeDni)
+			throws SQLException {
+		ListaEsperaInscripcionCursoDto res = new ListaEsperaInscripcionCursoDto();
+
+		String dniOriginal = rs.getString(ListaEsperaInscripcionCursoDto.DNI_USUARIO);
+		res.dniUsuario = anonimizeDni ? StringUtils.anonimizeDni(dniOriginal) : dniOriginal;
+
+		res.nombreUsuario = rs.getString(ListaEsperaInscripcionCursoDto.NOMBRE_USUARIO);
+		res.idCurso = rs.getInt(ListaEsperaInscripcionCursoDto.ID_CURSO);
+		res.posicionUsuarioLista = rs.getInt(ListaEsperaInscripcionCursoDto.POS_USUARIO);
+
+		return res;
+
+	}
+
+	/**
+	 * 
+	 * @since HU. 19733
+	 * @param rs Resultset con el la lista de espera para el curso.
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<ListaEsperaInscripcionCursoDto> toListaEsperaInscripcionCursoDtoList(ResultSet rs)
+			throws SQLException {
+		List<ListaEsperaInscripcionCursoDto> res = new ArrayList<>();
+
+		while (rs.next()) {
+			res.add(toListaEsperaInscripcionCursoDto(rs, true));
+		}
+
+		return res;
 	}
 
 }

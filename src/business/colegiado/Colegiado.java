@@ -192,8 +192,9 @@ public class Colegiado {
 						// admitidas
 
 						ColegiadoDto colegiadoAllData = ColegiadoCrud.findColegiadoDni(col.DNI);
+						String num = updateNumColegiado(col.DNI);
+						colegiadoAllData.numeroColegiado = num;
 
-						updateNumColegiado(col.DNI);
 						colegiadosAdmitidos.add(colegiadoAllData);
 						titulacionAdmitida = true;
 
@@ -330,5 +331,24 @@ public class Colegiado {
 	private static void comprobarArgumentos(String dni) {
 		Argument.isNotEmpty(dni);
 		Argument.longitudNueve(dni);
+	}
+
+	/**
+	 * Comprueba que el tipo de colectivo se corresponde con el tipo de colectivo
+	 * del usuario con el dni indicado.
+	 * 
+	 * @param dni       DNI del usuario.
+	 * @param colectivo Tipo de colectivo. Por ejemplo, Colegiado, Precolegiado,
+	 *                  Estudiante...
+	 * 
+	 * @since HU. 19733
+	 * @throws BusinessException
+	 */
+	public static void coincideDniConColectivo(String dni, String colectivo) throws BusinessException {
+		ColegiadoDto colegiado = findColegiadoPorDni(dni);
+
+		if (colegiado != null && !colegiado.TipoColectivo.equalsIgnoreCase(colectivo)) {
+			throw new BusinessException("El DNI no se corresponde con el tipo de colectivo seleccionado.");
+		}
 	}
 }

@@ -11,6 +11,15 @@ import java.awt.Font;
  */
 public class LookAndFeel {
 
+	public static final String[] AVAILABLE_LOOK_AND_FEELS = new String[] { "Metal", "System", "Motif", "GTK" };
+
+	/* Reemplazar por null para establecer el Look & Feel por defecto */
+	public static final String DEFAULT_LOOK_AND_FEEL = AVAILABLE_LOOK_AND_FEELS[1];
+	/* Si se selecciona el Look & Feel 'Metal', se puede configurar el tema */
+	public static final String[] AVAILABLE_METAL_THEMES = new String[] { "DefaultMetal", "Ocean" };
+	public static final String METAL_THEME = AVAILABLE_METAL_THEMES[1];
+
+
 	// Typography styles
 	public static final String TYPOGRAPHY = "Poppins";
 	public static final Font PRIMARY_FONT = new Font(TYPOGRAPHY, Font.PLAIN, 14);
