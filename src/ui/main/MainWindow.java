@@ -3453,6 +3453,7 @@ public class MainWindow extends JFrame {
 							c = Colegiado.findColegiadoPorDni(textFieldDNIColegiado.getText().toString());
 							if(c != null && c.estado != null && c.estado.equalsIgnoreCase("EN_ESPERA")) {
 								textFieldDNIColegiado.setText("");
+								
 								JOptionPane.showMessageDialog(null, "El solicitante no puede pagar la inscripción ya que se encuentra en la lista de espera de un curso", "Pagar inscripcion: Solicitante en lista de espera", JOptionPane.ERROR_MESSAGE);
 								
 							}
