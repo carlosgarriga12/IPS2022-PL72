@@ -4,14 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
+import persistence.DtoAssembler;
 import persistence.jdbc.Jdbc;
-import persistence.util.Conf;
 import persistence.jdbc.PersistenceException;
+import persistence.util.Conf;
 
 public class SolicitudVisadosCRUD {
 	private static final String SQL_ADD_SOLICITUD_VISADO = Conf.getInstance()
 			.getProperty("TSOLICITUDVISADO_ADD");
+	
+	private static final String SQL_FIND_ALL_SOLICITUDES_VISADO = Conf.getInstance()
+			.getProperty("TSOLICITUDVISADO_FIND_ALL");
 	
 	public static void addSolicitudVisado(SolicitudVisadoDto s) {
 		Connection c = null;
@@ -34,4 +40,24 @@ public class SolicitudVisadosCRUD {
 			Jdbc.close(rs, pst, c);
 		}
 	} 
+	
+	public static List<SolicitudVisadoDto> findAllSolicitudesVisado() {
+		Connection c = null;
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			c = Jdbc.getConnection();
+			
+			st = c.createStatement();
+			
+			rs = st.executeQuery(SQL_FIND_ALL_SOLICITUDES_VISADO);
+			
+			return DtoAssembler.toSolicitudVisadosList( rs );
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(rs, st, c);
+		}
+	}
 }

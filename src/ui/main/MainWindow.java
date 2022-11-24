@@ -49,6 +49,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -98,6 +99,7 @@ import persistence.perito.PeritoCRUD;
 import persistence.recibo.ReciboCRUD;
 import persistence.solicitudVisados.SolicitudVisadoDto;
 import persistence.solicitudVisados.SolicitudVisadosCRUD;
+import ui.model.ModeloSolicitudesVisados;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -114,7 +116,6 @@ import ui.model.ModeloPeritos;
 import ui.model.ModeloSolicitudServicios;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
-import javax.swing.JTextArea;
 
 public class MainWindow extends JFrame {
 
@@ -141,6 +142,7 @@ public class MainWindow extends JFrame {
 	private static final String CANCELAR_CURSO = "cancelaCursoCOIIPA";
 	protected static final String CANCELAR_INSCRIPCION = "cancelaInscripcionCurso";
 	protected static final String CREAR_SOLICITUD_VISADOS = "crearSolicitudVisados";
+	protected static final String ASIGNACION_VISADOS = "asignacionVisados";
 
 	private static final int ALL_MINUS_ID = 1;
 
@@ -616,6 +618,21 @@ public class MainWindow extends JFrame {
 	private JButton btnComprobarDNI;
 	private JLabel lblTextoInfo;
 	private JButton btnVisadosVolverAlInicio;
+	private DefaultButton btHomeAsignarVisados;
+	private JPanel pnAsignarVisados;
+	private JPanel pnNorthAsignarVisados;
+	private JLabel lblAsignacionDeVisados;
+	private JPanel pnSouthAsignarVisados;
+	private JButton btnVolverAlInicio;
+	private JPanel pnCenterAsignarVisados;
+	private JPanel pnVisadosARevisar;
+	private JPanel pnPeritosDisponibles;
+	private JTable tbPeritosDisponibles;
+	private JLabel lblSolicitudesDeVisado;
+	private JLabel lblPeritosDisponibles;
+	private JScrollPane spVisados;
+	private JTable tbVisados;
+	private JButton btnAsignarVisado;
 
 
 	public MainWindow() {
@@ -657,6 +674,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnCancelarInscripcionCurso(), CANCELAR_INSCRIPCION);
 		mainPanel.add(getPnInscripcionCurso(), INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnSolicitudVisados(), CREAR_SOLICITUD_VISADOS);
+		mainPanel.add(getPnAsignarVisados(), ASIGNACION_VISADOS);
 		
 		frame = new RegisterWindow(this);
 		frame.setVisible(false);
@@ -2523,7 +2541,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria = new JPanel();
 			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesSecretaria.setOpaque(false);
-			pnHomeAccionesSecretaria.setLayout(new GridLayout(8, 1, 0, 10));
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(9, 1, 0, 10));
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
@@ -2532,6 +2550,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaTransferencias());
 			pnHomeAccionesSecretaria.add(getBtHomeAsignacionSolicitudServicios());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaCancelarCursos());
+			pnHomeAccionesSecretaria.add(getBtHomeAsignarVisados());
 		}
 		return pnHomeAccionesSecretaria;
 	}
@@ -6922,5 +6941,141 @@ public class MainWindow extends JFrame {
 			btnVisadosVolverAlInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnVisadosVolverAlInicio;
+	}
+	private DefaultButton getBtHomeAsignarVisados() {
+		if (btHomeAsignarVisados == null) {
+			btHomeAsignarVisados = new DefaultButton("Cancelar un curso", "ventana", "CancelaCurso", 'l', ButtonColor.NORMAL);
+			btHomeAsignarVisados.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, ASIGNACION_VISADOS);
+				}
+			});
+			btHomeAsignarVisados.setText("Asignar Visados");
+			btHomeAsignarVisados.setMnemonic('U');
+		}
+		return btHomeAsignarVisados;
+	}
+	private JPanel getPnAsignarVisados() {
+		if (pnAsignarVisados == null) {
+			pnAsignarVisados = new JPanel();
+			pnAsignarVisados.setLayout(new BorderLayout(0, 0));
+			pnAsignarVisados.add(getPnNorthAsignarVisados(), BorderLayout.NORTH);
+			pnAsignarVisados.add(getPnSouthAsignarVisados(), BorderLayout.SOUTH);
+			pnAsignarVisados.add(getPnCenterAsignarVisados(), BorderLayout.CENTER);
+		}
+		return pnAsignarVisados;
+	}
+	private JPanel getPnNorthAsignarVisados() {
+		if (pnNorthAsignarVisados == null) {
+			pnNorthAsignarVisados = new JPanel();
+			pnNorthAsignarVisados.add(getLblAsignacionDeVisados());
+		}
+		return pnNorthAsignarVisados;
+	}
+	private JLabel getLblAsignacionDeVisados() {
+		if (lblAsignacionDeVisados == null) {
+			lblAsignacionDeVisados = new JLabel("Asignacion de visados");
+			lblAsignacionDeVisados.setFont(new Font("Tahoma", Font.BOLD, 19));
+		}
+		return lblAsignacionDeVisados;
+	}
+	private JPanel getPnSouthAsignarVisados() {
+		if (pnSouthAsignarVisados == null) {
+			pnSouthAsignarVisados = new JPanel();
+			pnSouthAsignarVisados.add(getBtnAsignarVisado());
+			pnSouthAsignarVisados.add(getBtnVolverAlInicio());
+		}
+		return pnSouthAsignarVisados;
+	}
+	private JButton getBtnVolverAlInicio() {
+		if (btnVolverAlInicio == null) {
+			btnVolverAlInicio = new JButton("Volver al inicio");
+			btnVolverAlInicio.setBackground(Color.RED);
+			btnVolverAlInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnVolverAlInicio;
+	}
+	private JPanel getPnCenterAsignarVisados() {
+		if (pnCenterAsignarVisados == null) {
+			pnCenterAsignarVisados = new JPanel();
+			pnCenterAsignarVisados.setLayout(new BorderLayout(0, 0));
+			pnCenterAsignarVisados.add(getPnVisadosARevisar(), BorderLayout.WEST);
+			pnCenterAsignarVisados.add(getPnPeritosDisponibles(), BorderLayout.EAST);
+		}
+		return pnCenterAsignarVisados;
+	}
+	private JPanel getPnVisadosARevisar() {
+		if (pnVisadosARevisar == null) {
+			pnVisadosARevisar = new JPanel();
+			pnVisadosARevisar.setLayout(new BorderLayout(0, 0));
+			pnVisadosARevisar.add(getLblSolicitudesDeVisado(), BorderLayout.NORTH);
+			pnVisadosARevisar.add(getSpVisados());
+		}
+		return pnVisadosARevisar;
+	}
+	private JPanel getPnPeritosDisponibles() {
+		if (pnPeritosDisponibles == null) {
+			pnPeritosDisponibles = new JPanel();
+			pnPeritosDisponibles.add(getTbPeritosDisponibles());
+			pnPeritosDisponibles.add(getLblPeritosDisponibles());
+		}
+		return pnPeritosDisponibles;
+	}
+	private JTable getTbPeritosDisponibles() {
+		if (tbPeritosDisponibles == null) {
+			tbPeritosDisponibles = new JTable();
+		}
+		return tbPeritosDisponibles;
+	}
+	private JLabel getLblSolicitudesDeVisado() {
+		if (lblSolicitudesDeVisado == null) {
+			lblSolicitudesDeVisado = new JLabel("Solicitudes de visado: ");
+			lblSolicitudesDeVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return lblSolicitudesDeVisado;
+	}
+	private JLabel getLblPeritosDisponibles() {
+		if (lblPeritosDisponibles == null) {
+			lblPeritosDisponibles = new JLabel("Peritos disponibles:");
+		}
+		return lblPeritosDisponibles;
+	}
+	private JScrollPane getSpVisados() {
+		if (spVisados == null) {
+			spVisados = new JScrollPane();
+			spVisados.setViewportView(getTbVisados());
+		}
+		return spVisados;
+	}
+	private JTable getTbVisados() {
+		if (tbVisados == null) {
+			tbVisados = new JTable();
+			tbVisados.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			TableModel visadosModel = new ModeloSolicitudesVisados(SolicitudVisadosCRUD.findAllSolicitudesVisado()).getSolicitudModel();
+			tbVisados.setModel(visadosModel);
+			tbVisados.setIntercellSpacing(new Dimension(0, 0));
+			tbVisados.setShowGrid(false);
+			tbVisados.setRowMargin(0);
+			tbVisados.setRequestFocusEnabled(false);
+			tbVisados.setFocusable(false);
+			tbVisados.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbVisados.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbVisados.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbVisados.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbVisados.setShowVerticalLines(false);
+			tbVisados.setOpaque(false);
+
+			tbVisados.setRowHeight(80);
+			tbVisados.setGridColor(new Color(255, 255, 255));
+		}
+		return tbVisados;
+	}
+	private JButton getBtnAsignarVisado() {
+		if (btnAsignarVisado == null) {
+			btnAsignarVisado = new JButton("Asignar visado");
+			btnAsignarVisado.setBackground(Color.GREEN);
+			btnAsignarVisado.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnAsignarVisado;
 	}
 }

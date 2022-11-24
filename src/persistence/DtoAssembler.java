@@ -18,6 +18,7 @@ import persistence.curso.CursoCRUD;
 import persistence.curso.CursoDto;
 import persistence.curso.Precio_Colectivos;
 import persistence.curso.profesorado.ProfesorDto;
+import persistence.solicitudVisados.SolicitudVisadoDto;
 
 public class DtoAssembler {
 
@@ -340,6 +341,27 @@ public class DtoAssembler {
 		}
 
 		return res;
+	}
+
+	public static List<SolicitudVisadoDto> toSolicitudVisadosList(ResultSet rs) throws SQLException {
+		List<SolicitudVisadoDto> res = new ArrayList<>();
+
+		while (rs.next()) {
+			res.add(toSolicitudVisadoDto(rs));
+		}
+
+		return res;
+	}
+
+	private static SolicitudVisadoDto toSolicitudVisadoDto(ResultSet rs) throws SQLException {
+		SolicitudVisadoDto s = new SolicitudVisadoDto();
+		
+		s.dniPerito = rs.getString("dniPerito");
+		s.descripcion = rs.getString("descripcion");
+		s.estado = rs.getString("estado");
+		s.dniVisado = rs.getString("dniVisado");
+		
+		return s;
 	}
 
 }
