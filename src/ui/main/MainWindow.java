@@ -3473,9 +3473,8 @@ public class MainWindow extends JFrame {
 
 	private DefaultButton getBtnInicioInscripcion() {
 		if (btnInicioInscripcion == null) {
-			btnInicioInscripcion = new DefaultButton("Vovler a Inicio", "ventana", "VolverAInicio", 'v',
+			btnInicioInscripcion = new DefaultButton("Volver a Inicio", "ventana", "VolverAInicio", 'v',
 					ButtonColor.CANCEL);
-			btnInicioInscripcion.setText("Atras");
 			btnInicioInscripcion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (confirmarVolverPrincipio()) {
@@ -3546,8 +3545,17 @@ public class MainWindow extends JFrame {
 			pnNumeroTarjetaValidarTarjeta = new JPanel();
 			pnNumeroTarjetaValidarTarjeta.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 			pnNumeroTarjetaValidarTarjeta.setMaximumSize(new Dimension(500, 500));
-			pnNumeroTarjetaValidarTarjeta.setLayout(new GridLayout(0, 1, 0, 0));
-			pnNumeroTarjetaValidarTarjeta.add(getBtnTarjetaCreditoColegiado());
+			GridBagLayout gbl_pnNumeroTarjetaValidarTarjeta = new GridBagLayout();
+			gbl_pnNumeroTarjetaValidarTarjeta.columnWidths = new int[]{100, 344, 0};
+			gbl_pnNumeroTarjetaValidarTarjeta.rowHeights = new int[]{35, 93, 0};
+			gbl_pnNumeroTarjetaValidarTarjeta.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			gbl_pnNumeroTarjetaValidarTarjeta.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			pnNumeroTarjetaValidarTarjeta.setLayout(gbl_pnNumeroTarjetaValidarTarjeta);
+			GridBagConstraints gbc_btnTarjetaCreditoColegiado = new GridBagConstraints();
+			gbc_btnTarjetaCreditoColegiado.fill = GridBagConstraints.BOTH;
+			gbc_btnTarjetaCreditoColegiado.gridx = 1;
+			gbc_btnTarjetaCreditoColegiado.gridy = 1;
+			pnNumeroTarjetaValidarTarjeta.add(getBtnTarjetaCreditoColegiado(), gbc_btnTarjetaCreditoColegiado);
 		}
 		return pnNumeroTarjetaValidarTarjeta;
 	}
@@ -3557,8 +3565,17 @@ public class MainWindow extends JFrame {
 			pnPagoTranferencia = new JPanel();
 			pnPagoTranferencia.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 			pnPagoTranferencia.setBorder(new EmptyBorder(0, 100, 0, 100));
-			pnPagoTranferencia.setLayout(new GridLayout(0, 1, 0, 0));
-			pnPagoTranferencia.add(getBtnTransferenciaColegiado());
+			GridBagLayout gbl_pnPagoTranferencia = new GridBagLayout();
+			gbl_pnPagoTranferencia.columnWidths = new int[]{121, 313, 0};
+			gbl_pnPagoTranferencia.rowHeights = new int[]{221, 75, 0};
+			gbl_pnPagoTranferencia.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			gbl_pnPagoTranferencia.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			pnPagoTranferencia.setLayout(gbl_pnPagoTranferencia);
+			GridBagConstraints gbc_btnTransferenciaColegiado = new GridBagConstraints();
+			gbc_btnTransferenciaColegiado.fill = GridBagConstraints.BOTH;
+			gbc_btnTransferenciaColegiado.gridx = 1;
+			gbc_btnTransferenciaColegiado.gridy = 1;
+			pnPagoTranferencia.add(getBtnTransferenciaColegiado(), gbc_btnTransferenciaColegiado);
 		}
 		return pnPagoTranferencia;
 	}
