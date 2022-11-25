@@ -635,6 +635,7 @@ public class MainWindow extends JFrame {
 	private JButton btnAsignarVisado;
 	private JScrollPane spPeritosDisponibles;
 	private JTable tbPeritosDisponibles;
+	private JButton btnActualizarVisados;
 
 
 	public MainWindow() {
@@ -7017,6 +7018,7 @@ public class MainWindow extends JFrame {
 			pnVisadosARevisar.setLayout(new BorderLayout(0, 0));
 			pnVisadosARevisar.add(getLblSolicitudesDeVisado(), BorderLayout.NORTH);
 			pnVisadosARevisar.add(getSpVisados());
+			pnVisadosARevisar.add(getBtnActualizarVisados(), BorderLayout.SOUTH);
 		}
 		return pnVisadosARevisar;
 	}
@@ -7084,6 +7086,16 @@ public class MainWindow extends JFrame {
 					int visadoIndex = getTbVisados().getSelectedRow();
 					int peritoIndex = getTbPeritosDisponibles().getSelectedRow();
 					
+					if(visadoIndex == -1) {
+						JOptionPane.showMessageDialog(pnAsignarVisados, "No se ha seleccionado un visado para revisar");
+						return;
+					}
+					
+					if(peritoIndex == -1) {
+						JOptionPane.showMessageDialog(pnAsignarVisados, "No se ha seleccionado un perito para la pericial");
+						return;
+					}
+					
 					SolicitudVisadoDto s = visados.get(visadoIndex);
 					ColegiadoDto c = peritosDisponibles.get(peritoIndex);
 					
@@ -7099,11 +7111,14 @@ public class MainWindow extends JFrame {
 					
 					SolicitudVisadosCRUD.asignarVisadoAPerito(s, c);
 					JOptionPane.showMessageDialog(pnAsignarVisados, "Visado asignado correctamente");
+					
 					TableModel peritosModel = new ModeloPeritosDisponiblesParaVisado(PeritoCRUD.findPeritosDisponiblesParaVisado()).getSolicitudModel();
 					tbPeritosDisponibles.setModel(peritosModel);
+					tbPeritosDisponibles.repaint();
 					
 					TableModel visadosModel = new ModeloSolicitudesVisados(SolicitudVisadosCRUD.findAllSolicitudesVisado()).getSolicitudModel();
 					tbVisados.setModel(visadosModel);
+					tbVisados.repaint();
 					
 				}
 			});
@@ -7142,5 +7157,19 @@ public class MainWindow extends JFrame {
 			
 		}
 		return tbPeritosDisponibles;
+	}
+	private JButton getBtnActualizarVisados() {
+		if (btnActualizarVisados == null) {
+			btnActualizarVisados = new JButton("Actualizar lista");
+			btnActualizarVisados.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					TableModel visadosModel = new ModeloSolicitudesVisados(SolicitudVisadosCRUD.findAllSolicitudesVisado()).getSolicitudModel();
+					tbVisados.setModel(visadosModel);
+					tbVisados.repaint();
+				}
+			});
+			btnActualizarVisados.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return btnActualizarVisados;
 	}
 }
