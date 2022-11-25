@@ -38,7 +38,10 @@ public class ColegiadoCrud {
 
 	private static final String SQL_ACTUALIZAR_ESTADO_COLEGIADO_BYDNI = Conf.getInstance()
 			.getProperty("TCOLEGIADO_UPDATE_ESTADO_BYDNI");
-
+	
+	private static final String SQL_FIND_CANTIDAD_DEUDADA_POR_DNI = Conf.getInstance()
+			.getProperty("TCOLEGIADO_CANTIDAD_DEUDADA");
+	
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
@@ -300,5 +303,31 @@ public class ColegiadoCrud {
 		}
 
 		return maxNumber;
+	}
+	
+	public static double getCantidadDeudada(String dni) {
+		Connection c = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try{
+			c = Jdbc.getConnection();
+			
+			pst = c.prepareStatement(SQL_FIND_CANTIDAD_DEUDADA_POR_DNI);
+			
+			pst.setString(1, dni);
+			
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				return rs.getDouble("cantidadTotal");
+			} else {
+				return 0.0;
+			}
+			
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		} finally {
+			Jdbc.close(rs, pst, c);
+		}
 	}
 }
