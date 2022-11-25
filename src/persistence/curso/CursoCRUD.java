@@ -76,6 +76,10 @@ public class CursoCRUD {
 			pst.setString(i++, curso.estado);
 			pst.setString(i++, curso.CantidadPagarColectivo);
 			
+			/* Curso cancelable */
+			pst.setBoolean(i++, curso.isCancelable);
+			pst.setDouble(i++, curso.porcentaje_devolucion);
+			
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e);

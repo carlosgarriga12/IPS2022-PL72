@@ -99,7 +99,7 @@ public class ListaEsperaInscripcionCursoCrud {
 			pst.setString(2, dniColegiado);
 			pst.setInt(3, maxPosicion);
 
-			success = pst.executeUpdate() == 1 ? true : false;
+			success = pst.executeUpdate() > 0 ? true : false;
 
 			con.commit();
 
@@ -110,6 +110,7 @@ public class ListaEsperaInscripcionCursoCrud {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			success = false;
 			throw new PersistenceException(sqle.getMessage());
 
 		} finally {

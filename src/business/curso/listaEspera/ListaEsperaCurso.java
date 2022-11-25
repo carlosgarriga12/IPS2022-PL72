@@ -41,7 +41,7 @@ public class ListaEsperaCurso {
 				codigoCurso);
 		
 		if (actualizado) {
-			ColegiadoCrud.updateEstadoColegiadoByDni("EN_ESPERA", dniUsuario);
+			ColegiadoCrud.updateEstadoColegiadoByDni(dniUsuario, "EN_ESPERA");
 		}
 	}
 
