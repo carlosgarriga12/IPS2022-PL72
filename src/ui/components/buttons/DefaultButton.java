@@ -135,6 +135,7 @@ public class DefaultButton extends JButton {
 		} else if (type.equalsIgnoreCase(sizes[1])) {
 			this.setPreferredSize(new Dimension(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
 			this.setBounds(new Rectangle(VENTANA_TYPE_WIDTH, VENTANA_TYPE_HEIGHT));
+			this.setFont(LookAndFeel.REGULAR_BUTTON_FONT);
 		}
 	}
 
@@ -151,7 +152,6 @@ public class DefaultButton extends JButton {
 	private void setButtonColor(final ButtonColor seletedType) {
 		if (seletedType == ButtonColor.NORMAL) {
 			this.setBackground(DEFAULT_BACKGROUND);
-			this.setForeground(DEFAULT_FOREGROUND);
 
 		} else if (seletedType == ButtonColor.CANCEL) {
 			this.setBackground(LookAndFeel.PRIMARY_COLOR);
@@ -160,7 +160,6 @@ public class DefaultButton extends JButton {
 		} else if (seletedType == ButtonColor.INFO) {
 			this.setBackground(LookAndFeel.TERTIARY_COLOR);
 			this.setForeground(LookAndFeel.SECONDARY_COLOR);
-			this.setBorderPainted(true);
 			this.setBorder(new LineBorder(LookAndFeel.TERTIARY_COLOR_DARK, 2, true));
 		}
 	}

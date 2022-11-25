@@ -2,6 +2,7 @@ package business.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Utilidades para trabajar con fechas.
@@ -12,6 +13,9 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateUtils {
 
+	public static final Locale DEFAULT_LOCALE = new Locale("es", "ES");
+	
+	
 	/**
 	 * Comprueba que una fecha es anterior a otra, pasadas como parametro.
 	 * 
