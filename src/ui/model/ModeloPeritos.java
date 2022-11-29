@@ -9,7 +9,9 @@ import persistence.colegiado.ColegiadoDto;
 public class ModeloPeritos {
 	public static final String HEADER_COLUMN1 = "NOMBRE";
 	public static final String HEADER_COLUMN2 = "APELLIDOS";
-	public static final String HEADER_COLUMN3 = "TELEFONO";
+	public static final String HEADER_COLUMN3 = "DNI";
+	public static final String HEADER_COLUMN4 = "TELEFONO";
+	public static final String HEADER_COLUMN5 = "POSICION";
 	
 	
 	private List<ColegiadoDto> peritos;
@@ -34,11 +36,13 @@ public class ModeloPeritos {
 			model.addColumn(HEADER_COLUMN1);
 			model.addColumn(HEADER_COLUMN2);
 			model.addColumn(HEADER_COLUMN3);
+			model.addColumn(HEADER_COLUMN4);
+			model.addColumn(HEADER_COLUMN5);
 
 			
 			for (ColegiadoDto p : peritos) {
 				model.addRow(
-						new Object[] {p.nombre, p.apellidos, p.telefono});
+						new Object[] {p.nombre, p.apellidos, p.DNI, p.telefono, p.posicionPerito});
 			}
 		}
 

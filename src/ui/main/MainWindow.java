@@ -18,6 +18,8 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -100,6 +103,7 @@ import persistence.perito.PeritoCRUD;
 import persistence.recibo.ReciboCRUD;
 import persistence.solicitudVisados.SolicitudVisadoDto;
 import persistence.solicitudVisados.SolicitudVisadosCRUD;
+import ui.model.ModeloInformesPericiales;
 import ui.components.LookAndFeel;
 import ui.components.buttons.ButtonColor;
 import ui.components.buttons.DefaultButton;
@@ -118,11 +122,6 @@ import ui.model.ModeloSolicitudServicios;
 import ui.model.ModeloSolicitudesVisados;
 import ui.model.combo.ColectivoComboModel;
 import ui.util.TimeFormatter;
-
-import javax.swing.JTextArea;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import javax.swing.BoxLayout;
 
 public class MainWindow extends JFrame {
 
@@ -149,6 +148,9 @@ public class MainWindow extends JFrame {
 	protected static final String CANCELAR_INSCRIPCION = "cancelaInscripcionCurso";
 	protected static final String CREAR_SOLICITUD_VISADOS = "crearSolicitudVisados";
 	protected static final String ASIGNACION_VISADOS = "asignacionVisados";
+	protected static final String INFORMES_PERICIALES = "informesPericiales";
+	protected static final String CANCELAR_PERICIAL = "cancelarPericial";
+	
 
 	private static final int ALL_MINUS_ID = 1;
 
@@ -653,6 +655,38 @@ public class MainWindow extends JFrame {
 
 	private JTable tbListadoRecepcionSolicitudes;
 	private JPanel pnListadoAltaSolicitanteRecepcionLoteBotonesWrapper;
+	private JPanel pnInformesPericiales;
+	private DefaultButton btHomeInformesPericiales;
+	private JLabel lbInformesPericialesTitulo;
+	private JPanel pnInformesPericialesCenter;
+	private JPanel pnFiltros;
+	private JPanel pnFiltroEstado;
+	private JPanel pnFiltroAno;
+	private JPanel pnFiltroPerito;
+	private JLabel lbFiltroEstado;
+	private JLabel lbFiltroAno;
+	private JLabel lbFiltroPerito;
+	private JComboBox<String> cbFiltroEstado;
+	private JComboBox<String> cbFiltrosAge;
+	private JTextField txFiltrosPerito;
+	private JScrollPane pnTableInformes;
+	private JTable tableInformesPericiales;
+	private DefaultButton btCancelacionPericial;
+	private JPanel pnCancelarPericial;
+	private JLabel lbCancelarPericial;
+	private JPanel pnCancelarPericialCenter;
+	private JPanel panel_1;
+	private JPanel panel_2;
+	private JScrollPane scrollPane_1;
+	private JPanel panel_3;
+	private JScrollPane scrollPane_2;
+	private JPanel panel_4;
+	private JPanel panel_5;
+	private JLabel lbDniCancelarPericial;
+	private JTextField txDniCancelarPericial;
+	private JTable tbPericiales;
+	private JTable tbListaPeritos;
+	private JButton btnCancelarPericial;
 
 	public MainWindow() {
 		initLookAndFeel();
@@ -694,6 +728,8 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnInscripcionCurso(), INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnSolicitudVisados(), CREAR_SOLICITUD_VISADOS);
 		mainPanel.add(getPnAsignarVisados(), ASIGNACION_VISADOS);
+		mainPanel.add(getPnInformesPericiales(), INFORMES_PERICIALES);
+		mainPanel.add(getPnCancelarPericial(), CANCELAR_PERICIAL);
 		
 
 		frame = new RegisterWindow(this);
@@ -2520,6 +2556,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado.add(getBtHomeSolicitudServicios());
 			pnHomeAccionesColegiado.add(getBtListasProfesionales());
 			pnHomeAccionesColegiado.add(getBtCancelarInscripcionCurso());
+			pnHomeAccionesColegiado.add(getBtCancelacionPericial());
 			pnHomeAccionesColegiado.add(getBtSolicitudVisados());
 		}
 		return pnHomeAccionesColegiado;
@@ -2601,7 +2638,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria = new JPanel();
 			pnHomeAccionesSecretaria.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesSecretaria.setOpaque(false);
-			pnHomeAccionesSecretaria.setLayout(new GridLayout(9, 1, 0, 10));
+			pnHomeAccionesSecretaria.setLayout(new GridLayout(10, 1, 0, 10));
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaAbrirInscripciones());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaConsultarTitulacionSolicitante());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaEmitirCuotas());
@@ -2610,6 +2647,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaTransferencias());
 			pnHomeAccionesSecretaria.add(getBtHomeAsignacionSolicitudServicios());
 			pnHomeAccionesSecretaria.add(getBtHomeSecretariaCancelarCursos());
+			pnHomeAccionesSecretaria.add(getBtHomeInformesPericiales());
 			pnHomeAccionesSecretaria.add(getBtHomeAsignarVisados());
 		}
 		return pnHomeAccionesSecretaria;
@@ -7595,5 +7633,432 @@ public class MainWindow extends JFrame {
 			pnListadoAltaSolicitanteRecepcionLoteBotonesWrapper.add(getBtRecepcionarLoteSolicitudesPendientesColegiado(), gbc_btRecepcionarLoteSolicitudesPendientesColegiado);
 		}
 		return pnListadoAltaSolicitanteRecepcionLoteBotonesWrapper;
+	}
+	private JPanel getPnInformesPericiales() {
+		if (pnInformesPericiales == null) {
+			pnInformesPericiales = new JPanel();
+			pnInformesPericiales.setLayout(new BorderLayout(0, 0));
+			pnInformesPericiales.add(getLbInformesPericialesTitulo(), BorderLayout.NORTH);
+			pnInformesPericiales.add(getPnInformesPericialesCenter(), BorderLayout.CENTER);
+		}
+		return pnInformesPericiales;
+	}
+	private DefaultButton getBtHomeInformesPericiales() {
+		if (btHomeInformesPericiales == null) {
+			btHomeInformesPericiales = new DefaultButton("Cancelar un curso", "ventana", "CancelaCurso", 'l', ButtonColor.NORMAL);
+			btHomeInformesPericiales.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+						mainCardLayout.show(mainPanel, INFORMES_PERICIALES);
+						actualizaTbInformesPericiales();
+				}
+			});
+			btHomeInformesPericiales.setText("InformesPericiales");
+			btHomeInformesPericiales.setMnemonic('I');
+		}
+		return btHomeInformesPericiales;
+	}
+	private JLabel getLbInformesPericialesTitulo() {
+		if (lbInformesPericialesTitulo == null) {
+			lbInformesPericialesTitulo = new JLabel("Informes Periciales");
+			lbInformesPericialesTitulo.setFont(new Font("Tahoma", Font.BOLD, 30));
+			lbInformesPericialesTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbInformesPericialesTitulo;
+	}
+	private JPanel getPnInformesPericialesCenter() {
+		if (pnInformesPericialesCenter == null) {
+			pnInformesPericialesCenter = new JPanel();
+			pnInformesPericialesCenter.setLayout(new BorderLayout(0, 0));
+			pnInformesPericialesCenter.add(getPnFiltros(), BorderLayout.NORTH);
+			pnInformesPericialesCenter.add(getPnTableInformes(), BorderLayout.CENTER);
+		}
+		return pnInformesPericialesCenter;
+	}
+	private JPanel getPnFiltros() {
+		if (pnFiltros == null) {
+			pnFiltros = new JPanel();
+			pnFiltros.setLayout(new GridLayout(0, 3, 0, 0));
+			pnFiltros.add(getPnFiltroEstado());
+			pnFiltros.add(getPnFiltroAno());
+			pnFiltros.add(getPnFiltroPerito());
+		}
+		return pnFiltros;
+	}
+	private JPanel getPnFiltroEstado() {
+		if (pnFiltroEstado == null) {
+			pnFiltroEstado = new JPanel();
+			pnFiltroEstado.setLayout(new GridLayout(2, 0, 0, 0));
+			pnFiltroEstado.add(getLbFiltroEstado());
+			pnFiltroEstado.add(getCbFiltroEstado());
+		}
+		return pnFiltroEstado;
+	}
+	private JPanel getPnFiltroAno() {
+		if (pnFiltroAno == null) {
+			pnFiltroAno = new JPanel();
+			pnFiltroAno.setLayout(new GridLayout(2, 0, 0, 0));
+			pnFiltroAno.add(getLbFiltroAno());
+			pnFiltroAno.add(getCbFiltrosAge());
+		}
+		return pnFiltroAno;
+	}
+	private JPanel getPnFiltroPerito() {
+		if (pnFiltroPerito == null) {
+			pnFiltroPerito = new JPanel();
+			pnFiltroPerito.setLayout(new GridLayout(2, 0, 0, 0));
+			pnFiltroPerito.add(getLbFiltroPerito());
+			pnFiltroPerito.add(getTxFiltrosPerito());
+		}
+		return pnFiltroPerito;
+	}
+	private JLabel getLbFiltroEstado() {
+		if (lbFiltroEstado == null) {
+			lbFiltroEstado = new JLabel("Estado:");
+			lbFiltroEstado.setFont(new Font("Tahoma", Font.BOLD, 20));
+		}
+		return lbFiltroEstado;
+	}
+	private JLabel getLbFiltroAno() {
+		if (lbFiltroAno == null) {
+			lbFiltroAno = new JLabel("A\u00F1o:");
+			lbFiltroAno.setFont(new Font("Tahoma", Font.BOLD, 20));
+		}
+		return lbFiltroAno;
+	}
+	private JLabel getLbFiltroPerito() {
+		if (lbFiltroPerito == null) {
+			lbFiltroPerito = new JLabel("Perito(DNI):");
+			lbFiltroPerito.setFont(new Font("Tahoma", Font.BOLD, 20));
+		}
+		return lbFiltroPerito;
+	}
+	private JComboBox<String> getCbFiltroEstado() {
+		if (cbFiltroEstado == null) {
+			cbFiltroEstado = new JComboBox();
+			cbFiltroEstado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					actualizaTbInformesPericiales();
+				}
+			});
+			cbFiltroEstado.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			cbFiltroEstado.setModel(new DefaultComboBoxModel(new String[] {"Todos", SolicitudServiciosDto.ASIGNADA, SolicitudServiciosDto.SIN_ASIGNAR, 
+					SolicitudServiciosDto.FINALIZADA, SolicitudServiciosDto.CANCELADA}));
+		}
+		return cbFiltroEstado;
+	}
+	private JComboBox<String> getCbFiltrosAge() {
+		if (cbFiltrosAge == null) {
+			cbFiltrosAge = new JComboBox();
+			cbFiltrosAge.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					actualizaTbInformesPericiales();
+				}
+			});
+			cbFiltrosAge.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			String[] model = new String[101];
+			model[0] = "Todos";
+			for(int i=1;i<101;i++) {
+				model[i] = (2022 - (i-1))+"";
+			}
+			cbFiltrosAge.setModel(new DefaultComboBoxModel(model));
+		}
+		return cbFiltrosAge;
+	}
+	private JTextField getTxFiltrosPerito() {
+		if (txFiltrosPerito == null) {
+			txFiltrosPerito = new JTextField();
+			txFiltrosPerito.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					actualizaTbInformesPericiales();
+				}
+			});
+			txFiltrosPerito.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			txFiltrosPerito.setColumns(10);
+		}
+		return txFiltrosPerito;
+	}
+	private JScrollPane getPnTableInformes() {
+		if (pnTableInformes == null) {
+			pnTableInformes = new JScrollPane();
+			pnTableInformes.setViewportView(getTableInformesPericiales());
+		}
+		return pnTableInformes;
+	}
+	private JTable getTableInformesPericiales() {
+		if (tableInformesPericiales == null) {
+			tableInformesPericiales = new JTable();
+			tableInformesPericiales.setIntercellSpacing(new Dimension(0, 0));
+			tableInformesPericiales.setShowGrid(false);
+			tableInformesPericiales.setRowMargin(2);
+			tableInformesPericiales.setRequestFocusEnabled(false);
+			tableInformesPericiales.setFocusable(false);
+			tableInformesPericiales.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tableInformesPericiales.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tableInformesPericiales.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tableInformesPericiales.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tableInformesPericiales.setShowVerticalLines(false);
+			tableInformesPericiales.setOpaque(false);
+
+			tableInformesPericiales.setRowHeight(80);
+			tableInformesPericiales.setGridColor(new Color(255, 255, 255));
+
+			tableInformesPericiales.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return tableInformesPericiales;
+	}
+	
+	private void actualizaTbInformesPericiales() {
+		
+		String ageStr = (String) cbFiltrosAge.getSelectedItem();
+		int age = ageStr.equals("Todos") ? -1:Integer.valueOf(ageStr);
+		ArrayList<SolicitudServiciosDto> solicitudes = SolicitudServicios.listarSolicitudesServiciosConFiltros((String) cbFiltroEstado.getSelectedItem(), age, txFiltrosPerito.getText());
+		
+		TableModel tableModelSolicitudes = new ModeloInformesPericiales(solicitudes).getSolicitudModel(true, false);
+		getTableInformesPericiales().setModel(tableModelSolicitudes);
+	}
+	private DefaultButton getBtCancelacionPericial() {
+		if (btCancelacionPericial == null) {
+			btCancelacionPericial = new DefaultButton("Cancelar inscripci\u00C3\u00B3n", "ventana", "CancelarInscripci\u00C3\u00B3n", 'l', ButtonColor.NORMAL);
+			btCancelacionPericial.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, CANCELAR_PERICIAL);
+				}
+			});
+			btCancelacionPericial.setText("Cancelar Pericial");
+			btCancelacionPericial.setMnemonic('N');
+		}
+		return btCancelacionPericial;
+	}
+	private JPanel getPnCancelarPericial() {
+		if (pnCancelarPericial == null) {
+			pnCancelarPericial = new JPanel();
+			pnCancelarPericial.setLayout(new BorderLayout(0, 0));
+			pnCancelarPericial.add(getLbCancelarPericial(), BorderLayout.NORTH);
+			pnCancelarPericial.add(getPnCancelarPericialCenter(), BorderLayout.CENTER);
+		}
+		return pnCancelarPericial;
+	}
+	private JLabel getLbCancelarPericial() {
+		if (lbCancelarPericial == null) {
+			lbCancelarPericial = new JLabel("Cancelar una pericial");
+			lbCancelarPericial.setFont(new Font("Tahoma", Font.BOLD, 30));
+			lbCancelarPericial.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbCancelarPericial;
+	}
+	private JPanel getPnCancelarPericialCenter() {
+		if (pnCancelarPericialCenter == null) {
+			pnCancelarPericialCenter = new JPanel();
+			pnCancelarPericialCenter.setLayout(new BorderLayout(0, 0));
+			pnCancelarPericialCenter.add(getPanel_1());
+		}
+		return pnCancelarPericialCenter;
+	}
+	private JPanel getPanel_1() {
+		if (panel_1 == null) {
+			panel_1 = new JPanel();
+			panel_1.setLayout(new GridLayout(2, 0, 0, 0));
+			panel_1.add(getPanel_2());
+			panel_1.add(getScrollPane_1());
+		}
+		return panel_1;
+	}
+	private JPanel getPanel_2() {
+		if (panel_2 == null) {
+			panel_2 = new JPanel();
+			panel_2.setLayout(new BorderLayout(0, 10));
+			panel_2.add(getPanel_3(), BorderLayout.NORTH);
+			panel_2.add(getScrollPane_2(), BorderLayout.CENTER);
+			panel_2.add(getPanel_4(), BorderLayout.SOUTH);
+		}
+		return panel_2;
+	}
+	private JScrollPane getScrollPane_1() {
+		if (scrollPane_1 == null) {
+			scrollPane_1 = new JScrollPane();
+			scrollPane_1.setViewportView(getTbListaPeritos());
+		}
+		return scrollPane_1;
+	}
+	private JPanel getPanel_3() {
+		if (panel_3 == null) {
+			panel_3 = new JPanel();
+			panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			panel_3.add(getPanel_5());
+		}
+		return panel_3;
+	}
+	private JScrollPane getScrollPane_2() {
+		if (scrollPane_2 == null) {
+			scrollPane_2 = new JScrollPane();
+			scrollPane_2.setViewportView(getTbPericiales());
+		}
+		return scrollPane_2;
+	}
+	private JPanel getPanel_4() {
+		if (panel_4 == null) {
+			panel_4 = new JPanel();
+			panel_4.setLayout(new BorderLayout(0, 5));
+			panel_4.add(getPanel(), BorderLayout.SOUTH);
+			panel_4.add(getPanel_6());
+		}
+		return panel_4;
+	}
+	private JPanel getPanel_5() {
+		if (panel_5 == null) {
+			panel_5 = new JPanel();
+			panel_5.setLayout(new GridLayout(2, 2, 0, 0));
+			panel_5.add(getLbDniCancelarPericial());
+			panel_5.add(getTxDniCancelarPericial());
+		}
+		return panel_5;
+	}
+	private JLabel getLbDniCancelarPericial() {
+		if (lbDniCancelarPericial == null) {
+			lbDniCancelarPericial = new JLabel("DNI:");
+			lbDniCancelarPericial.setFont(new Font("Tahoma", Font.BOLD, 16));
+		}
+		return lbDniCancelarPericial;
+	}
+	private JTextField getTxDniCancelarPericial() {
+		if (txDniCancelarPericial == null) {
+			txDniCancelarPericial = new JTextField();
+			txDniCancelarPericial.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					actualizaTbCancelarPericial();
+				}
+			});
+			txDniCancelarPericial.setFont(new Font("Tahoma", Font.BOLD, 16));
+			txDniCancelarPericial.setColumns(10);
+		}
+		return txDniCancelarPericial;
+	}
+	private JTable getTbPericiales() {
+		if (tbPericiales == null) {
+			tbPericiales = new JTable();
+			tbPericiales.setIntercellSpacing(new Dimension(0, 0));
+			tbPericiales.setShowGrid(false);
+			tbPericiales.setRowMargin(2);
+			tbPericiales.setRequestFocusEnabled(false);
+			tbPericiales.setFocusable(false);
+			tbPericiales.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbPericiales.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbPericiales.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbPericiales.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbPericiales.setShowVerticalLines(false);
+			tbPericiales.setOpaque(false);
+
+			tbPericiales.setRowHeight(80);
+			tbPericiales.setGridColor(new Color(255, 255, 255));
+
+			tbPericiales.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return tbPericiales;
+	}
+	private JTable getTbListaPeritos() {
+		if (tbListaPeritos == null) {
+			tbListaPeritos = new JTable();
+			tbListaPeritos.setIntercellSpacing(new Dimension(0, 0));
+			tbListaPeritos.setShowGrid(false);
+			tbListaPeritos.setRowMargin(2);
+			tbListaPeritos.setRequestFocusEnabled(false);
+			tbListaPeritos.setFocusable(false);
+			tbListaPeritos.setSelectionForeground(LookAndFeel.TERTIARY_COLOR);
+			tbListaPeritos.setSelectionBackground(LookAndFeel.SECONDARY_COLOR);
+			tbListaPeritos.setBorder(new EmptyBorder(10, 10, 10, 10));
+			tbListaPeritos.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			tbListaPeritos.setShowVerticalLines(false);
+			tbListaPeritos.setOpaque(false);
+
+			tbListaPeritos.setRowHeight(80);
+			tbListaPeritos.setGridColor(new Color(255, 255, 255));
+
+			tbListaPeritos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return tbListaPeritos;
+	}
+	private JButton getBtnCancelarPericial() {
+		if (btnCancelarPericial == null) {
+			btnCancelarPericial = new DefaultButton("Cancelar", "ventana", "Cancelar", 'C',
+					ButtonColor.NORMAL);
+			btnCancelarPericial.setEnabled(false);
+			btnCancelarPericial.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(txMotivoCancelacion.getText().trim().equals("")) {
+						JOptionPane.showMessageDialog(rootPane, "Para cancelar la pericial es necesario indicar un motivo");
+						return;
+					}
+					SolicitudServiciosDto vaav = listaSolicitudesPerito.get(tbPericiales.getSelectedRow());
+					SolicitudServicios.CancelaPericial(vaav);
+					JOptionPane.showMessageDialog(rootPane, "La pericial se ha cancelado correctamente y ha recuperado su puesto anterior en la lista de peritos");
+					actualizaTbCancelarPericial();
+				}
+				
+			});
+			btnCancelarPericial.setPreferredSize(new Dimension(200, 50));
+			btnCancelarPericial.setBounds(new Rectangle(200, 50));
+			btnCancelarPericial.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		}
+		return btnCancelarPericial;
+	}
+	
+	private ArrayList<SolicitudServiciosDto> listaSolicitudesPerito;
+	private ArrayList<ColegiadoDto> listaPeritos;
+	private JPanel panel;
+	private JPanel panel_6;
+	private JLabel lblNewLabel_3;
+	private JTextField txMotivoCancelacion;
+	
+	private void actualizaTbCancelarPericial() {
+		listaSolicitudesPerito = txDniCancelarPericial.getText().trim().equals("") ? new ArrayList<>() : SolicitudServicios.listarSolicitudesServiciosConFiltros("Todos", -1, txDniCancelarPericial.getText());
+		listaPeritos = Perito.listarPeritosOrdenados();
+		
+		TableModel tableModelSolicitudes = new ModeloInformesPericiales(listaSolicitudesPerito).getSolicitudModel(false, true);
+		TableModel tableModelPeritos = new ModeloPeritos(listaPeritos).getPeritoModel();
+		getTbPericiales().setModel(tableModelSolicitudes);
+		getTbListaPeritos().setModel(tableModelPeritos);
+		
+		
+		if(listaSolicitudesPerito.size() > 0) {
+			getBtnCancelarPericial().setEnabled(true);
+			getTbPericiales().addRowSelectionInterval(0, 0);
+		}
+		else {
+			getBtnCancelarPericial().setEnabled(false);
+		}
+
+	
+	}
+	
+	private JPanel getPanel() {
+		if (panel == null) {
+			panel = new JPanel();
+			panel.add(getBtnCancelarPericial());
+		}
+		return panel;
+	}
+	private JPanel getPanel_6() {
+		if (panel_6 == null) {
+			panel_6 = new JPanel();
+			panel_6.setLayout(new BorderLayout(10, 0));
+			panel_6.add(getLblNewLabel_3(), BorderLayout.NORTH);
+			panel_6.add(getTxMotivoCancelacion(), BorderLayout.SOUTH);
+		}
+		return panel_6;
+	}
+	private JLabel getLblNewLabel_3() {
+		if (lblNewLabel_3 == null) {
+			lblNewLabel_3 = new JLabel("Motivo de Cancelacion:");
+			lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		}
+		return lblNewLabel_3;
+	}
+	private JTextField getTxMotivoCancelacion() {
+		if (txMotivoCancelacion == null) {
+			txMotivoCancelacion = new JTextField();
+			txMotivoCancelacion.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			txMotivoCancelacion.setColumns(10);
+		}
+		return txMotivoCancelacion;
 	}
 }
