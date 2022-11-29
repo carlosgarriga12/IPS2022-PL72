@@ -88,6 +88,7 @@ public class ListaEsperaInscripcionCursoCrud {
 			// La posicion en la lista será consecutiva al último usuario añadido a dicha
 			// lista de espera.
 			pst2 = con.prepareStatement(SQL_MAX_POSICION_LISTA_ESPERA_CURSO);
+			pst2.setInt(1, codigoCurso);
 			rs2 = pst2.executeQuery();
 
 			rs2.next();
