@@ -21,13 +21,13 @@ public class SolicitudServicios {
 		SolicitudServiciosCrud.AsociaSolicitudServicio(s, c);
 	}
 	
-	public static ArrayList<SolicitudServiciosDto> listarSolicitudesServiciosConFiltros(String estado, int año, String dniPerito){
+	public static ArrayList<SolicitudServiciosDto> listarSolicitudesServiciosConFiltros(String estado, int ano, String dniPerito){
 		
 		String Query = "Select * from SolicitudPeritos";
 		
 
 		String queryEstado = estado.equals("Todos") ? "" : " WHERE SolicitudPeritos.Estado = "+'"'+estado+'"';
-		String queryAge = año == -1 ? "" : queryEstado.equals("") ? " WHERE SolicitudPeritos.AgeSolicitud = "+año : " AND SolicitudPeritos.AgeSolicitud = "+año;
+		String queryAge = ano == -1 ? "" : queryEstado.equals("") ? " WHERE SolicitudPeritos.AgeSolicitud = "+ano : " AND SolicitudPeritos.AgeSolicitud = "+ano;
 		String queryDni = dniPerito.trim().equals("") ? "" : (!queryEstado.equals("")) || (!queryEstado.equals("")) ? " AND SolicitudPeritos.dniPerito = "+'"'+dniPerito.trim()+'"' : 
 			" WHERE SolicitudPeritos.dniPerito = "+'"'+dniPerito.trim()+'"';
 		return SolicitudServiciosCrud.listarSolicitudesServiciosConFiltros(Query+queryEstado+queryAge+queryDni);
