@@ -234,7 +234,8 @@ public class SolicitudServiciosCrud {
 			c = Jdbc.getConnection();
 
 			pst = c.prepareStatement(SQL_CANCELA_PERICIAL);
-			pst.setInt(1, s.id);
+			pst.setString(1, LocalDate.now().toString());
+			pst.setInt(2, s.id);
 
 			pst.execute();
 

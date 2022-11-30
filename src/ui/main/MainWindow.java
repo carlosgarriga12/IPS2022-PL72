@@ -7988,8 +7988,12 @@ public class MainWindow extends JFrame {
 						JOptionPane.showMessageDialog(rootPane, "Para cancelar la pericial es necesario indicar un motivo");
 						return;
 					}
-					SolicitudServiciosDto vaav = listaSolicitudesPerito.get(tbPericiales.getSelectedRow());
-					SolicitudServicios.CancelaPericial(vaav);
+					SolicitudServiciosDto solicitud = listaSolicitudesPerito.get(tbPericiales.getSelectedRow());
+					if(solicitud.estado.equals(SolicitudServiciosDto.FINALIZADA) || solicitud.estado.equals(SolicitudServiciosDto.CANCELADA)) {
+						JOptionPane.showMessageDialog(rootPane, "No se pueden cancelar periciales canceladas o finalizadas");
+						return;
+					}
+					SolicitudServicios.CancelaPericial(solicitud);
 					JOptionPane.showMessageDialog(rootPane, "La pericial se ha cancelado correctamente y ha recuperado su puesto anterior en la lista de peritos");
 					actualizaTbCancelarPericial();
 				}
