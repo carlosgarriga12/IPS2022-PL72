@@ -89,6 +89,7 @@ import business.util.CSVLoteSolicitudesColegiacion;
 import business.util.DateUtils;
 import persistence.DtoAssembler;
 import persistence.Colegiado_Inscripcion.Colegiado_Inscripcion;
+import persistence.InscripcionColegiado.InscripcionColegiadoCRUD;
 import persistence.InscripcionColegiado.InscripcionColegiadoDto;
 import persistence.SolicitudServicios.SolicitudServiciosDto;
 import persistence.colegiado.ColegiadoCrud;
@@ -671,6 +672,9 @@ public class MainWindow extends JFrame {
 	private JPanel pnSouthBajaColegiado;
 	private JButton btnDarDeBaja;
 	private JButton btnVolverInicioBajaColegiado;
+	private JLabel lblComentarioBaja;
+	private JTextArea txtComentarioBaja;
+	private JScrollPane spColegiadoBaja;
 
 	public MainWindow() {
 		initLookAndFeel();
@@ -7681,6 +7685,25 @@ public class MainWindow extends JFrame {
 	private JTextField getTxtDniBajaColegiado() {
 		if (txtDniBajaColegiado == null) {
 			txtDniBajaColegiado = new JTextField();
+			txtDniBajaColegiado.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					ColegiadoDto colegiado = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
+					
+					TableModel bajaColegiadoModel = new ModeloBajaColegiado(colegiado).getSolicitudModel();
+					tbColegiadoADarDeBaja.setModel(bajaColegiadoModel);
+					tbColegiadoADarDeBaja.repaint();
+					
+					if (colegiado == null) {
+						lblComentarioBaja.setEnabled(false);
+						txtComentarioBaja.setEnabled(false);
+						txtComentarioBaja.setText("");
+					} else {
+						lblComentarioBaja.setEnabled(true);
+						txtComentarioBaja.setEnabled(true);
+					}
+				}
+			});
 			txtDniBajaColegiado.setFont(new Font("Tahoma", Font.PLAIN, 17));
 			txtDniBajaColegiado.setColumns(10);
 		}
@@ -7689,20 +7712,6 @@ public class MainWindow extends JFrame {
 	private JButton getBtnComprobarDniBajaColegiado() {
 		if (btnComprobarDniBajaColegiado == null) {
 			btnComprobarDniBajaColegiado = new JButton("Comprobar");
-			btnComprobarDniBajaColegiado.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					ColegiadoDto colegiado = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
-					
-					TableModel bajaColegiadoModel = new ModeloBajaColegiado(colegiado).getSolicitudModel();
-					tbColegiadoADarDeBaja.setModel(bajaColegiadoModel);
-					tbColegiadoADarDeBaja.repaint();
-					
-					if (colegiado == null) {
-						JOptionPane.showMessageDialog(pnBajaColegiado, "No existe colegiado con tal DNI");
-					} 
-					
-				}
-			});
 			btnComprobarDniBajaColegiado.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnComprobarDniBajaColegiado;
@@ -7710,24 +7719,28 @@ public class MainWindow extends JFrame {
 	private JPanel getPnCenterBajaColegiado() {
 		if (pnCenterBajaColegiado == null) {
 			pnCenterBajaColegiado = new JPanel();
-			pnCenterBajaColegiado.setLayout(new BorderLayout(0, 0));
-			pnCenterBajaColegiado.add(getPnCenterNorthColegiado(), BorderLayout.NORTH);
-			pnCenterBajaColegiado.add(getPnCenterSouthColegiado(), BorderLayout.SOUTH);
+			pnCenterBajaColegiado.setLayout(null);
+			pnCenterBajaColegiado.add(getPnCenterNorthColegiado());
+			pnCenterBajaColegiado.add(getPnCenterSouthColegiado());
 		}
 		return pnCenterBajaColegiado;
 	}
 	private JPanel getPnCenterNorthColegiado() {
 		if (pnCenterNorthColegiado == null) {
 			pnCenterNorthColegiado = new JPanel();
-			pnCenterNorthColegiado.setLayout(new GridLayout(1,1));
-			pnCenterNorthColegiado.add(getTbColegiadoADarDeBaja());
+			pnCenterNorthColegiado.setBounds(0, 0, 1102, 248);
+			pnCenterNorthColegiado.setLayout(new BorderLayout(0, 0));
+			pnCenterNorthColegiado.add(getSpColegiadoBaja());
 		}
 		return pnCenterNorthColegiado;
 	}
 	private JPanel getPnCenterSouthColegiado() {
 		if (pnCenterSouthColegiado == null) {
 			pnCenterSouthColegiado = new JPanel();
-			pnCenterSouthColegiado.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnCenterSouthColegiado.setBounds(0, 261, 1102, 381);
+			pnCenterSouthColegiado.setLayout(null);
+			pnCenterSouthColegiado.add(getLblComentarioBaja());
+			pnCenterSouthColegiado.add(getTxtComentarioBaja());
 		}
 		return pnCenterSouthColegiado;
 	}
@@ -7770,6 +7783,35 @@ public class MainWindow extends JFrame {
 	private JButton getBtnDarDeBaja() {
 		if (btnDarDeBaja == null) {
 			btnDarDeBaja = new JButton("Dar de baja");
+			btnDarDeBaja.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (txtComentarioBaja.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(pnBajaColegiado, "No has puesto un comentario para la baja");
+						return;
+					}
+					
+					ColegiadoDto c = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
+					
+					InscripcionColegiadoCRUD.deleteInscripcionesByDni(txtDniBajaColegiado.getText());
+					ColegiadoCrud.deleteColegiado(txtDniBajaColegiado.getText());
+					
+					
+					JOptionPane.showMessageDialog(pnBajaColegiado, "Colegiado dado de baja correctamente"
+							+ "\nNombre: " + c.nombre
+							+ "\nApellidos: " + c.apellidos
+							+ "\nComentario: " + txtComentarioBaja.getText()
+							+ "\nFecha de baja: " + LocalDate.now().toString());
+					
+					txtDniBajaColegiado.setText("");
+					txtComentarioBaja.setText("");
+					
+					TableModel bajaColegiadoModel = new ModeloBajaColegiado(ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText())).getSolicitudModel();
+					tbColegiadoADarDeBaja.setModel(bajaColegiadoModel);
+					tbColegiadoADarDeBaja.repaint();
+					
+				}
+			});
+			
 			btnDarDeBaja.setBackground(Color.GREEN);
 			btnDarDeBaja.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
@@ -7787,5 +7829,32 @@ public class MainWindow extends JFrame {
 			btnVolverInicioBajaColegiado.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnVolverInicioBajaColegiado;
+	}
+	private JLabel getLblComentarioBaja() {
+		if (lblComentarioBaja == null) {
+			lblComentarioBaja = new JLabel("Comentario baja: ");
+			lblComentarioBaja.setEnabled(false);
+			lblComentarioBaja.setBounds(10, 4, 134, 21);
+			lblComentarioBaja.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		}
+		return lblComentarioBaja;
+	}
+	private JTextArea getTxtComentarioBaja() {
+		if (txtComentarioBaja == null) {
+			txtComentarioBaja = new JTextArea();
+			txtComentarioBaja.setFont(new Font("Tahoma", Font.PLAIN, 17));
+			txtComentarioBaja.setEnabled(false);
+			txtComentarioBaja.setBounds(10, 35, 1082, 217);
+			txtComentarioBaja.setEditable(true);
+			txtComentarioBaja.setText("");
+		}
+		return txtComentarioBaja;
+	}
+	private JScrollPane getSpColegiadoBaja() {
+		if (spColegiadoBaja == null) {
+			spColegiadoBaja = new JScrollPane();
+			spColegiadoBaja.setViewportView(getTbColegiadoADarDeBaja());
+		}
+		return spColegiadoBaja;
 	}
 }

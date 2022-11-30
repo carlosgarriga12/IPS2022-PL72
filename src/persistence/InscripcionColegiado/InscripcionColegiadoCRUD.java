@@ -41,7 +41,7 @@ public class InscripcionColegiadoCRUD {
 	private static final String SQL_INSCRIPCION_FIND_CANCELADA = Conf.getInstance().getProperty("TINSCRIPCION_FIND_CANCELADA");
 	private static final String SQL_INSCRIPCION_FIND_CANCELAR = Conf.getInstance().getProperty("TINSCRIPCION_FIND_CANCELAR");
 	private static final String SQL_INSCRIPCION_FIND_BY_DNI = Conf.getInstance().getProperty("TINSCRIPCION_FIND_BY_DNI");
-
+	private static final String SQL_INSCRIPCION_DELETE_BY_DNI = Conf.getInstance().getProperty("TINSCRIPCION_DELETE_BY_DNI");
 	
 	public static void InscribirColegiado(CursoDto curso, ColegiadoDto colegiado) throws PersistenceException {
 		PreparedStatement stmt = null;
@@ -473,6 +473,27 @@ public class InscripcionColegiadoCRUD {
 		}
 		finally {
 			Jdbc.close(stmt);
+		}
+	}
+	
+	public static void deleteInscripcionesByDni(String dni) {
+		Connection c = null;
+		PreparedStatement pst = null;
+		
+		try {
+			c = Jdbc.getConnection();
+			
+			pst = c.prepareStatement(SQL_INSCRIPCION_DELETE_BY_DNI);
+			
+			pst.setString(1, dni);
+			pst.execute();
+			
+		} catch(SQLException e) {
+			throw new PersistenceException(e);
+			
+		} finally {
+			Jdbc.close(pst);
+			Jdbc.close(c);
 		}
 	}
 	

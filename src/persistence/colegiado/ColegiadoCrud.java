@@ -42,6 +42,9 @@ public class ColegiadoCrud {
 	private static final String SQL_FIND_CANTIDAD_DEUDADA_POR_DNI = Conf.getInstance()
 			.getProperty("TCOLEGIADO_CANTIDAD_DEUDADA");
 	
+	private static final String SQL_DELETE_COLEGIADO = Conf.getInstance()
+			.getProperty("TCOLEGIADO_BORRAR_COLEGIADO");
+	
 	public static ColegiadoDto findColegiadoGeneral(String dni, String QuerySQL, String atributo) {
 		ColegiadoDto colegiado;
 
@@ -328,6 +331,27 @@ public class ColegiadoCrud {
 			throw new PersistenceException(e);
 		} finally {
 			Jdbc.close(rs, pst, c);
+		}
+	}
+	
+	public static void deleteColegiado(String dni) {
+		Connection c = null;
+		PreparedStatement pst = null;
+		
+		try {
+			c = Jdbc.getConnection();
+			
+			pst = c.prepareStatement(SQL_DELETE_COLEGIADO);
+			
+			pst.setString(1, dni);
+			
+			pst.execute();
+		} catch(SQLException e) {
+			throw new PersistenceException(e);
+			
+		} finally {
+			Jdbc.close(pst);
+			Jdbc.close(c);
 		}
 	}
 }
