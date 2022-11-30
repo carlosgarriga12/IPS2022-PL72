@@ -11,7 +11,7 @@ public class ModeloInformesPericiales {
 
 	public static final String HEADER_COLUMN1 = "DESCRIPCION";
 	public static final String HEADER_COLUMN2 = "DNI PERITO";
-	public static final String HEADER_COLUMN3 = "AÑO SOLICITUD";
+	public static final String HEADER_COLUMN3 = "Aï¿½O SOLICITUD";
 	public static final String HEADER_COLUMN4 = "ESTADO";
 	public static final String HEADER_COLUMN5 = "FECHA CANCELACION";
 	

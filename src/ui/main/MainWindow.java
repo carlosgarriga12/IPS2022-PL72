@@ -220,8 +220,17 @@ public class MainWindow extends JFrame {
 	private JLabel lblNewLabelA;
 	private JTextField textFieldApellidos;
 	private JLabel lblNewLabelD;
+
+	private JPanel pnInscripcion_old;
+	private JScrollPane spCursosInscripcionCurso;
+	private JLabel lbInscripcionSeleccionarCursos;
+	private JButton btnInscribete;
+	private JLabel lbAlerta;
+	private JLabel lbConfirmacionInscripcion;
+	private JButton btMostrarCursos;
 	private ColegiadoDto colegiado;
 	private CardLayout mainCardLayout;
+	private JButton btnInscripcionToInicio;
 
 	private JTextField textFieldDni;
 	private JPanel pnDatosGeoAcademicos;
@@ -244,6 +253,7 @@ public class MainWindow extends JFrame {
 	private JPanel pnDatosTituloColegiadoCheck;
 	private JTextField textFieldTitulaciones;
 	private JLabel lblTitulacinSegunSus;
+	private JTextField txCursoDNI;
 
 	private JPanel pnHomeNorth;
 	private JPanel pnHomeCenter;
@@ -344,6 +354,7 @@ public class MainWindow extends JFrame {
 	private JPanel pnPrecioAnadirColectivo;
 	private JTextField txPrecioAnadirColectivo;
 	private JLabel lbPrecioAnadirColectivo;
+	private JComboBox<String> cbSeleccionarColectivo;
 	private JPanel pnTituloCurso;
 	private JLabel lblTituloCurso;
 	private JTextField txtTituloCurso;
@@ -729,6 +740,7 @@ public class MainWindow extends JFrame {
 		mainPanel.add(getPnHome(), HOME_PANEL_NAME);
 		mainPanel.add(getPnSolicitudColegiado(), SOLICITUD_COLEGIADO_PANEL_NAME);
 		mainPanel.add(getPnAbrirInscripcionesCurso(), APERTURA_INSCRIPCIONES_PANEL_NAME);
+		mainPanel.add(getPnInscripcion_old(), "inscripcion_cursos_OLD");
 		mainPanel.add(getPnPagarInscripcionColegiado(), PAGAR_INSCRIPCION_CURSO_PANEL_NAME);
 		mainPanel.add(getPnListadoInscripciones(), LISTADO_INSCRIPCIONES_PANEL_NAME);
 		mainPanel.add(getPnConsultarTitulacionSolicitante(), CONSULTAR_TITULACION_SOLICITANTE_PANEL_NAME);
@@ -1986,6 +1998,68 @@ public class MainWindow extends JFrame {
 		return lblTitulacinSegunSus;
 	}
 
+	private JPanel getPnInscripcion_old() {
+		if (pnInscripcion_old == null) {
+			pnInscripcion_old = new JPanel();
+			pnInscripcion_old.setVisible(false);
+			pnInscripcion_old.setFont(LookAndFeel.PRIMARY_FONT);
+			pnInscripcion_old.setLayout(null);
+			pnInscripcion_old.add(getSpCursosInscripcionCurso());
+			pnInscripcion_old.add(getLbInscripcionSeleccionarCursos());
+			pnInscripcion_old.add(getBtnInscribete());
+			pnInscripcion_old.add(getLbAlerta());
+			pnInscripcion_old.add(getLbConfirmacionInscripcion());
+			pnInscripcion_old.add(getBtMostrarCursos());
+			pnInscripcion_old.add(getBtnInscripcionToInicio());
+
+			JLabel lbLoginUsername_1 = new JLabel("Introduzca su DNI:");
+			lbLoginUsername_1.setHorizontalAlignment(SwingConstants.LEFT);
+			lbLoginUsername_1.setFont(new Font("Arial", Font.BOLD, 12));
+			lbLoginUsername_1.setBounds(356, 10, 324, 35);
+			pnInscripcion_old.add(lbLoginUsername_1);
+
+			txCursoDNI = new JTextField();
+			txCursoDNI.setToolTipText("Intro");
+			txCursoDNI.setColumns(10);
+			txCursoDNI.setBounds(356, 44, 324, 35);
+			pnInscripcion_old.add(txCursoDNI);
+
+			getCbSeleccionarColectivo();
+
+			JLabel lblNewLabel = new JLabel("Seleccione el colectivo al que pertenece:");
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lblNewLabel.setBounds(18, 15, 260, 24);
+			pnInscripcion_old.add(lblNewLabel);
+
+			JPanel pnInscripcionCursosCenter = new JPanel();
+			pnInscripcionCursosCenter.setBounds(0, 0, 10, 10);
+			pnInscripcion_old.add(pnInscripcionCursosCenter);
+		}
+		return pnInscripcion_old;
+	}
+
+	private JComboBox<String> getCbSeleccionarColectivo() {
+		if (cbSeleccionarColectivo == null) {
+			cbSeleccionarColectivo = new JComboBox<String>();
+			cbSeleccionarColectivo.setModel(new DefaultComboBoxModel<String>(
+					new String[] { "Colegiado", "Precolegiado", "Estudiante", "Desempleado", "Otros" }));
+			cbSeleccionarColectivo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbSeleccionarColectivo.setAlignmentX(0.0f);
+			cbSeleccionarColectivo.setBounds(18, 46, 137, 26);
+			pnInscripcion_old.add(cbSeleccionarColectivo);
+		}
+		return cbSeleccionarColectivo;
+	}
+
+	private JScrollPane getSpCursosInscripcionCurso() {
+		if (spCursosInscripcionCurso == null) {
+			spCursosInscripcionCurso = new JScrollPane();
+			spCursosInscripcionCurso.setBounds(18, 139, 1057, 384);
+			// spCursosInscripcionCurso.setViewportView();
+		}
+		return spCursosInscripcionCurso;
+	}
+
 	private JTable getTbCursosAbiertosInscripcionCurso() {
 		if (tbCursosAbiertosInscripcionCurso == null) {
 			tbCursosAbiertosInscripcionCurso = new JTable();
@@ -2077,6 +2151,179 @@ public class MainWindow extends JFrame {
 
 		}
 		return tbCursosInscripciones;
+	}
+
+	private JLabel getLbInscripcionSeleccionarCursos() {
+		if (lbInscripcionSeleccionarCursos == null) {
+			lbInscripcionSeleccionarCursos = new JLabel("Selecciona un Curso:");
+			lbInscripcionSeleccionarCursos.setDisplayedMnemonic('s');
+			lbInscripcionSeleccionarCursos.setFont(new Font("Arial", Font.BOLD, 16));
+			lbInscripcionSeleccionarCursos.setBounds(18, 70, 361, 35);
+		}
+		return lbInscripcionSeleccionarCursos;
+	}
+
+	private JButton getBtnInscribete() {
+		if (btnInscribete == null) {
+			btnInscribete = new DefaultButton("Inscribirme", "ventana", "Inscribirme", 'n', ButtonColor.NORMAL);
+			btnInscribete.setEnabled(false);
+			btnInscribete.setLocation(794, 533);
+			btnInscribete.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					lbConfirmacionInscripcion.setVisible(false);
+					lbAlerta.setVisible(false);
+					int IndexCursoSeleccionado = getTbCursosAbiertosInscripcionCurso().getSelectedRow();
+					CursoDto cursoSeleccionado = IndexCursoSeleccionado == -1 ? null
+							: cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
+					try {
+						if (cursoSeleccionado == null) {
+							lbAlerta.setText("Para Realizar la Inscripcion es Necesario Seleccionar un Curso");
+							lbAlerta.setVisible(true);
+						} else {
+							if (!InscripcionColegiado.isInscrito(colegiado, cursoSeleccionado)) {
+								if (InscripcionCursoFormativo.hayPlazasLibres(cursoSeleccionado)) {
+
+									InscripcionColegiado.InscribirColegiado(cursoSeleccionado, colegiado);
+									InscripcionColegiado.EmitirJustificante(colegiado, cursoSeleccionado);
+									lbConfirmacionInscripcion.setText(
+											"La inscripcion en el curso seleccionado se ha realizado correctamente");
+									lbConfirmacionInscripcion.setForeground(Color.green);
+									lbConfirmacionInscripcion.setVisible(true);
+
+								} else {
+									lbConfirmacionInscripcion.setText(
+											"Lo sentimos, no hay plazas disponibles para inscribirse en este curso");
+									lbConfirmacionInscripcion.setForeground(Color.red);
+									lbConfirmacionInscripcion.setVisible(true);
+								}
+							} else {
+								lbConfirmacionInscripcion.setText(
+										"La inscripciÃ³n no se ha realizado porque ya estÃ¡ inscrito en este curso");
+								lbConfirmacionInscripcion.setForeground(Color.red);
+								lbConfirmacionInscripcion.setVisible(true);
+							}
+						}
+					} catch (PersistenceException e1) {
+						e1.printStackTrace();
+					} catch (BusinessException e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+
+		}
+		return btnInscribete;
+	}
+
+	private JLabel getLbAlerta() {
+		if (lbAlerta == null) {
+
+			lbAlerta = new JLabel("Para Realizar la Inscripción es Necesario Seleccionar un Curso");
+			lbAlerta.setHorizontalTextPosition(SwingConstants.LEFT);
+			lbAlerta.setVisible(false);
+			lbAlerta.setBorder(new LineBorder(Color.BLACK));
+			lbAlerta.setForeground(Color.RED);
+			lbAlerta.setFont(LookAndFeel.PRIMARY_FONT);
+
+			lbAlerta.setHorizontalAlignment(SwingConstants.CENTER);
+			lbAlerta.setBounds(209, 98, 678, 29);
+
+		}
+		return lbAlerta;
+	}
+
+	private JLabel getLbConfirmacionInscripcion() {
+		if (lbConfirmacionInscripcion == null) {
+			lbConfirmacionInscripcion = new JLabel();
+			lbConfirmacionInscripcion.setBackground(Color.WHITE);
+			lbConfirmacionInscripcion.setVisible(false);
+			lbConfirmacionInscripcion.setOpaque(true);
+			lbConfirmacionInscripcion.setHorizontalAlignment(SwingConstants.CENTER);
+			lbConfirmacionInscripcion.setFont(new Font("Arial", Font.BOLD, 18));
+			lbConfirmacionInscripcion.setBorder(new LineBorder(Color.BLACK));
+
+			lbConfirmacionInscripcion.setBounds(18, 548, 719, 61);
+
+		}
+		return lbConfirmacionInscripcion;
+	}
+
+	private JButton getBtMostrarCursos() {
+		if (btMostrarCursos == null) {
+			btMostrarCursos = new DefaultButton("Mostrar Cursos Abiertos", "ventana", "MostrarCursosAbiertos", 'm',
+					ButtonColor.NORMAL);
+			btMostrarCursos.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						ColegiadoDto c = InscripcionColegiado.InicioSesion(txCursoDNI.getText());
+
+						if (c == null || txCursoDNI.getText().isEmpty()) {
+							lbAlerta.setText("Para mostrar los Cursos es Necesario un DNI correcto");
+							lbAlerta.setVisible(true);
+
+						} else {
+
+							if (!c.TipoColectivo
+									.equalsIgnoreCase(String.valueOf(cbSeleccionarColectivo.getSelectedItem()))) {
+								lbAlerta.setText(
+										"El colectivo seleccionado no se corresponde con el colectivo asociado al DNI");
+								lbAlerta.setVisible(true);
+								return;
+							}
+							colegiado = c;
+
+							cursosAbiertosPnInscripcion = InscripcionCursoFormativo.getCursosAbiertos();
+							cursosAbiertosPnInscripcion = cursosAbiertosPnInscripcion.stream()
+									.filter(curso -> Precio_Colectivos
+											.StringToPrecio_Colectivos(curso.CantidadPagarColectivo)
+											.containsAlgunColectivo(c.TipoColectivo, "Todos"))
+									.collect(Collectors.toList());
+
+							if (cursosAbiertosPnInscripcion.isEmpty()) {
+								lbAlerta.setVisible(true);
+								lbAlerta.setText(
+										"Lo sentimos, No hay cursos Disponibles para el colectivo seleccionado");
+								return;
+							} else {
+
+								TableModel tableModel = new ModeloCurso(cursosAbiertosPnInscripcion).getCursoModel(true,
+										c.TipoColectivo);
+
+								getTbCursosAbiertosInscripcionCurso().setModel(tableModel);
+
+								btnInscribete.setEnabled(true);
+								lbAlerta.setVisible(false);
+							}
+						}
+					} catch (BusinessException e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+			btMostrarCursos.setBounds(757, 21, 318, 66);
+
+		}
+		return btMostrarCursos;
+	}
+
+	private JButton getBtnInscripcionToInicio() {
+		if (btnInscripcionToInicio == null) {
+
+			btnInscripcionToInicio = new DefaultButton("Volver a inicio", "ventana", "VolverAInicio", 'v',
+					ButtonColor.NORMAL);
+			btnInscripcionToInicio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					mainCardLayout.show(mainPanel, HOME_PANEL_NAME);
+
+					btnInscribete.setEnabled(false);
+				}
+			});
+			btnInscripcionToInicio.setFont(new Font("Tahoma", Font.BOLD, 16));
+
+			btnInscripcionToInicio.setBounds(795, 619, 280, 64);
+
+		}
+		return btnInscripcionToInicio;
 	}
 
 	private JPanel getPnHomeNorth() {
@@ -6416,6 +6663,9 @@ public class MainWindow extends JFrame {
 			btInscrirseInscripcionCurso.setToolTipText("Haz click aquí para confirmar la inscripción");
 			btInscrirseInscripcionCurso.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+
+					lbConfirmacionInscripcion.setVisible(false);
+					lbAlerta.setVisible(false);
 					int IndexCursoSeleccionado = getTbCursosAbiertosInscripcionCurso().getSelectedRow();
 					CursoDto cursoSeleccionado = IndexCursoSeleccionado == -1 ? null
 							: cursosAbiertosPnInscripcion.get(IndexCursoSeleccionado);
@@ -6705,8 +6955,6 @@ public class MainWindow extends JFrame {
 							lbInscripcionCursoMensaje.setText(
 									"El DNI introducido no es válido. Por favor, revíselo e introdúzcalo de nuevo.");
 							pnInscripcionCursoSouthMessage.setVisible(true);
-							
-							resetPanelTablasInscripcionCurso(true);
 
 						} else {
 
@@ -6722,14 +6970,10 @@ public class MainWindow extends JFrame {
 										.collect(Collectors.toList());
 
 								if (cursosAbiertosPnInscripcion.isEmpty()) {
-									resetPanelTablasInscripcionCurso(true);
-									
 									lbInscripcionCursoMensaje.setText(
 											"Lo sentimos, No hay cursos disponibles para el colectivo seleccionado");
 									pnInscripcionCursoSouthMessage.setVisible(true);
 								}
-								
-								resetPanelTablasInscripcionCurso(false);
 
 								TableModel tableModelCursosAbiertosInsCurso = new CursoModel(
 										cursosAbiertosPnInscripcion).getCursosAbiertosInscripcionCurso();
@@ -6746,19 +6990,6 @@ public class MainWindow extends JFrame {
 		}
 		return btMostrarCursosAbiertosInscripcionCurso;
 	}
-	
-	/**
-	 * Oculta el panel que contiene las tablas de la inscripcion a un curso.
-	 * @param deshabilitar true para ocultar el panel y false en caso contrario
-	 */
-	private void resetPanelTablasInscripcionCurso(boolean deshabilitar) {
-		pnInscripcionCursoCursosAbiertos.setVisible(!deshabilitar);
-		if(deshabilitar) {
-			tbCursosAbiertosInscripcionCurso.setModel(new DefaultTableModel());
-			tbListaEsperaCursoSeleccionadoInscripcionCurso.setModel(new DefaultTableModel());
-		}
-	}
-	
 
 	/**
 	 * Método auxiliar al método

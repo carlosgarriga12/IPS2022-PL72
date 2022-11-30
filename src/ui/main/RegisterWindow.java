@@ -75,8 +75,10 @@ public class RegisterWindow extends JDialog {
 	private JButton getBtnNewButtonOk() {
 		if (btnNewButtonOk == null) {
 			btnNewButtonOk = new JButton("OK");
-			btnNewButtonOk.setForeground(Color.WHITE);
-			btnNewButtonOk.setBackground(LookAndFeel.SECONDARY_COLOR);
+
+			btnNewButtonOk.setForeground(Color.BLACK);
+			btnNewButtonOk.setBackground(Color.WHITE);
+			
 			btnNewButtonOk.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (textFieldDni.getText()==null || textFieldDni.getText().isBlank() || textFieldDni.getText().length() != 9) {

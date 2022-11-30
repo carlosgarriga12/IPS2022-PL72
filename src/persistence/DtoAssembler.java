@@ -226,6 +226,7 @@ public class DtoAssembler {
 
 	public static InscripcionColegiadoDto resultsetToIncripcionTransferencia(ResultSet rs) throws SQLException {
 		InscripcionColegiadoDto d = new InscripcionColegiadoDto();
+
 		int i = 1;
 		d.colegiado = new ColegiadoDto();
 		d.colegiado.DNI = rs.getString(i++);
@@ -246,8 +247,6 @@ public class DtoAssembler {
 		d.estado = rs.getString(i++);
 		d.incidencias = rs.getString(i++);
 		d.devolver = rs.getString(i++);
-		d.curso = new CursoDto();
-		d.curso.porcentaje_devolucion = rs.getDouble(i++);
 		return d;
 	}
 
