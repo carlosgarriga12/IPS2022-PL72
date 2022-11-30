@@ -2578,7 +2578,7 @@ public class MainWindow extends JFrame {
 			pnHomeAccionesColegiado = new JPanel();
 			pnHomeAccionesColegiado.setBorder(new EmptyBorder(50, 50, 50, 50));
 			pnHomeAccionesColegiado.setOpaque(false);
-			pnHomeAccionesColegiado.setLayout(new GridLayout(8, 1, 0, 10));
+			pnHomeAccionesColegiado.setLayout(new GridLayout(9, 1, 0, 10));
 
 			pnHomeAccionesColegiado.add(getBtHomeAltaColegiado());
 			pnHomeAccionesColegiado.add(getBtHomeInscripcionCurso());
@@ -8190,6 +8190,17 @@ public class MainWindow extends JFrame {
 	private JButton getBtnComprobarDniBajaColegiado() {
 		if (btnComprobarDniBajaColegiado == null) {
 			btnComprobarDniBajaColegiado = new JButton("Comprobar");
+			btnComprobarDniBajaColegiado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					ColegiadoDto c = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
+					
+					if (c == null) {
+						JOptionPane.showMessageDialog(pnBajaColegiado, "No existe tal colegiado");
+						txtDniBajaColegiado.grabFocus();
+						return;
+					} 
+				}
+			});
 			btnComprobarDniBajaColegiado.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnComprobarDniBajaColegiado;
@@ -8263,12 +8274,20 @@ public class MainWindow extends JFrame {
 			btnDarDeBaja = new JButton("Dar de baja");
 			btnDarDeBaja.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					ColegiadoDto c = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
+					
+					if (c == null) {
+						JOptionPane.showMessageDialog(pnBajaColegiado, "No existe tal colegiado");
+						txtDniBajaColegiado.grabFocus();
+						return;
+					}
+					
 					if (txtComentarioBaja.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(pnBajaColegiado, "No has puesto un comentario para la baja");
 						return;
 					}
 					
-					ColegiadoDto c = ColegiadoCrud.findColegiadoDni(txtDniBajaColegiado.getText());
+					
 					
 					InscripcionColegiadoCRUD.deleteInscripcionesByDni(txtDniBajaColegiado.getText());
 					ColegiadoCrud.deleteColegiado(txtDniBajaColegiado.getText());
